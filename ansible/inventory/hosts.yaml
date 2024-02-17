@@ -1,0 +1,14 @@
+---
+kubernetes:
+  children:
+    controllers:
+      hosts:
+        "k3s-control-1":
+          ansible_user: "root"
+          ansible_host: "192.168.20.51"
+        "k3s-control-2":
+          ansible_user: "root"
+          ansible_host: "192.168.20.52"
+        "rpi5":
+          ansible_user: "pi"
+          ansible_host: "192.168.20.3"
