@@ -12,3 +12,4 @@ resources:
   - ./metrics-server.yaml
   - ./openebs.yaml
   - ./stakater.yaml
+  - ./cloudnative-pg.yaml
