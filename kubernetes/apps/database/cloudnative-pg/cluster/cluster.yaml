@@ -7,7 +7,7 @@ spec:
   instances: 3
   storage:
     size: 9Gi
-    storageClass: openebs-hostpath
+    storageClass:  local-hostpath
   superuserSecret:
     name: cloudnative-pg-secret
   enableSuperuserAccess: true

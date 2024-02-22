@@ -13,3 +13,7 @@ resources:
   - ./openebs.yaml
   - ./stakater.yaml
   - ./cloudnative-pg.yaml
+  - ./longhorn.yaml
+  - ./backube.yaml
+  - ./piraeus.yaml
+  - ./democratic-csi.yaml
