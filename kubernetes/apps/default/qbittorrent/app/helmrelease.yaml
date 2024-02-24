@@ -35,21 +35,72 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
     controllers:
       main:
+        initContainers:
+          init-categories:
+            image:
+              repository: docker.io/library/alpine
+              tag: 3.19.1
+            command:
+              - "sh"
+              - "-c"
+              - |
+                mkdir -p /config/qBittorrent/ &&
+                echo '{"movies": {"save_path": "/data/torrents/movies"}, "tv": {"save_path": "/data/torrents/tv"}}' > /config/qBittorrent/categories.json
         containers:
           main:
             image:
               repository: ghcr.io/onedr0p/qbittorrent
-              tag: 4.6.3@sha256:a4ad890e8c4a287c17d12ca22eb1d84a046aba2efbd882bf7d6eb12459f6a70c
+              tag: 4.6.2@sha256:fedb62126c82ae0c7192e9052633411294a27e9c233613c03b0a8d168d160040
             env:
               TZ: "${TIMEZONE}"
               QBITTORRENT__PORT: &port 8080
               QBITTORRENT__BT_PORT: &port-bt 58462
+              QBT_Preferences__Downloads__SavePath: &downloads-path /data/torrents
+              QBT_Preferences__WebUI__Password_PBKDF2: "@ByteArray(iXranQkCEwRqp96g0yKHHA==:2ujiTbO+e12jHqzAJccPqjrBcVmRhaTSrrMi27VRiv2rbWk50twuRcHBCc8jsX/J/oZ8JQnBzHFjNzZ2bvpZkQ==)"
+              QBT_Preferences__WebUI__AlternativeUIEnabled: 'true'
+              QBT_Preferences__WebUI__RootFolder: '/add-ons/VueTorrent'
+              QBT_Preferences__WebUI__LocalHostAuth: false
+              QBT_Preferences__WebUI__UseUPNP: false
+              QBT_Preferences__WebUI__CSRFProtection: false
+              QBT_Preferences__WebUI__ClickjackingProtection: false
+              QBT_Preferences__WebUI__AuthSubnetWhitelistEnabled: true
+              QBT_Preferences__WebUI__AuthSubnetWhitelist: |-
+                10.42.0.0/16, 192.168.10.0/24, 192.168.20.0/24
+              QBT_BitTorrent__Session__AlternativeGlobalDLSpeedLimit: 20000
+              QBT_BitTorrent__Session__AlternativeGlobalUPSpeedLimit: 0
+              QBT_BitTorrent__Session__GlobalUPSpeedLimit: 0
+              QBT_BitTorrent__Session__GlobalDLSpeedLimit: 2500
+              QBT_BitTorrent__Session__UseAlternativeGlobalSpeedLimit: false
+              QBT_BitTorrent__Session__BandwidthSchedulerEnabled: true
+              QBT_BitTorrent__Session__DisableAutoTMMByDefault: false
+              QBT_BitTorrent__Session__TempPathEnabled: false
+              QBT_BitTorrent__Session__DisableAutoTMMTriggers__CategorySavePathChanged: false
+              QBT_BitTorrent__Session__DisableAutoTMMTriggers__DefaultSavePathChanged: false
+              QBT_BitTorrent__Scheduler__days: true
+              QBT_BitTorrent__Scheduler__start_time: '@Variant(\0\0\0\xf\0\0\0\0)'
+              QBT_BitTorrent__Scheduler__end_time: '@Variant(\0\0\0\xf\x1\xb7t\0)'
             resources:
               requests:
                 cpu: 500m
                 memory: 1Gi
               limits:
                 memory: 3Gi
+          secondary:
+            dependsOn: main
+            image:
+              repository: registry.k8s.io/git-sync/git-sync
+              tag: v4.2.1
+            args:
+              - --repo=https://github.com/WDaan/VueTorrent
+              - --ref=latest-release
+              - --period=86400s
+              - --root=/add-ons
+            resources:
+              requests:
+                cpu: 10m
+                memory: 25Mi
+              limits:
+                memory: 50Mi
     service:
       main:
         ports:
@@ -77,7 +128,7 @@ spec:
           gethomepage.dev/name: Qbittorrent
           gethomepage.dev/group: Media
         hosts:
-          - host: &host "qbittorrent.${SECRET_DOMAIN}"
+          - host: &host "torrent.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:
@@ -94,13 +145,12 @@ spec:
           - path: /config
       downloads:
         type: nfs
-        server: "192.168.20.5"
-        path: /mnt/storage/downloads
+        server: "${NAS_URL}"
+        path: "${NAS_PATH}"
         globalMounts:
-          - path: /mnt/storage/downloads
-      video-qbittorrent:
-        type: nfs
-        server: "192.168.20.5"
-        path: /mnt/storage/video/.qbittorrent
+          - path: *downloads-path
+      add-ons:
+        enabled: true
+        type: emptyDir
         globalMounts:
-          - path: /mnt/storage/video/.qbittorrent
+          - path: /add-ons

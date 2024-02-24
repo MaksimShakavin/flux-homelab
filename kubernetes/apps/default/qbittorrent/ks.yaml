@@ -12,6 +12,9 @@ spec:
       app.kubernetes.io/name: *app
   path: ./kubernetes/apps/default/qbittorrent/app
   prune: true
+  dependsOn:
+    - name: longhorn
+    - name: volsync
   sourceRef:
     kind: GitRepository
     name: home-kubernetes
@@ -22,3 +25,4 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      VOLSYNC_CAPACITY: 2Gi
