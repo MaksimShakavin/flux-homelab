@@ -17,4 +17,4 @@ resources:
   - ./backube.yaml
   - ./piraeus.yaml
   - ./democratic-csi.yaml
-  - ./cluster-secret.yaml
+  - ./emberstack-charts.yaml
