@@ -148,7 +148,7 @@ spec:
         server: "${NAS_URL}"
         path: "${NAS_PATH}"
         globalMounts:
-          - path: *downloads-path
+          - path: /data
       add-ons:
         enabled: true
         type: emptyDir
