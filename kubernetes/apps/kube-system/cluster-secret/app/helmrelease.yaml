@@ -1,0 +1,24 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: cluster-secret
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: cluster-secret
+      version: 0.2.1
+      sourceRef:
+        kind: HelmRepository
+        name: clustersecret
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
