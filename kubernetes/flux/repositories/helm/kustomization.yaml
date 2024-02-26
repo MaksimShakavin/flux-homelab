@@ -18,3 +18,5 @@ resources:
   - ./piraeus.yaml
   - ./democratic-csi.yaml
   - ./emberstack-charts.yaml
+  - ./node-feature-discovery.yaml
+  - ./intel.yaml
