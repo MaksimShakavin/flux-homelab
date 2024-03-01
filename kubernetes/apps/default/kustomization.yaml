@@ -9,3 +9,4 @@ resources:
   - ./prowlarr/ks.yaml
   - ./plex/ks.yaml
   - ./notifiarr/ks.yaml
+  - ./overseerr/ks.yaml
