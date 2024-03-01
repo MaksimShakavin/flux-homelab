@@ -1,0 +1,90 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta2.json
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: notifiarr
+  namespace: default
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 2.5.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    defaultPodOptions:
+      hostname: notifiarr-kube
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          main:
+            image:
+              repository: golift/notifiarr
+              tag: 0.7@sha256:5080028cabe9169a84ebfeab0d38df1496a56965fa72a1072397e13dac5cf9bc
+            env:
+              PUID: 1000
+              PGID: 1000
+              UMASK: 002
+              TZ: "${TIMEZONE}"
+              DN_PLEX_URL: "http://plex.default.svc.cluster.local:32400"
+              DN_QBIT_0_NAME: "qbittorrent-kube"
+              DN_QBIT_0_URL: "http://qbittorrent.default.svc.cluster.local:8080"
+              DN_QBIT_0_USER: "admin"
+              DN_RADARR_0_NAME: "radarr-kube"
+              DN_RADARR_0_URL: "http://radarr.default.svc.cluster.local:8080"
+              DN_RADARR_0_API_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: radarr-secret
+                    key: RADARR__API_KEY
+              DN_SONARR_0_NAME: "sonarr-kube"
+              DN_SONARR_0_URL: "http://sonarr.default.svc.cluster.local:8080"
+              DN_SONARR_0_API_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: sonarr-secret
+                    key: SONARR__API_KEY
+            envFrom:
+              - secretRef:
+                  name: notifiarr-secret
+    service:
+      main:
+        ports:
+          http:
+            port: 5454
+    ingress:
+      main:
+        enabled: true
+        className: internal
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/icon: notifiarr.png
+          gethomepage.dev/name: notifiarr
+          gethomepage.dev/group: Media
+        hosts:
+          - host: &host "notifiarr.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  name: main
+                  port: http
+        tls:
+          - hosts:
+              - *host
