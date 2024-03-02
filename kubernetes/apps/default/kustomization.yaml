@@ -10,3 +10,4 @@ resources:
   - ./plex/ks.yaml
   - ./notifiarr/ks.yaml
   - ./overseerr/ks.yaml
+  - ./homepage/ks.yaml
