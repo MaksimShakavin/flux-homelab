@@ -36,6 +36,31 @@ spec:
               tag: v0.8.6
             env:
               TZ: "${TIMEZONE}"
+              HOMEPAGE_VAR_QBITTORRENT_USERNAME:
+                valueFrom:
+                  secretKeyRef:
+                    name: qbittorrent-secret
+                    key: UI_USERNAME
+              HOMEPAGE_VAR_QBITTORRENT_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: qbittorrent-secret
+                    key: UI_PASSWORD
+              HOMEPAGE_VAR_RADARR_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: radarr-secret
+                    key: RADARR__API_KEY
+              HOMEPAGE_VAR_SONARR_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: sonarr-secret
+                    key: SONARR__API_KEY
+              HOMEPAGE_VAR_PROWLARR_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: prowlarr-secret
+                    key: PROWLARR__API_KEY
             envFrom:
               - secretRef:
                   name: homepage-secret
