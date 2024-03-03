@@ -61,6 +61,16 @@ spec:
                   secretKeyRef:
                     name: prowlarr-secret
                     key: PROWLARR__API_KEY
+              HOMEPAGE_VAR_PLEX_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: plex-secret
+                    key: PLEX_TOKEN
+              HOMEPAGE_VAR_OVERSEERR_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: overseerr-secret
+                    key: API_KEY
             envFrom:
               - secretRef:
                   name: homepage-secret

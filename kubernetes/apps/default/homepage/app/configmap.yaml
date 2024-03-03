@@ -56,6 +56,9 @@ data:
       Observability:
         style: column
         icon: mdi-chart-line
+    providers:
+      longhorn:
+        url: http://longhorn-frontend.storage.svc.cluster.local
   widgets.yaml: |
     - resources:
         backend: kubernetes
@@ -71,3 +74,8 @@ data:
           dateStyle: long
           timeStyle: short
           hourCycle: h23
+    - longhorn:
+        expanded: true
+        total: true
+        labels: true
+        nodes: true

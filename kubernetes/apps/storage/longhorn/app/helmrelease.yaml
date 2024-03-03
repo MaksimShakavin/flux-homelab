@@ -42,5 +42,10 @@ spec:
     ingress:
       enabled: true
       ingressClassName: internal
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/icon: longhorn.png
+        gethomepage.dev/name: Longhorn
+        gethomepage.dev/group: Storage
       host: longhorn.${SECRET_DOMAIN}
       tls: true

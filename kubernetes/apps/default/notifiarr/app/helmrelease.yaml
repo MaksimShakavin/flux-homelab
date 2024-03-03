@@ -44,6 +44,11 @@ spec:
               UMASK: 002
               TZ: "${TIMEZONE}"
               DN_PLEX_URL: "http://plex.default.svc.cluster.local:32400"
+              DN_PLEX_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: plex-secret
+                    key: PLEX_TOKEN
               DN_QBIT_0_NAME: "qbittorrent-kube"
               DN_QBIT_0_URL: "http://qbittorrent.default.svc.cluster.local:8080"
               DN_QBIT_0_USER: "admin"
