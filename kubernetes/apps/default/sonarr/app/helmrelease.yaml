@@ -24,8 +24,7 @@ spec:
     cleanupOnFail: true
     remediation:
       retries: 3
-  uninstall:
-    keepHistory: false
+      strategy: uninstall
   values:
     defaultPodOptions:
       securityContext:
@@ -34,7 +33,7 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
     controllers:
-      main:
+      sonarr:
         initContainers:
           init-db:
             image:
@@ -55,7 +54,7 @@ spec:
               - secretRef:
                   name: sonarr-secret
         containers:
-          main:
+          app:
             image:
               repository: ghcr.io/onedr0p/sonarr-develop
               tag: 4.0.2.1341@sha256:e7e1a75fa1586559f91d5e26caac72f96f1e18ae01ccb2d7c7ce589a3bedaca4
@@ -76,13 +75,13 @@ spec:
               limits:
                 memory: 2000Mi
     service:
-      main:
+      app:
+        controller: sonarr
         ports:
           http:
             port: *port
     ingress:
-      main:
-        enabled: true
+      app:
         className: internal
         annotations:
           gethomepage.dev/enabled: "true"
@@ -98,14 +97,13 @@ spec:
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: app
                   port: http
         tls:
           - hosts:
               - *host
     persistence:
       config:
-        enabled: true
         existingClaim: *app
         globalMounts:
           - path: /config

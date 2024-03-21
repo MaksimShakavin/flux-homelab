@@ -7,6 +7,8 @@ metadata:
   namespace: default
 spec:
   interval: 30m
+  driftDetection:
+    mode: enabled
   chart:
     spec:
       chart: app-template
@@ -34,7 +36,7 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
     controllers:
-      main:
+      qbittorrent:
         initContainers:
           init-categories:
             image:
@@ -47,7 +49,7 @@ spec:
                 mkdir -p /config/qBittorrent/ &&
                 echo '{"movies": {"save_path": "/data/torrents/movies"}, "tv": {"save_path": "/data/torrents/tv"}}' > /config/qBittorrent/categories.json
         containers:
-          main:
+          app:
             image:
               repository: ghcr.io/onedr0p/qbittorrent
               tag: 4.6.3@sha256:f2895e632fe66299d8ccc68265cc11aea92a232b7d0844de9961864b3e504026
@@ -86,7 +88,7 @@ spec:
               limits:
                 memory: 3Gi
           secondary:
-            dependsOn: main
+            dependsOn: app
             image:
               repository: registry.k8s.io/git-sync/git-sync
               tag: v4.2.1
@@ -102,24 +104,20 @@ spec:
               limits:
                 memory: 50Mi
     service:
-      main:
-        ports:
-          http:
-            port: *port
-      bittorent:
-        enabled: true
-        controller: main
+      app:
+        controller: qbittorrent
         type: LoadBalancer
         annotations:
           io.cilium/lb-ipam-ips: "${CLUSTER_LB_QBITTORRENT}"
         ports:
+          http:
+            port: *port
           bittorrent:
             enabled: true
             port: *port-bt
             protocol: TCP
     ingress:
-      main:
-        enabled: true
+      app:
         className: internal
         annotations:
           gethomepage.dev/enabled: "true"
@@ -136,14 +134,13 @@ spec:
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: app
                   port: http
         tls:
           - hosts:
               - *host
     persistence:
       config:
-        enabled: true
         existingClaim: *app
         globalMounts:
           - path: /config

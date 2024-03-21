@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta2.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/common-3.0.1/charts/library/common/values.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
@@ -24,6 +24,7 @@ spec:
     cleanupOnFail: true
     remediation:
       retries: 3
+      strategy: uninstall
   uninstall:
     keepHistory: false
   values:
@@ -34,7 +35,7 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
     controllers:
-      main:
+      prowlarr:
         annotations:
           reloader.stakater.com/auto: "true"
         initContainers:
@@ -57,7 +58,7 @@ spec:
               - secretRef:
                   name: prowlarr-secret
         containers:
-          main:
+          app:
             image:
               repository: ghcr.io/onedr0p/prowlarr
               tag: 1.13@sha256:53ecae8f35f90ba91c64f961f13779a4c1e51e7bd4bbe432601b90296f8c23fe
@@ -76,13 +77,13 @@ spec:
               limits:
                 memory: 500Mi
     service:
-      main:
+      app:
+        controller: prowlarr
         ports:
           http:
             port: *port
     ingress:
-      main:
-        enabled: true
+      app:
         className: internal
         annotations:
           gethomepage.dev/enabled: "true"
@@ -98,14 +99,13 @@ spec:
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: app
                   port: http
         tls:
           - hosts:
               - *host
     persistence:
       config:
-        enabled: true
         existingClaim: *app
         globalMounts:
           - path: /config

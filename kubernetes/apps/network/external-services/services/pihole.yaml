@@ -1,0 +1,39 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pihole-external-service
+spec:
+  type: ExternalName
+  externalName: 192.168.20.5
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pihole-ingress
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/icon: synology.png
+    gethomepage.dev/name: Synology
+    gethomepage.dev/group: Storage
+    gethomepage.dev/description: Network-wide Ad Blocking DNS
+    gethomepage.dev/widget.type: pihole
+    gethomepage.dev/widget.url: http://192.168.20.5:5000
+    gethomepage.dev/widget.username: "{{HOMEPAGE_VAR_SYNOLOGY_USERNAME}}"
+    gethomepage.dev/widget.password: "{{HOMEPAGE_VAR_SYNOLOGY_PASSWORD}}"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  rules:
+    - host: &host "nas.${SECRET_DOMAIN}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pihole-external-service
+                port:
+                  number: 5001
+  tls:
+    - hosts:
+        - *host

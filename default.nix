@@ -13,5 +13,6 @@ pkgs.mkShell {
    pkgs.sops
    pkgs.stern
    pkgs.yq-go
+   pkgs.envsubst
   ];
 }

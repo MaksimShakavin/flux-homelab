@@ -24,17 +24,18 @@ spec:
     cleanupOnFail: true
     remediation:
       retries: 3
+      strategy: uninstall
   uninstall:
     keepHistory: false
   values:
     defaultPodOptions:
       hostname: notifiarr-kube
     controllers:
-      main:
+      notifiarr:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
-          main:
+          app:
             image:
               repository: golift/notifiarr
               tag: 0.7@sha256:c7a21fcf4ae2d5035c3302debde257bf6b3338b768d5678efb59e093a246c515
@@ -75,13 +76,13 @@ spec:
               - secretRef:
                   name: notifiarr-secret
     service:
-      main:
+      app:
+        controller: notifiarr
         ports:
           http:
             port: 5454
     ingress:
-      main:
-        enabled: true
+      app:
         className: internal
         annotations:
           gethomepage.dev/enabled: "true"
@@ -93,7 +94,7 @@ spec:
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: app
                   port: http
         tls:
           - hosts:
