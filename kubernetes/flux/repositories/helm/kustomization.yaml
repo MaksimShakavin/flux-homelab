@@ -8,6 +8,7 @@ resources:
   - ./ingress-nginx.yaml
   - ./k8s-gateway.yaml
   - ./kubernetes-dashboard.yaml
+  - ./portainer-charts.yaml
   - ./jetstack.yaml
   - ./metrics-server.yaml
   - ./openebs.yaml

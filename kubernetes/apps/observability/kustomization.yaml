@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - ./namespace.yaml
   - ./kubernetes-dashboard/k3s.yaml
+  - ./portainer/k3s.yaml
