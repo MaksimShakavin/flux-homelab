@@ -15,7 +15,7 @@ metadata:
     gethomepage.dev/enabled: "true"
     gethomepage.dev/icon: "https://sprut.${SECRET_DOMAIN}/favicon.ico"
     gethomepage.dev/name: Spruthub
-    gethomepage.dev/group: SmartHome
+    gethomepage.dev/group: Home
     gethomepage.dev/description: Zigbee hub and Homekit integration
 spec:
   rules:

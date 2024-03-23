@@ -1,0 +1,96 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta2.json
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: &app nodered
+  namespace: default
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.0.4
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    controllers:
+      nodered:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: docker.io/nodered/node-red
+              tag: 3.1.7@sha256:b3bee638741091bf6548f77aa08ec9ff5f879cdf6a0a43c761dcd009217636a5
+            env:
+              PUID: 1000
+              PGID: 1000
+              UMASK: 002
+              TZ: "${TIMEZONE}"
+            envFrom:
+              - secretRef:
+                  name: nodered-secret
+        pod:
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        controller: nodered
+        ports:
+          http:
+            port: 1880
+    ingress:
+      app:
+        className: internal
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/icon: node-red.png
+          gethomepage.dev/name: Node-red
+          gethomepage.dev/description: Visual programming for automation
+          gethomepage.dev/group: Home
+        hosts:
+          - host: &host "nodered.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+        tls:
+          - hosts:
+              - *host
+    persistence:
+#      config:
+#        existingClaim: *app
+#        globalMounts:
+#          - path: /data
+#      settings:
+#        type: configMap
+#        name: node-red-configmap
+#        globalMounts:
+#          - path: /data/settings.js
+#            subPath: settings.js
+#            readOnly: true
+      downloads:
+        type: nfs
+        server: "${NAS_URL}"
+        path: "/volume1/rpi/docker/Appdata/nodered"
+        globalMounts:
+          - path: /data

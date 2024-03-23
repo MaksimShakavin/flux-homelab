@@ -11,3 +11,4 @@ resources:
   - ./notifiarr/ks.yaml
   - ./overseerr/ks.yaml
   - ./homepage/ks.yaml
+  - ./nodered/ks.yaml
