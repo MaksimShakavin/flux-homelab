@@ -23,6 +23,7 @@ spec:
   values:
     service:
       type: ClusterIP
+      httpPort: 9000
     persistence:
       existingClaim: *app
     ingress:
@@ -35,7 +36,7 @@ spec:
         gethomepage.dev/group: Observability
         gethomepage.dev/description: Container management UI
         gethomepage.dev/widget.type: portainer
-        gethomepage.dev/widget.url: http://portainer.observability.svc.cluster.local:9090
+        gethomepage.dev/widget.url: http://portainer.observability.svc.cluster.local:9000
         gethomepage.dev/widget.env: "1"
         gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_PORTAINER_TOKEN}}"
       hosts:
