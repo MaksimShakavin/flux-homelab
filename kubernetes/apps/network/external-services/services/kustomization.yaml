@@ -5,3 +5,4 @@ resources:
   - ./synology.yaml
   - ./sprut.yaml
   - ./proxmox.yaml
+  - ./minio.yaml
