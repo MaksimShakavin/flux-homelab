@@ -1,0 +1,36 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: synology-external-service
+spec:
+  type: ExternalName
+  externalName: "${NAS_URL}"
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: synology-ingress
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/icon: synology.png
+    gethomepage.dev/name: Synology
+    gethomepage.dev/group: Storage
+    gethomepage.dev/description: Synology nas disk station
+    gethomepage.dev/widget.type: diskstation
+    gethomepage.dev/widget.url: "http://${NAS_URL}:5000"
+    gethomepage.dev/widget.username: "{{HOMEPAGE_VAR_SYNOLOGY_USERNAME}}"
+    gethomepage.dev/widget.password: "{{HOMEPAGE_VAR_SYNOLOGY_PASSWORD}}"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  rules:
+    - host: "nas.${SECRET_DOMAIN}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: synology-external-service
+                port:
+                  number: 5001

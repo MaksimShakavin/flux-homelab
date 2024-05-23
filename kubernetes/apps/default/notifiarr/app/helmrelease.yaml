@@ -1,0 +1,75 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: notifiarr
+  namespace: default
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.1.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+      strategy: uninstall
+  dependsOn:
+    - name: longhorn
+      namespace: storage
+    - name: volsync
+      namespace: storage
+  values:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    defaultPodOptions:
+      hostname: notifiarr-kube
+    controllers:
+      notifiarr:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: golift/notifiarr
+              tag: 0.7@sha256:c7a21fcf4ae2d5035c3302debde257bf6b3338b768d5678efb59e093a246c515
+            env:
+              PUID: 1000
+              PGID: 1000
+              UMASK: 002
+              TZ: "${TIMEZONE}"
+            envFrom:
+              - secretRef:
+                  name: notifiarr-secret
+    service:
+      app:
+        controller: notifiarr
+        ports:
+          http:
+            port: 5454
+    ingress:
+      app:
+        className: internal
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/icon: notifiarr.png
+          gethomepage.dev/name: notifiarr
+          gethomepage.dev/group: Media
+        hosts:
+          - host: "notifiarr.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http

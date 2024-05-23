@@ -1,0 +1,202 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
+---
+# renovate: datasource=docker depName=ghcr.io/siderolabs/installer
+talosVersion: v1.7.2
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+kubernetesVersion: v1.30.1
+
+clusterName: "home-kubernetes"
+endpoint: https://192.168.20.60:6443
+clusterPodNets:
+  - "10.69.0.0/16"
+clusterSvcNets:
+  - "10.96.0.0/16"
+additionalApiServerCertSans: &sans
+  - "192.168.20.60"
+  - 127.0.0.1 # KubePrism
+additionalMachineCertSans: *sans
+
+# Disable built-in Flannel to use Cilium
+cniConfig:
+  name: none
+
+nodes:
+  - hostname: "k8s-control-1"
+    ipAddress: "192.168.20.51"
+    installDisk: /dev/sda
+    talosImageURL: factory.talos.dev/installer/88d1f7a5c4f1d3aba7df787c448c1d3d008ed29cfb34af53fa0df4336a56040b
+    controlPlane: true
+    nodeLabels:
+      "node.longhorn.io/create-default-disk": "true"
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:b5:dd:1f"
+        dhcp: false
+        addresses:
+          - "192.168.20.51/24"
+        routes:
+          - network: 0.0.0.0/0
+            gateway: "192.168.20.1"
+        mtu: 1500
+        vip:
+          ip: "192.168.20.60"
+  - hostname: "k8s-control-2"
+    ipAddress: "192.168.20.52"
+    installDisk: /dev/sda
+    talosImageURL: factory.talos.dev/installer/88d1f7a5c4f1d3aba7df787c448c1d3d008ed29cfb34af53fa0df4336a56040b
+    controlPlane: true
+    nodeLabels:
+      "node.longhorn.io/create-default-disk": "true"
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:0c:fd:22"
+        dhcp: false
+        addresses:
+          - "192.168.20.52/24"
+        routes:
+          - network: 0.0.0.0/0
+            gateway: "192.168.20.1"
+        mtu: 1500
+        vip:
+          ip: "192.168.20.60"
+  - hostname: "k8s-control-3"
+    ipAddress: "192.168.20.53"
+    installDisk: /dev/sda
+    talosImageURL: factory.talos.dev/installer/88d1f7a5c4f1d3aba7df787c448c1d3d008ed29cfb34af53fa0df4336a56040b
+    controlPlane: true
+    nodeLabels:
+      "node.longhorn.io/create-default-disk": "true"
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:a8:19:33"
+        dhcp: false
+        addresses:
+          - "192.168.20.53/24"
+        routes:
+          - network: 0.0.0.0/0
+            gateway: "192.168.20.1"
+        mtu: 1500
+        vip:
+          ip: "192.168.20.60"
+
+patches:
+  # Configure containerd
+  - |-
+    machine:
+      files:
+        - op: create
+          path: /etc/cri/conf.d/20-customization.part
+          content: |-
+            [plugins."io.containerd.grpc.v1.cri"]
+              enable_unprivileged_ports = true
+              enable_unprivileged_icmp = true
+            [plugins."io.containerd.grpc.v1.cri".containerd]
+              discard_unpacked_layers = false
+            [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+              discard_unpacked_layers = false
+
+  # Disable search domain everywhere
+  - |-
+    machine:
+      network:
+        disableSearchDomain: true
+
+  # Enable cluster discovery
+  - |-
+    cluster:
+      discovery:
+        registries:
+          kubernetes:
+            disabled: false
+          service:
+            disabled: false
+
+  # Configure kubelet
+  - |-
+    machine:
+      kubelet:
+        extraArgs:
+          rotate-server-certificates: true
+        nodeIP:
+          validSubnets:
+            - 192.168.20.0/24
+
+  # Force nameserver
+  - |-
+    machine:
+      network:
+        nameservers:
+          - "1.1.1.1"
+          - "1.0.0.1"
+
+  # Custom sysctl settings
+  - |-
+    machine:
+      sysctls:
+        fs.inotify.max_queued_events: "65536"
+        fs.inotify.max_user_watches: "524288"
+        fs.inotify.max_user_instances: "8192"
+        net.core.rmem_max: "2500000"
+        net.core.wmem_max: "2500000"
+
+  # Mount longhorn in kubelet
+  - |-
+    machine:
+      kubelet:
+        extraMounts:
+          - destination: /var/lib/longhorn
+            type: bind
+            source: /var/lib/longhorn
+            options:
+              - bind
+              - rshared
+              - rw
+          - destination: /var/democratic-csi/local
+            type: bind
+            source: /var/democratic-csi/local
+            options:
+              - bind
+              - rshared
+              - rw
+
+controlPlane:
+  patches:
+    # Cluster configuration
+    - |-
+      cluster:
+        allowSchedulingOnControlPlanes: true
+        controllerManager:
+          extraArgs:
+            bind-address: 0.0.0.0
+        coreDNS:
+          disabled: true
+        proxy:
+          disabled: true
+        scheduler:
+          extraArgs:
+            bind-address: 0.0.0.0
+
+    # ETCD configuration
+    - |-
+      cluster:
+        etcd:
+          extraArgs:
+            listen-metrics-urls: http://0.0.0.0:2381
+          advertisedSubnets:
+            - 192.168.20.0/24
+
+    # Disable default API server admission plugins.
+    - |-
+      - op: remove
+        path: /cluster/apiServer/admissionControl
+
+    # Enable K8s Talos API Access
+    - |-
+      machine:
+        features:
+          kubernetesTalosAPIAccess:
+            enabled: true
+            allowedRoles:
+              - os:admin
+            allowedKubernetesNamespaces:
+              - system-upgrade

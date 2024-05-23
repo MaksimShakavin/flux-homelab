@@ -1,0 +1,157 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app qbittorrent
+  namespace: default
+spec:
+  interval: 30m
+  driftDetection:
+    mode: enabled
+  chart:
+    spec:
+      chart: app-template
+      version: 3.1.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  dependsOn:
+    - name: longhorn
+      namespace: storage
+    - name: volsync
+      namespace: storage
+  values:
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    controllers:
+      qbittorrent:
+        initContainers:
+          init-categories:
+            image:
+              repository: docker.io/library/alpine
+              tag: 3.19.1
+            command:
+              - "sh"
+              - "-c"
+              - |
+                mkdir -p /config/qBittorrent/ &&
+                echo '{"movies": {"save_path": "/data/torrents/movies"}, "tv": {"save_path": "/data/torrents/tv"}}' > /config/qBittorrent/categories.json
+        containers:
+          app:
+            image:
+              repository: ghcr.io/onedr0p/qbittorrent
+              tag: 4.6.4@sha256:53ead5ab43027d04efc5d52740aa02308a88d6b4a6eaa90cf6fd2e94fc11ba17
+            env:
+              TZ: "${TIMEZONE}"
+              QBITTORRENT__PORT: &port 8080
+              QBITTORRENT__BT_PORT: &port-bt 58462
+              QBT_Preferences__Downloads__SavePath: /data/torrents
+              QBT_Preferences__WebUI__Password_PBKDF2: "@ByteArray(iXranQkCEwRqp96g0yKHHA==:2ujiTbO+e12jHqzAJccPqjrBcVmRhaTSrrMi27VRiv2rbWk50twuRcHBCc8jsX/J/oZ8JQnBzHFjNzZ2bvpZkQ==)"
+              QBT_Preferences__WebUI__AlternativeUIEnabled: 'true'
+              QBT_Preferences__WebUI__RootFolder: '/add-ons/VueTorrent'
+              QBT_Preferences__WebUI__LocalHostAuth: false
+              QBT_Preferences__WebUI__UseUPNP: false
+              QBT_Preferences__WebUI__CSRFProtection: false
+              QBT_Preferences__WebUI__ClickjackingProtection: false
+              QBT_Preferences__WebUI__AuthSubnetWhitelistEnabled: true
+              QBT_Preferences__WebUI__AuthSubnetWhitelist: |-
+                10.42.0.0/16, 192.168.10.0/24, 192.168.20.0/24
+              QBT_BitTorrent__Session__AlternativeGlobalDLSpeedLimit: 20000
+              QBT_BitTorrent__Session__AlternativeGlobalUPSpeedLimit: 0
+              QBT_BitTorrent__Session__GlobalUPSpeedLimit: 0
+              QBT_BitTorrent__Session__GlobalDLSpeedLimit: 2500
+              QBT_BitTorrent__Session__UseAlternativeGlobalSpeedLimit: false
+              QBT_BitTorrent__Session__BandwidthSchedulerEnabled: true
+              QBT_BitTorrent__Session__DisableAutoTMMByDefault: false
+              QBT_BitTorrent__Session__TempPathEnabled: false
+              QBT_BitTorrent__Session__DisableAutoTMMTriggers__CategorySavePathChanged: false
+              QBT_BitTorrent__Session__DisableAutoTMMTriggers__DefaultSavePathChanged: false
+              QBT_BitTorrent__Scheduler__days: true
+              QBT_BitTorrent__Scheduler__start_time: '@Variant(\0\0\0\xf\0\0\0\0)'
+              QBT_BitTorrent__Scheduler__end_time: '@Variant(\0\0\0\xf\x1\xb7t\0)'
+            resources:
+              requests:
+                cpu: 500m
+                memory: 1Gi
+              limits:
+                memory: 3Gi
+          secondary:
+            dependsOn: app
+            image:
+              repository: registry.k8s.io/git-sync/git-sync
+              tag: v4.2.3
+            args:
+              - --repo=https://github.com/WDaan/VueTorrent
+              - --ref=latest-release
+              - --period=86400s
+              - --root=/add-ons
+            resources:
+              requests:
+                cpu: 10m
+                memory: 25Mi
+              limits:
+                memory: 50Mi
+    service:
+      app:
+        controller: qbittorrent
+        type: LoadBalancer
+        annotations:
+          io.cilium/lb-ipam-ips: "${CLUSTER_LB_QBITTORRENT}"
+        ports:
+          http:
+            port: *port
+          bittorrent:
+            enabled: true
+            port: *port-bt
+            protocol: TCP
+    ingress:
+      app:
+        className: internal
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Media
+          gethomepage.dev/name: qBittorrent
+          gethomepage.dev/icon: qbittorrent.png
+          gethomepage.dev/description: Torrent Client
+          gethomepage.dev/widget.type: qbittorrent
+          gethomepage.dev/widget.url: http://qbittorrent.default.svc.cluster.local:8080
+          gethomepage.dev/widget.username: "{{HOMEPAGE_VAR_QBITTORRENT_USERNAME}}"
+          gethomepage.dev/widget.password: "{{HOMEPAGE_VAR_QBITTORRENT_PASSWORD}}"
+        hosts:
+          - host: "torrent.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+    persistence:
+      config:
+        existingClaim: *app
+        globalMounts:
+          - path: /config
+      downloads:
+        type: nfs
+        server: "${NAS_URL}"
+        path: "${NAS_PATH}"
+        globalMounts:
+          - path: /data
+      add-ons:
+        enabled: true
+        type: emptyDir
+        globalMounts:
+          - path: /add-ons

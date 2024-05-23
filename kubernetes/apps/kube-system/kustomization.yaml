@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./namespace.yaml
+  - ./alert.yaml
+  - ./cilium/ks.yaml
+  - ./coredns/ks.yaml
+  - ./metrics-server/ks.yaml
+  - ./reloader/ks.yaml
+  - ./spegel/ks.yaml
+  - ./kubelet-csr-approver/ks.yaml
+  - ./node-feature-discovery/ks.yaml
+  - ./intel-device-plugin/ks.yaml
