@@ -6,6 +6,11 @@ serviceAccount:
 service:
   name: kube-dns
   clusterIP: "10.96.0.10"
+resources:
+  request:
+    cpu: null
+  limits:
+    cpu: null
 servers:
   - zones:
       - zone: .

@@ -21,6 +21,7 @@ metadata:
     gethomepage.dev/widget.url: "http://${RPI_URL}"
     gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_PI_HOLE_TOKEN}}"
 spec:
+  ingressClassName: internal
   rules:
     - host: "pihole.${SECRET_DOMAIN}"
       http:

@@ -13,7 +13,7 @@ spec:
   path: ./kubernetes/apps/default/sonarr/app
   prune: true
   dependsOn:
-    - name: cloudnative-pg
+    - name: cloudnative-pg-cluster
     - name: external-secrets-stores
   sourceRef:
     kind: GitRepository

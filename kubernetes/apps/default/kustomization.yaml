@@ -14,3 +14,4 @@ resources:
   - ./overseerr/ks.yaml
   - ./homepage/ks.yaml
   - ./nodered/ks.yaml
+  - ./paperless/ks.yaml

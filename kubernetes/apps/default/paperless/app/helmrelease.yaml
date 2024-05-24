@@ -4,11 +4,8 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: &app paperless
-  namespace: default
 spec:
   interval: 30m
-  driftDetection:
-    mode: enabled
   chart:
     spec:
       chart: app-template
@@ -17,7 +14,6 @@ spec:
         kind: HelmRepository
         name: bjw-s
         namespace: flux-system
-  maxHistory: 2
   install:
     remediation:
       retries: 3
@@ -36,6 +32,14 @@ spec:
       paperless:
         annotations:
           reloader.stakater.com/auto: "true"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/onedr0p/postgres-init
+              tag: 16
+            envFrom: &envFrom
+              - secretRef:
+                  name: paperless-secret
         containers:
           app:
             image:
@@ -43,12 +47,27 @@ spec:
               tag: 2.7.2@sha256:703c990a790dfd4d25fb56df3afec27b13cb0926a3818bf265edac9c71311647
             env:
               PAPERLESS_TIME_ZONE: "${TIMEZONE}"
-            resources:
-              requests:
-                cpu: 11m
-                memory: 500Mi
-              limits:
-                memory: 2000Mi
+              PAPERLESS_URL: "https://paperless.${SECRET_DOMAIN}"
+              PAPERLESS_PORT: &port 8000
+              PAPERLESS_REDIS: redis://dragonfly.database.svc.cluster.local:6379
+              PAPERLESS_TIKA_ENABLED: true
+              PAPERLESS_TIKA_ENDPOINT: http://localhost:9998
+              PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://localhost:3000
+              PAPERLESS_LOGROTATE_MAX_BACKUPS: 0 #disable logging backup since anyway is done by locki
+              PAPERLESS_OCR_LANGUAGE: rus+pol+eng
+              PAPERLESS_OCR_LANGUAGES: pol rus
+            envFrom: *envFrom
+          tika:
+            image:
+              repository: ghcr.io/paperless-ngx/tika
+              tag: 2.9.1-minimal@sha256:20db3df89eaeb1b271dd840888fe909b88b12f4b86ef641ec07a1d45d4c5168f
+          gotenburg:
+            image:
+              repository: gotenberg/gotenberg
+              tag: 8.5.1@sha256:c229bd7a6c16800e9feabd102aacc445bd7c434d3a72e8df3cca6661314a0a3c
+            securityContext:
+              privileged: false
+              runAsUser: 1001
     service:
       app:
         controller: paperless
@@ -57,16 +76,16 @@ spec:
             port: *port
     ingress:
       app:
-        className: internal
+        className: external
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/icon: paperless-ngx.png
           gethomepage.dev/name: Paperless
           gethomepage.dev/group: Storage
           gethomepage.dev/description: Document management
-          gethomepage.dev/widget.type: paperless
-          gethomepage.dev/widget.url: http://paperless.default.svc.cluster.local:8080
-          gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_RADARR_TOKEN}}"
+          gethomepage.dev/widget.type: paperlessngx
+          gethomepage.dev/widget.url: http://paperless.default.svc.cluster.local:8000
+          gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_PAPERLESS_TOKEN}}"
         hosts:
           - host: "paperless.${SECRET_DOMAIN}"
             paths:
@@ -75,13 +94,21 @@ spec:
                   identifier: app
                   port: http
     persistence:
-      config:
+      data:
         existingClaim: *app
         globalMounts:
-          - path: /data/local
-      downloads:
+          - path: /usr/src/paperless/data
+      files:
         type: nfs
         server: "${NAS_URL}"
         path: "${NAS_PATH}/paperless"
         globalMounts:
-          - path: /data/nas
+          - subPath: media
+            path: /usr/src/paperless/media
+          - subPath: export
+            path: /usr/src/paperless/export
+          - subPath: consume
+            path: /usr/src/paperless/consume
+      tmp:
+        enabled: true
+        type: emptyDir

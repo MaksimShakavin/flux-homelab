@@ -18,6 +18,7 @@ metadata:
     gethomepage.dev/group: Home
     gethomepage.dev/description: Zigbee hub and Homekit integration
 spec:
+  ingressClassName: internal
   rules:
     - host: &host "sprut.${SECRET_DOMAIN}"
       http:
@@ -29,6 +30,3 @@ spec:
                 name: sprut-external-service
                 port:
                   number: 7777
-  tls:
-    - hosts:
-        - *host
