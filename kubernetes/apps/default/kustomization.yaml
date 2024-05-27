@@ -15,3 +15,4 @@ resources:
   - ./homepage/ks.yaml
   - ./nodered/ks.yaml
   - ./paperless/ks.yaml
+  - ./firefly-iii/ks.yaml

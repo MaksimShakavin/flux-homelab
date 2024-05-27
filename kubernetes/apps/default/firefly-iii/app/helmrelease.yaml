@@ -1,0 +1,115 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app firefly
+  namespace: default
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.1.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+      strategy: rollback
+  dependsOn:
+    - name: longhorn
+      namespace: storage
+    - name: volsync
+      namespace: storage
+  values:
+    controllers:
+      firefly:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/onedr0p/postgres-init
+              tag: 16
+            envFrom: &envFrom
+              - secretRef:
+                  name: firefly-secret
+        containers:
+          app:
+            image:
+              repository: fireflyiii/core
+              tag: version-6.1.16
+            env:
+              APP_ENV: production
+              APP_DEBUG: false
+              DEFAULT_LANGUAGE: ru_RU
+              DB_CONNECTION: pgsql
+              TZ: "${TIMEZONE}"
+              LOG_CHANNEL: stdout
+              CACHE_DRIVER: redis
+              SESSION_DRIVER: redis
+              REDIS_HOST: dragonfly.database.svc.cluster.local
+              TRUSTED_PROXIES: "**"
+            envFrom: *envFrom
+            resources:
+              requests:
+                cpu: 500m
+                memory: 500Mi
+              limits:
+                memory: 2000Mi
+          cronjob:
+            image:
+              repository: alpine
+              tag: 3.20.0
+              pullPolicy: IfNotPresent
+            command:
+              - sh
+            args:
+              - -c
+              - >-
+                echo "0 */3 * * * wget -qO- http://firefly:8080/api/v1/cron/$(STATIC_CRON_TOKEN)"
+                | crontab -
+                && crond -f -L /dev/stdout
+            env:
+              - name: STATIC_CRON_TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    name: firefly-secret
+                    key: STATIC_CRON_TOKEN
+    service:
+      app:
+        controller: firefly
+        ports:
+          http:
+            port: 8080
+    ingress:
+      app:
+        className: internal
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/icon: firefly.png
+          gethomepage.dev/name: Firefly
+          gethomepage.dev/group: Documents
+          gethomepage.dev/description: Expense and budget manegement
+        hosts:
+          - host: "firefly.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+    persistence:
+      data:
+        existingClaim: *app
+        advancedMounts:
+          firefly:
+            main:
+              - path: /var/www/html/storage/upload
