@@ -116,4 +116,4 @@ and [onedr0p/cluster-template](https://github.com/onedr0p/cluster-template) repo
 A big thanks to the members of the [Home Operations](https://discord.gg/home-operations) community
 for their support and for sharing their repositories.
 Additional thanks to the [Kubesearch](https://kubesearch.dev/) project for ability to search for different configurations.
-Thanks for [kubepug](https://github.com/kubepug) for a logo. I like pugs
+Thanks [kubepug](https://github.com/kubepug) for the logo. I like pugs
