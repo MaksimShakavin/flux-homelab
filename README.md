@@ -1,10 +1,20 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/MaksimShakavin/flux-homelab/main/docs/assets/logo.png" align="center" width="150px" height="150px"/>
+<img src="https://raw.githubusercontent.com/kubepug/kubepug/main/assets/kubepug.png" align="center" width="250px" />
 
-# My Homelab automation Repository
+## My Homelab playground
+_... the way of a front-end developer cosplaying a sysadmin_ 🗿
 
-_... managed with FluxCD_ 🤖
+</div>
+
+<div align="center">
+
+[![Age-Days](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.exelent.click%2Fquery%3Fformat%3Dendpoint%26metric%3Dcluster_age_days&style=flat-square&label=Age)](https://github.com/kashalls/kromgo/)&nbsp;&nbsp;
+[![Uptime-Days](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.exelent.click%2Fquery%3Fformat%3Dendpoint%26metric%3Dcluster_uptime_days&style=flat-square&label=Uptime)](https://github.com/kashalls/kromgo/)&nbsp;&nbsp;
+[![Node-Count](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.exelent.click%2Fquery%3Fformat%3Dendpoint%26metric%3Dcluster_node_count&style=flat-square&label=Nodes)](https://github.com/kashalls/kromgo/)&nbsp;&nbsp;
+[![Pod-Count](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.exelent.click%2Fquery%3Fformat%3Dendpoint%26metric%3Dcluster_pod_count&style=flat-square&label=Pods)](https://github.com/kashalls/kromgo/)&nbsp;&nbsp;
+[![CPU-Usage](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.exelent.click%2Fquery%3Fformat%3Dendpoint%26metric%3Dcluster_cpu_usage&style=flat-square&label=CPU)](https://github.com/kashalls/kromgo/)&nbsp;&nbsp;
+[![Memory-Usage](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.exelent.click%2Fquery%3Fformat%3Dendpoint%26metric%3Dcluster_memory_usage&style=flat-square&label=Memory)](https://github.com/kashalls/kromgo/)&nbsp;&nbsp;
 
 </div>
 
@@ -106,3 +116,4 @@ and [onedr0p/cluster-template](https://github.com/onedr0p/cluster-template) repo
 A big thanks to the members of the [Home Operations](https://discord.gg/home-operations) community
 for their support and for sharing their repositories.
 Additional thanks to the [Kubesearch](https://kubesearch.dev/) project for ability to search for different configurations.
+Thanks for [kubepug](https://github.com/kubepug) for a logo. I like pugs
