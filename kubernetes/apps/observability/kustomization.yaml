@@ -10,7 +10,7 @@ resources:
   - ./thanos/ks.yaml
   - ./kube-prometheus-stack/ks.yaml
   - ./prometheus-operator-crds/ks.yaml
-#  - ./grafana/ks.yaml
+  - ./grafana/ks.yaml
   - ./vector/ks.yaml
   - ./loki/ks.yaml
   - ./unpoller/ks.yaml
