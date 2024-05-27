@@ -14,3 +14,4 @@ resources:
   - ./vector/ks.yaml
   - ./loki/ks.yaml
   - ./unpoller/ks.yaml
+  - ./kromgo/ks.yaml
