@@ -1,0 +1,20 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "packageRules": [
+    {
+      "matchDatasources": ["docker", "helm", "github-actions", "github-releases", "github-tags"],
+      "matchUpdateTypes": ["major"],
+      "commitMessagePrefix": "chore({{{replace '(?:.+\\/)*(.+)' '$1' depName}}})!: ",
+      "commitMessageTopic": "{{datasource}}",
+      "commitMessageExtra": " ( {{currentVersion}} → {{newVersion}} )"
+    },
+    {
+      "matchDatasources": ["docker", "helm", "github-actions", "github-releases", "github-tags"],
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "{{{replace '(?:.+\\/)*(.+)' '$1' depName}}}",
+      "commitMessageTopic": "{{datasource}}",
+      "commitMessageExtra": "( {{currentVersion}} → {{newVersion}} )"
+    }
+  ]
+}

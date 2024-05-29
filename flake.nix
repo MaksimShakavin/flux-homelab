@@ -1,5 +1,5 @@
 {
-  description = "A basic flake with a shell";
+  description = "Basic workstation dependencies";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     talhelper.url = "github:budimanjojo/talhelper";
@@ -18,7 +18,6 @@
             pkgs.cloudflared
             pkgs.helmfile
             pkgs.jq
-            pkgs.kubeconform
             pkgs.kustomize
             pkgs.moreutils
             pkgs.sops
