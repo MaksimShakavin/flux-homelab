@@ -33,7 +33,7 @@ spec:
           app:
             image:
               repository: docker.io/nodered/node-red
-              tag: 3.1.9@sha256:4872f67418a36ac2adf9f2793cfab1e3130796dd0c874acce7eddaca2e2e96e6
+              tag: 3.1.11@sha256:db8329d3cc6c6d6aa8bf9c558c89a1f0f33813acb73955815b32e34c15bd1df4
             env:
               PUID: 1000
               PGID: 1000
