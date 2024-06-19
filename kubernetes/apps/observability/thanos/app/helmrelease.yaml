@@ -65,8 +65,8 @@ spec:
         - --retention.resolution-1h=60d
       persistence: &persistence
         enabled: true
-        storageClass: local-hostpath
-        size: 5Gi
+        storageClass: longhorn-local
+        size: 20Gi
     query:
       replicas: 2
       extraArgs: ["--alert.query-url=https://thanos.${SECRET_DOMAIN}"]
