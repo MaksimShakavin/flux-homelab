@@ -1,0 +1,13 @@
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+reclaimPolicy: Delete
+provisioner: driver.longhorn.io
+parameters:
+  dataLocality: strict-local
+  numberOfReplicas: "1"
+  replicaAutoBalance: best-effort
+allowVolumeExpansion: true
+volumeBindingMode: Immediate
+metadata:
+  name: longhorn-local
