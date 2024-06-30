@@ -15,6 +15,21 @@
       "semanticCommitScope": "{{{replace '(?:.+\\/)*(.+)' '$1' depName}}}",
       "commitMessageTopic": "{{datasource}}",
       "commitMessageExtra": "( {{currentVersion}} → {{newVersion}} )"
+    },
+    {
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["major"],
+      "commitMessagePrefix": "chore({{{replace '(?:.+\\/)*(.+)' '$1' depName}}})!: ",
+      "commitMessageTopic": "{{datasource}} image",
+      "commitMessageExtra": " ( {{currentVersion}} → {{newVersion}} )"
+    },
+    {
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "{{{replace '(?:.+\\/)*(.+)' '$1' depName}}}",
+      "commitMessageTopic": "{{datasource}} image",
+      "commitMessageExtra": "( {{currentVersion}} → {{newVersion}} )"
     }
   ]
 }
