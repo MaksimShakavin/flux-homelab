@@ -85,7 +85,7 @@ spec:
           gethomepage.dev/description: Document management
           gethomepage.dev/widget.type: paperlessngx
           gethomepage.dev/widget.url: http://paperless.default.svc.cluster.local:8000
-          gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_PAPERLESS_TOKEN}}"
+          gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_PAPERLESS_TOKEN}}` }}"
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
         hosts:
           - host: "paperless.${SECRET_DOMAIN}"
