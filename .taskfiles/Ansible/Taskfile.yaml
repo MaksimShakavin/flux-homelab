@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+vars:
+  ANSIBLE_INVENTORY_DIR: "{{.ANSIBLE_DIR}}/inventory"
+  ANSIBLE_PLAYBOOK_DIR: "{{.ANSIBLE_DIR}}/playbooks"
+
+tasks:
+  proxmox-setup:
+    desc: Run Ansible setup playbook on the nodes
+    cmds:
+      - ansible-playbook -i {{.ANSIBLE_INVENTORY_DIR}}/hosts.yaml {{.ANSIBLE_PLAYBOOK_DIR}}/proxmox-setup.yaml -v
+
+  proxmox-update:
+    desc: Update proxmox packages
+    cmds:
+      - ansible-playbook -i {{.ANSIBLE_INVENTORY_DIR}}/hosts.yaml {{.ANSIBLE_PLAYBOOK_DIR}}/proxmox-apt-upgrade.yaml

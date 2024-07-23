@@ -1,72 +1,70 @@
-# Set up guide
+# Setup Guide
 
-## Install and configure Proxmox
+## Install and Configure Proxmox
 
-1. Download official image from an official Proxmox [site](https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso)
-2. Flush image and install it to the machines. During installation specify and write down static ip address that will be
-used by the machine.
-3. Disable subscription repositories. Go to Repositories setting menu and disable all components marked as `enterprise` and
-`pve-enterprise`
-4. ssh to the node and run `apt get update` following by `apt get upgrade`
-5. Go to Network, select Linux Bridge and check `VLAN aware checkox` in order to be able to assign virtual machines to a
-different VLANs.
-6. Set up a simple proxmox cluster using menu wizard. No need to make it HA since kubernetes will handle the HA.
+1. Download the official image from
+   the [Proxmox site](https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso).
+2. Flash the image and install it on the machines. During installation, specify and write down the static IP address
+   that will be used by the machine.
+3. Go to the machine disks, click on an SSD, and select "Initialize disk with GPT."
+4. Go to the LVM subsection and add a new Volume Group based on the disk, named "SSD."
+5. Inspect the [Ansible inventory file](../infrastructure/ansible/inventory/hosts.yaml) and
+   run `task ansible:proxmox-setup` to configure Proxmox nodes. This will provision the SSH key, update Proxmox to the
+   latest versions, and set up GPU passthrough. For any troubleshooting with GPU, check
+   out [this guide](https://3os.org/infrastructure/proxmox/gpu-passthrough/igpu-passthrough-to-vm/#proxmox-configuration-for-igpu-full-passthrough).
+6. Go to Network, select Linux Bridge, and check the `VLAN aware` checkbox to assign virtual machines to different
+   VLANs.
+7. Set up a simple Proxmox cluster using the menu wizard. No need to make it HA since Kubernetes will handle the HA.
 
-### Set up GPU passthrough
-1. Edit `/etc/default/grub` with the following changes:
-  ```
-  GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on"
-  ```
-2. Run `update-grub` and reboot the node
-3. Verify that IOMMU is enabled
-```
-dmesg | grep -e DMAR -e IOMMU
-```
-There should be a line that looks like `DMAR: IOMMU enabled`
-4. For any troubleshouting check out [this guide](https://3os.org/infrastructure/proxmox/gpu-passthrough/igpu-passthrough-to-vm/#proxmox-configuration-for-igpu-full-passthrough)
+## Create and Install Talos Images
 
-## Create and install Talos images
-1. Head over to https://factory.talos.dev and follow the instructions which will eventually lead you to download a Talos
-Linux iso file. Make sure to note the schematic ID you will need this later on. Add following extensions
-   - siderolabs/iscsi-tools -- for longhorn
-   - siderolabs/util-linux-tools -- for longhorn
-   - siderolabs/qemu-guest-agent -- for being able to manage VM from a proxmox UI
-2. Create VM with following configuration:
-  - Startup on boot
-  - Bios: SeaBios
-  - Machine: q35
-  - Memory: baloon disabled
-  - CPU: type host, cpu units 1024
-  - Network: vlan 20, firewall disabled, mac address one of the following: BC:24:11:B5:DD:1F, BC:24:11:0C:FD:22, BC:24:11:A8:19:33
-3. Add PCI device `Inter HD Graphics`
+1. Head over to [Talos Factory](https://factory.talos.dev) and follow the instructions to download a Talos Linux ISO
+   file. Note the schematic ID; you will need this later on. Add the following extensions:
+
+- siderolabs/iscsi-tools -- for Longhorn
+- siderolabs/util-linux-tools -- for Longhorn
+- siderolabs/qemu-guest-agent -- for managing VMs from the Proxmox UI
+
+2. Go to `/infrastructure/terraform/talos.tf` and update the ISO URL if needed.
+3. Check the Terraform changes with `terraform plan`.
+4. Run Terraform to create VMs with Talos nodes:
+   ```sh
+   terraform apply
+   ```
 
 ## Bootstrap kubernetes cluster
-1. Deploy the talos cluster to machines
-```
-task talos:bootstrap
-```
 
-2. It might take a while for the cluster to be setup (10+ minutes is normal), during which time you will see a variety of
-error messages like: "couldn't get current server API group list," "error: no matching resources found", etc. This is a
-normal. If this step gets interrupted, e.g. by pressing Ctrl + C, you likely will need to nuke the cluster
-before trying again.
+1. Deploy the Talos cluster to machines:
+   ```sh
+   task talos:bootstrap
+   ```
+   It might take a while for the cluster to be set up (10+ minutes is normal), during which time you will see various
+   error messages like: “couldn’t get current server API group list,” “error: no matching resources found,” etc. This is
+   normal. If this step gets interrupted, e.g., by pressing Ctrl + C, you likely will need to nuke the cluster before
+   trying again.
 
-This task will create a `talosconfig` in a `/kubernetes/bootstrap/talos/clusterconfig` directory. You can use it to
-get access to a Talos cluster for troubleshooting
-```
-talosctl --talosconfig=./kubernetes/bootstrap/talos/clusterconfig/talosconfig --nodes=192.168.20.51 health
-```
+   This task will create a talosconfig in the /kubernetes/bootstrap/talos/clusterconfig directory. You can use it to get
+   access to a Talos cluster for troubleshooting:
+   ```sh
+   talosctl --talosconfig=./kubernetes/bootstrap/talos/clusterconfig/talosconfig --nodes=192.168.20.51 health
+   ```
 
-3. The `kubeconfig` for interacting with the cluster will be generated in the root directory.
-
-    Verify the nodes are online:
-    ```shell
+2. The `kubeconfig` for interacting with the cluster will be generated in the root directory. Verify the nodes are online:
+    ```sh
     kubectl get nodes -o wide
     # NAME            STATUS   ROLES           AGE     VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE         KERNEL-VERSION   CONTAINER-RUNTIME
     # k8s-control-1   Ready    control-plane   4d21h   v1.30.1   192.168.20.51   <none>        Talos (v1.7.2)   6.6.30-talos     containerd://1.7.16
     # k8s-control-2   Ready    control-plane   4d22h   v1.30.1   192.168.20.52   <none>        Talos (v1.7.2)   6.6.30-talos     containerd://1.7.16
     # k8s-control-3   Ready    control-plane   4d21h   v1.30.1   192.168.20.53   <none>        Talos (v1.7.2)   6.6.30-talos     containerd://1.7.16
     ```
+
+3. Add longhorn annotations to each node
+
+   ```shell
+   kubectl annotate node k8s-control-1 node.longhorn.io/default-disks-config='[{"name": "nvme","path":"/var/lib/longhorn","tags":["nvme"]},{"name": "ssd","path":"/var/mnt/ssd/longhorn","allowScheduling":true,"tags":["ssd"]}]'
+   kubectl annotate node k8s-control-2 node.longhorn.io/default-disks-config='[{"name": "nvme","path":"/var/lib/longhorn","tags":["nvme"]},{"name": "ssd","path":"/var/mnt/ssd/longhorn","allowScheduling":true,"tags":["ssd"]}]'
+   kubectl annotate node k8s-control-3 node.longhorn.io/default-disks-config='[{"name": "nvme","path":"/var/lib/longhorn","tags":["nvme"]},{"name": "ssd","path":"/var/mnt/ssd/longhorn","allowScheduling":true,"tags":["ssd"]}]'
+   ```
 
 4. Continue with installing flux
 

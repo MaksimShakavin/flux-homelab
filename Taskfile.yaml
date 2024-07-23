@@ -5,13 +5,17 @@ version: "3"
 vars:
   # Directories
   KUBERNETES_DIR: "{{.ROOT_DIR}}/kubernetes"
+  INFRA_DIR: "{{.ROOT_DIR}}/infrastructure"
+  ANSIBLE_DIR: "{{.INFRA_DIR}}/ansible"
   # Files
   AGE_FILE: "{{.ROOT_DIR}}/age.key"
   KUBECONFIG_FILE: "{{.ROOT_DIR}}/kubeconfig"
+  INFRA_SECRETS_FILE: "{{.INFRA_DIR}}/secrets.sops.yaml"
 
 env:
   KUBECONFIG: "{{.KUBECONFIG_FILE}}"
   SOPS_AGE_KEY_FILE: "{{.AGE_FILE}}"
+  INFRA_SECRETS_FILE: "{{.INFRA_SECRETS_FILE}}"
 
 includes:
   kubernetes:
@@ -21,6 +25,7 @@ includes:
   talos: .taskfiles/Talos/Taskfile.yaml
   sops: .taskfiles/Sops/Taskfile.yaml
   volsync: .taskfiles/VolSync/Taskfile.yaml
+  ansible: .taskfiles/Ansible/Taskfile.yaml
   secrets: .taskfiles/ExternalSecrets/Taskfile.yaml
 
 tasks:
