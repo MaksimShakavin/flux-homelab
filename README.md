@@ -29,15 +29,29 @@ exploring Kubernetes and Infrastructure as Code (IaC) practices using tools like
 ## 📖 Table of contents
 
 - [🍼 Overview](#-overview)
-  - [📖 Table of contents](#-table-of-contents)
-  - [📚 Documentation](#-documentation)
-  - [🖥️ Technological Stack](#-technological-stack)
-  - [🔧 Hardware](#-hardware)
-  - [☁️ External Dependencies](#-external-dependencies)
-  - [🤖 Automation](#-automation)
-  - [🤝 Thanks](#-thanks)
+- [📖 Table of contents](#-table-of-contents)
+- [📚 Documentation](#-documentation)
+- [🖥️ Technological Stack](#-technological-stack)
+- [🔧 Hardware](#-hardware)
+- [☁️ External Dependencies](#-external-dependencies)
+- [🤖 Automation](#-automation)
+- [🤝 Thanks](#-thanks)
 
 ## 📚 Documentation
+
+1. [Prerequisites](docs/prerequisites.md)
+   - [Cloudflare](docs/prerequisites.md#1-set-up-cloudflare)
+   - [Secrets store](docs/prerequisites.md#2-set-up-secrets-store)
+   - [UDM](docs/prerequisites.md#3-set-up-udm)
+   - [Discord](docs/prerequisites.md#4-get-discord-token)
+   - [PiHole](docs/prerequisites.md#5-set-up-pihole-and-generate-token-for-homepage)
+   - [NAS and Minio](docs/prerequisites.md#6-nas-set-up)
+2. [Setup Guide](docs/set-up.md)
+   - [Install and Configure Proxmox](docs/set-up.md#install-and-configure-proxmox)
+   - [Create and Install Talos Images](docs/set-up.md#create-and-install-talos-images)
+   - [Bootstrap Kubernetes Cluster](docs/set-up.md#bootstrap-kubernetes-cluster)
+   - [Install Flux](docs/set-up.md#install-flux)
+3. [How To](docs/howto.md)
 
 ## 🖥️ Technological Stack
 
@@ -74,17 +88,17 @@ exploring Kubernetes and Infrastructure as Code (IaC) practices using tools like
   <img src="https://raw.githubusercontent.com/MaksimShakavin/flux-homelab/main/docs/assets/rack.jpg" align="center" width="200px" alt="rack"/>
 </details>
 
-| Device                     | Count | Disk Size | RAM  | OS      | Purpose                 |
-|----------------------------|-------|-----------|------|---------|-------------------------|
-| Lenovo M910Q Tiny i5-6500T | 3     | 256G      | 32GB | Talos   | Kubernetes Master Nodes |
-| Raspberry Pi 5             | 1     |           | 8GB  | RpiOS   | DNS, SmartHome          |
-| Synology RS422+            | 1     | 4x16TB    | 2GB  | DSM     | NAS                     |
-| UPS 5UTRA91227             | 1     |           |      |         | UPS                     |
-| UniFi UDM Pro              | 1     |           |      | UnifiOS | Router                  |
-| UniFi USW PRO 24 Gen2      | 1     |           |      |         | Switch                  |
-| UniFi USW Lite 8           | 1     |           |      |         | Switch                  |
-| UniFi U6 In-Wall           | 1     |           |      |         | Access Point            |
-| UniFi U6 Mesh              | 1     |           |      |         | Access Point            |
+| Device                     | Count | Disk Size  | RAM  | OS      | Purpose                 |
+|----------------------------|-------|------------|------|---------|-------------------------|
+| Lenovo M910Q Tiny i5-6500T | 3     | 2x1TB SSD  | 32GB | Talos   | Kubernetes Master Nodes |
+| Raspberry Pi 5             | 1     |            | 8GB  | RpiOS   | DNS, SmartHome          |
+| Synology RS422+            | 1     | 4x16TB HDD | 2GB  | DSM     | NAS                     |
+| UPS 5UTRA91227             | 1     |            |      |         | UPS                     |
+| UniFi UDM Pro              | 1     |            |      | UnifiOS | Router                  |
+| UniFi USW PRO 24 Gen2      | 1     |            |      |         | Switch                  |
+| UniFi USW Lite 8           | 1     |            |      |         | Switch                  |
+| UniFi U6 In-Wall           | 1     |            |      |         | Access Point            |
+| UniFi U6 Mesh              | 1     |            |      |         | Access Point            |
 
 ## ☁️ External Dependencies
 
