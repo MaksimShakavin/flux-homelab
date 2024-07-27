@@ -22,6 +22,7 @@ metadata:
     gethomepage.dev/widget.username: "{{HOMEPAGE_VAR_SYNOLOGY_USERNAME}}"
     gethomepage.dev/widget.password: "{{HOMEPAGE_VAR_SYNOLOGY_PASSWORD}}"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    external-dns.alpha.kubernetes.io/target: "internal.${SECRET_DOMAIN}"
 spec:
   ingressClassName: internal
   rules:

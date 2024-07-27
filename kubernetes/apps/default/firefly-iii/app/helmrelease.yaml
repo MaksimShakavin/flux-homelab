@@ -99,6 +99,7 @@ spec:
           gethomepage.dev/name: Firefly
           gethomepage.dev/group: Documents
           gethomepage.dev/description: Expense and budget manegement
+          external-dns.alpha.kubernetes.io/target: "internal.${SECRET_DOMAIN}"
         hosts:
           - host: "firefly.${SECRET_DOMAIN}"
             paths:

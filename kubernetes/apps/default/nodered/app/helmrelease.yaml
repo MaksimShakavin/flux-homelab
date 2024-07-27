@@ -64,6 +64,7 @@ spec:
           gethomepage.dev/name: Node-red
           gethomepage.dev/description: Visual programming for automation
           gethomepage.dev/group: Home
+          external-dns.alpha.kubernetes.io/target: "internal.${SECRET_DOMAIN}"
         hosts:
           - host: "nodered.${SECRET_DOMAIN}"
             paths:

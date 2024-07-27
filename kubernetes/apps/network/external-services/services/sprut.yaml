@@ -17,6 +17,7 @@ metadata:
     gethomepage.dev/name: Spruthub
     gethomepage.dev/group: Home
     gethomepage.dev/description: Zigbee hub and Homekit integration
+    external-dns.alpha.kubernetes.io/target: "internal.${SECRET_DOMAIN}"
 spec:
   ingressClassName: internal
   rules:

@@ -46,5 +46,6 @@ spec:
         gethomepage.dev/icon: longhorn.png
         gethomepage.dev/name: Longhorn
         gethomepage.dev/group: Storage
+        external-dns.alpha.kubernetes.io/target: "internal.${SECRET_DOMAIN}"
       host: longhorn.${SECRET_DOMAIN}
       tls: true

@@ -23,6 +23,7 @@ metadata:
     gethomepage.dev/widget.password: "{{HOMEPAGE_VAR_PROXMOX_PASSWORD}}"
     gethomepage.dev/node: proxmox1
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    external-dns.alpha.kubernetes.io/target: "internal.${SECRET_DOMAIN}"
 spec:
   ingressClassName: internal
   rules:

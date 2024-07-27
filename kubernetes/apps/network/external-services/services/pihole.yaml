@@ -20,6 +20,7 @@ metadata:
     gethomepage.dev/widget.type: pihole
     gethomepage.dev/widget.url: "http://${RPI_URL}"
     gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_PI_HOLE_TOKEN}}"
+    external-dns.alpha.kubernetes.io/target: "internal.${SECRET_DOMAIN}"
 spec:
   ingressClassName: internal
   rules:

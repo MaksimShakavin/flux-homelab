@@ -17,6 +17,7 @@ metadata:
     gethomepage.dev/name: Minio
     gethomepage.dev/group: Storage
     gethomepage.dev/description: S3 compatible object storage
+    external-dns.alpha.kubernetes.io/target: "internal.${SECRET_DOMAIN}"
 spec:
   ingressClassName: internal
   rules:
