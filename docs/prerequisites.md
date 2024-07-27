@@ -32,6 +32,7 @@ The 1Password vault should contain the following items:
 |                           | MINO_THANOS_BUCKET                              |                                                           |
 |                           | MINO_THANOS_SECRET_KEY                          |                                                           |
 |                           | MINO_THANOS_ACCESS_KEY                          |                                                           |
+|                           | VOLSYNC_RESTIC_PASSWORD                         | rectic repo encryption key                                |
 | cloudnative-pg            | POSTGRESS_SUPER_USER                            |                                                           |
 |                           | POSTGRESS_SUPER_PASS                            |                                                           |
 | cloudflare                | CLOUDFLARE_ACCOUNT_TAG                          |                                                           |
@@ -99,11 +100,7 @@ The 1Password vault should contain the following items:
    2. Open the `Synology Container Manager` and run a Docker container using the `minio/minio` image. Ensure that port `9000` is forwarded.
 
 2. **Create Minio Buckets:**
-  - Manually create the following buckets:
-    - `cloudnative-pg` for PostgreSQL backups.
-    - `loki-bucket` to store logs.
-    - `thanos` to store old metrics data with Thanos.
-  - Update the corresponding 1Password items with the necessary details.
+  - Use [terraform module](../infrastructure/terraform/minio) to create necessary buckets and users
 
 #### Configure NFS Connections
 
