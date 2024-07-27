@@ -10,6 +10,7 @@ resources:
   - ./sonarr/ks.yaml
   - ./prowlarr/ks.yaml
   - ./plex/ks.yaml
+  - ./tautulli/ks.yaml
   - ./notifiarr/ks.yaml
   - ./overseerr/ks.yaml
   - ./homepage/ks.yaml
