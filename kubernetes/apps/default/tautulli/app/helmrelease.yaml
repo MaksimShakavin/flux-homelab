@@ -1,0 +1,115 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tautulli
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.2.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  dependsOn:
+    - name: longhorn
+      namespace: storage
+    - name: volsync
+      namespace: storage
+  values:
+    controllers:
+      tautulli:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/tautulli/tautulli
+              tag: v2.14.3@sha256:36d6a81d7d06c5aba752ce025d956a47f6008d6529f39b05ed2cf51cf22fe26b
+            env:
+              TZ: "${TIMEZONE}"
+            command: ["/usr/local/bin/python", "Tautulli.py"]
+            args: [
+              "--config", "/config/config.ini",
+              "--datadir", "/config",
+              "--port", "80"
+            ]
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /status
+                    port: &port 80
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 1Gi
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      app:
+        controller: tautulli
+        ports:
+          http:
+            port: *port
+    ingress:
+      app:
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "internal.${SECRET_DOMAIN}"
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Media
+          gethomepage.dev/name: Tautulli
+          gethomepage.dev/icon: tautulli.svg
+          gethomepage.dev/description: Monitor Plex Media Server
+          gethomepage.dev/widget.type: tautulli
+          gethomepage.dev/widget.url: http://tautulli.default.svc.cluster.local
+          gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_TAUTULLI_API_KEY}}` }}"
+        className: internal
+        hosts:
+          - host: "{{ .Release.Name }}.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+    persistence:
+      config:
+        existingClaim: tautulli
+      cache:
+        type: emptyDir
+        globalMounts:
+          - path: /config/cache
+      logs:
+        type: emptyDir
+        globalMounts:
+          - path: /config/logs
+      tmp:
+        type: emptyDir
