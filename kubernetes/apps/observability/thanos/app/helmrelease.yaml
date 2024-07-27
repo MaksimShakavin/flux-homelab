@@ -89,6 +89,7 @@ spec:
           gethomepage.dev/name: Thanos
           gethomepage.dev/group: Observability
           gethomepage.dev/description: Highly available Prometheus setup
+          external-dns.alpha.kubernetes.io/target: "internal.${SECRET_DOMAIN}"
         hosts:
           - thanos.${SECRET_DOMAIN}
       podAnnotations: &podAnnotations

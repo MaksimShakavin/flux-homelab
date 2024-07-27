@@ -66,6 +66,7 @@ spec:
           gethomepage.dev/icon: notifiarr.png
           gethomepage.dev/name: notifiarr
           gethomepage.dev/group: Media
+          external-dns.alpha.kubernetes.io/target: "internal.${SECRET_DOMAIN}"
         hosts:
           - host: "notifiarr.${SECRET_DOMAIN}"
             paths:

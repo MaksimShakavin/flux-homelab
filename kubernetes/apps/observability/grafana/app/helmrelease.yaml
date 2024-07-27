@@ -341,6 +341,7 @@ spec:
         gethomepage.dev/widget.url: http://grafana.observability.svc.cluster.local
         gethomepage.dev/widget.username: "{{`{{HOMEPAGE_VAR_GRAFANA_USER}}`}}"
         gethomepage.dev/widget.password: "{{`{{HOMEPAGE_VAR_GRAFANA_PASSWORD}}`}}"
+        external-dns.alpha.kubernetes.io/target: "internal.${SECRET_DOMAIN}"
       hosts: ["grafana.${SECRET_DOMAIN}"]
     persistence:
       enabled: false

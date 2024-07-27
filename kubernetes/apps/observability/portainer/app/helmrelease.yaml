@@ -43,6 +43,7 @@ spec:
         gethomepage.dev/widget.url: http://portainer.observability.svc.cluster.local:9000
         gethomepage.dev/widget.env: "2"
         gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_PORTAINER_TOKEN}}"
+        external-dns.alpha.kubernetes.io/target: "internal.${SECRET_DOMAIN}"
       hosts:
         - host: "portainer.${SECRET_DOMAIN}"
           paths:
