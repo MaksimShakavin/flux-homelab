@@ -61,6 +61,8 @@ spec:
               QBITTORRENT__PORT: &port 8080
               QBITTORRENT__BT_PORT: &port-bt 58462
               QBT_Preferences__Downloads__SavePath: /data/torrents
+              QBT_Preferences__Downloads__TorrentExportDir: /data/torrents/.torrents
+              QBT_Preferences__Downloads__FinishedTorrentExportDir: /data/torrents/.torrents/completed
               QBT_Preferences__WebUI__Password_PBKDF2: "@ByteArray(iXranQkCEwRqp96g0yKHHA==:2ujiTbO+e12jHqzAJccPqjrBcVmRhaTSrrMi27VRiv2rbWk50twuRcHBCc8jsX/J/oZ8JQnBzHFjNzZ2bvpZkQ==)"
               QBT_Preferences__WebUI__AlternativeUIEnabled: 'true'
               QBT_Preferences__WebUI__RootFolder: '/add-ons/VueTorrent'
