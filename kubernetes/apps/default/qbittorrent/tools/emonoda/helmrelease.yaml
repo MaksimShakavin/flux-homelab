@@ -1,0 +1,74 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: qbittorrent-emonoda
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.2.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  dependsOn:
+    - name: qbittorrent
+      namespace: default
+  values:
+    controllers:
+      tagging:
+        type: cronjob
+        cronjob:
+          schedule: "@hourly"
+          timeZone: "${TIMEZONE}"
+          concurrencyPolicy: Forbid
+          successfulJobsHistory: 1
+          failedJobsHistory: 1
+        containers:
+          main:
+            image:
+              repository: ghcr.io/mglants/emonoda
+              tag: 2.1.37
+            command:
+              - emupdate
+            args:
+              - --config
+              - /app/config.yaml
+            resources:
+              requests:
+                cpu: 25m
+              limits:
+                memory: 256M
+        pod:
+          restartPolicy: OnFailure
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    persistence:
+      config-file:
+        type: secret
+        name: qbtools-emonoda-secret
+        globalMounts:
+          - path: /app/config.yaml
+            subPath: config.yaml
+            readOnly: true
+      downloads:
+        type: nfs
+        server: "${NAS_URL}"
+        path: "${NAS_PATH}"
+        globalMounts:
+          - path: /data
