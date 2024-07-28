@@ -44,7 +44,7 @@ spec:
           init-categories:
             image:
               repository: docker.io/library/alpine
-              tag: 3.20.1
+              tag: 3.20.2
             command:
               - "sh"
               - "-c"
