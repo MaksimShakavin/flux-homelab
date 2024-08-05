@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/externaldns.k8s.io/dnsendpoint_v1alpha1.json
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: playit
+spec:
+  endpoints:
+    - dnsName: "play.${SECRET_DOMAIN}"
+      recordType: A
+      targets: [ '147.185.221.16' ]
+      # https://github.com/kubernetes-sigs/external-dns/issues/2418#issuecomment-987587518
+      providerSpecific:
+        - name: external-dns.alpha.kubernetes.io/cloudflare-proxied
+          value: 'false'

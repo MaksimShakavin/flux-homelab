@@ -39,42 +39,47 @@ spec:
               tag: 3.0.4
             env:
               TZ: "${TIMEZONE}"
-              NAME: "Shojkkborg"
+              NAME: "Shojkborg"
               WORLD: "Shokushkino"
               PUBLIC: "False"
-              TYPE: "ValheimPlus"
+              TYPE: "BepInEx"
               ENABLE_CROSSPLAY: "True"
               HTTP_PORT: &port 1025
               AUTO_BACKUP: 1
               AUTO_BACKUP_ON_UPDATE: 1
               AUTO_BACKUP_ON_SHUTDOWN: 1
+              AUTO_BACKUP_PAUSE_WITH_NO_PLAYERS: 1
+              ADDRESS: "127.0.0.1:2457"
+              # It MUST be a link with a command and a new line at the end to be valid.
+              MODS: |
+                https://thunderstore.io/package/download/ValheimModding/Jotunn/2.20.2/,
+                https://thunderstore.io/package/download/ValheimModding/HookGenPatcher/0.0.4/,
+                https://thunderstore.io/package/download/MathiasDecrock/PlanBuild/0.16.0/,
+                https://thunderstore.io/package/download/JereKuusela/Server_devcommands/1.81.0/
+
             envFrom:
               - secretRef:
                   name: valheim-secret
             probes:
-              liveness: &probes
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /status
-                    port: *port
-                  initialDelaySeconds: 320
-                  periodSeconds: 10
-                  timeoutSeconds: 1
-                  failureThreshold: 3
-              readiness: *probes
-              startup: *probes
+              liveness:
+                enabled: false
+              readiness:
+                enabled: false
+              startup:
+                enabled: false
             resources:
               requests:
                 memory: 4Gi
-                cpu: 200m
+                cpu: 400m
               limits:
                 memory: 7Gi
     service:
       app:
         controller: valheim
-        ports:
+        type: LoadBalancer
+        annotations:
+          io.cilium/lb-ipam-ips: "${CLUSTER_LB_VALHEIM}"
+        ports: &ports
           http:
             port: *port
           gameplay:
@@ -89,6 +94,11 @@ spec:
             enabled: true
             port: 2458
             protocol: UDP
+      playit:
+        controller: valheim
+        type: ClusterIP
+        clusterIP: 10.96.237.67 # FIXME: Remove if/when playit supports hostname tunnel endpoints
+        ports: *ports
     ingress:
       app:
         annotations:
