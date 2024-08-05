@@ -28,6 +28,7 @@ spec:
       replicas: 2
       service:
         annotations:
+          external-dns.alpha.kubernetes.io/hostname: "internal.${SECRET_DOMAIN}"
           io.cilium/lb-ipam-ips: "${CLUSTER_LB_INTERNAL_INGRESS}"
         externalTrafficPolicy: Cluster
       ingressClassResource:
