@@ -39,9 +39,9 @@ spec:
               tag: 3.0.4
             env:
               TZ: "${TIMEZONE}"
-              NAME: "Shojkkborg"
+              NAME: "Shojkborg"
               WORLD: "Shokushkino"
-              PUBLIC: "False"
+              PUBLIC: "True"
               TYPE: "ValheimPlus"
               ENABLE_CROSSPLAY: "True"
               HTTP_PORT: &port 1025
@@ -52,28 +52,24 @@ spec:
               - secretRef:
                   name: valheim-secret
             probes:
-              liveness: &probes
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /status
-                    port: *port
-                  initialDelaySeconds: 320
-                  periodSeconds: 10
-                  timeoutSeconds: 1
-                  failureThreshold: 3
-              readiness: *probes
-              startup: *probes
+              liveness:
+                enabled: false
+              readiness:
+                enabled: false
+              startup:
+                enabled: false
             resources:
               requests:
                 memory: 4Gi
-                cpu: 200m
+                cpu: 400m
               limits:
                 memory: 7Gi
     service:
       app:
         controller: valheim
+        type: LoadBalancer
+        annotations:
+          io.cilium/lb-ipam-ips: "${CLUSTER_LB_VALHEIM}"
         ports:
           http:
             port: *port
