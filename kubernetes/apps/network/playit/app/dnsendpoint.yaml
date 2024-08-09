@@ -8,7 +8,7 @@ spec:
   endpoints:
     - dnsName: "play.${SECRET_DOMAIN}"
       recordType: A
-      targets: [ '147.185.221.16' ]
+      targets: [ '209.25.141.16' ]
       # https://github.com/kubernetes-sigs/external-dns/issues/2418#issuecomment-987587518
       providerSpecific:
         - name: external-dns.alpha.kubernetes.io/cloudflare-proxied

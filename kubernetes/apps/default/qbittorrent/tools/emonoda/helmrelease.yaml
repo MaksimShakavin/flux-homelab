@@ -52,6 +52,15 @@ spec:
                 memory: 256M
         pod:
           restartPolicy: OnFailure
+          affinity:
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchExpressions:
+                      - key: app.kubernetes.io/name
+                        operator: In
+                        values: [ "qbittorrent" ]
+                  topologyKey: kubernetes.io/hostname
     defaultPodOptions:
       securityContext:
         runAsUser: 1000
@@ -59,6 +68,10 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
     persistence:
+      qbittorrent:
+        existingClaim: qbittorrent
+        globalMounts:
+          - path: /config
       config-file:
         type: secret
         name: qbtools-emonoda-secret
@@ -66,9 +79,3 @@ spec:
           - path: /app/config.yaml
             subPath: config.yaml
             readOnly: true
-      downloads:
-        type: nfs
-        server: "${NAS_URL}"
-        path: "${NAS_PATH}"
-        globalMounts:
-          - path: /data
