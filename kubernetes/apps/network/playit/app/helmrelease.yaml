@@ -32,7 +32,7 @@ spec:
           app:
             image:
               repository: pepaondrugs/playitgg-docker
-              tag: v0.15.13@sha256:c48ac110afced4f8abd54d3586e8322022a0b8e8668b7ef5746137533d0724b5
+              tag: v0.15.19@sha256:c1ba1161b0a54937db40c3120070e179808fe11dcbe904d370432a2e6e1e4c2c
             probes:
               liveness:
                 enabled: false
