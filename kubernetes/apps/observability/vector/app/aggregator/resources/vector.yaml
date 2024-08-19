@@ -32,6 +32,16 @@ transforms:
       .custom_app_name = .pod_labels."app.kubernetes.io/name" || .pod_labels.app || .pod_labels."k8s-app" || "unknown"
       # Drop pod_labels
       del(.pod_labels)
+  unwrap_logs:
+    type: remap
+    inputs: ["kubernetes_remap"]
+    source: |
+      if contains(string!(.custom_app_name), "qbittorrent-tools") {
+        .log = .message
+      } else {
+        .log = encode_json(.)
+      }
+      del(.message)
 
 #
 # Sinks
