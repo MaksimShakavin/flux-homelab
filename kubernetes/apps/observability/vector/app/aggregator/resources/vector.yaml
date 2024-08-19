@@ -32,7 +32,18 @@ transforms:
       .custom_app_name = .pod_labels."app.kubernetes.io/name" || .pod_labels.app || .pod_labels."k8s-app" || "unknown"
       # Drop pod_labels
       del(.pod_labels)
-
+  unwrap_critical_logs:
+    type: remap
+    inputs: [ "kubernetes_remap" ]
+    source: |
+      # Define a list of critical apps
+      critical_apps = ["qbittorrent-emonoda", "qbit-manage"]
+      if critical_apps.includes(.custom_app_name) {
+        .log = .message
+      } else {
+        .log = encode_json(.)
+      }
+      del(.message)
 #
 # Sinks
 #
