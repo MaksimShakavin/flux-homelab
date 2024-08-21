@@ -50,11 +50,29 @@ spec:
         check_for_updates: false
         check_for_plugin_updates: false
         reporting_enabled: false
+      auth:
+        oauth_auto_login: true
+        signout_redirect_url: https://sso.exelent.click/application/o/grafana/end-session/
+        oauth_allow_insecure_email_lookup: true
       auth.basic:
-        enabled: true
+        enabled: false
       auth.anonymous:
         enabled: true
         org_role: Viewer
+      auth.generic_oauth:
+        enabled: true
+        name: exelent.click
+        icon: signin
+        auth_url: https://sso.exelent.click/application/o/authorize/
+        token_url: https://sso.exelent.click/application/o/token/
+        api_url: https://sso.exelent.click/application/o/userinfo/
+        scopes: openid email profile
+        use_pkce: true
+        skip_org_role_sync: true
+      auth.generic_oauth.group_mapping:
+        role_attribute_path: |
+          contains(groups[*], 'infrastructure') && 'Admin' || 'Viewer'
+        org_id: 1
       news:
         news_feed_enabled: false
     admin:
@@ -200,6 +218,11 @@ spec:
           datasource: Prometheus
         node-feature-discovery:
           url: https://raw.githubusercontent.com/kubernetes-sigs/node-feature-discovery/master/examples/grafana-dashboard.json
+          datasource: Prometheus
+        authentik:
+          # renovate: depName="Authentik"
+          gnetId: 14837
+          revision: 2
           datasource: Prometheus
       flux:
         flux-cluster:

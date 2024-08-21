@@ -27,3 +27,4 @@ resources:
   - ./spegel.yaml
   - ./coredns.yaml
   - ./postfinance.yaml
+  - ./authentik-charts.yaml
