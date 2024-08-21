@@ -1,0 +1,112 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app APP_NAME
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.3.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    remediation:
+      # Retries is the number of retries that should be attempted on failures before bailing. Remediation, using an uninstall, is performed between each attempt.
+      retries: 3
+  upgrade:
+    # CleanupOnFail allows deletion of new resources created during the Helm rollback action when it fails
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  # Generally storage dependencies goes here
+  dependsOn:
+    - name: DEP_NAME
+      namespace: DEP_NAMESPACE
+  values:
+    controllers:
+      APP_NAME:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: APP_IMAGE
+              tag: VERSION
+            env:
+              TZ: "${TIMEZONE}"
+            # Paste if have secret with envs
+            envFrom:
+              - secretRef:
+                  name: SECRET_NAME
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: &port 80
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities: { drop: [ "ALL" ] }
+              resources:
+                requests:
+                  cpu: 100m
+                limits:
+                  memory: 2Gi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        supplementalGroups: [ 10000 ]
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      app:
+        controller: APP_NAME
+        type: LoadBalancer
+        # Add if it needs to have local network ip
+        annotations:
+          io.cilium/lb-ipam-ips: "${CLUSTER_LB_VALHEIM}"
+        ports:
+          http:
+            port: *port
+    ingress:
+      app:
+        annotations:
+          # or internal
+          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
+        # or internal
+        className: external
+        hosts:
+          - host: "APP_NAME.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+    persistence:
+      server:
+        existingClaim: *app
+        globalMounts:
+          - path: /home/steam/valheim
+      saves:
+        type: nfs
+        server: "${NAS_URL}"
+        path: "${NAS_PATH}/path"
+        globalMounts:
+          - path: /home/steam/.config/unity3d/IronGate/Valheim
