@@ -32,6 +32,17 @@ spec:
       valheim:
         annotations:
           reloader.stakater.com/auto: "true"
+        initContainers:
+          copy-discord-secret:
+            image:
+              repository: docker.io/library/alpine
+              tag: 3.20.2
+            command:
+              - "sh"
+              - "-c"
+              - |
+                mkdir -p /home/steam/valheim/BepInEx/config/games.nwest.valheim.discordconnector &&
+                cp -f /temp-dir/discordconnector.cfg /home/steam/valheim/BepInEx/config/games.nwest.valheim.discordconnector/discordconnector.cfg
         containers:
           app:
             image:
@@ -43,19 +54,23 @@ spec:
               WORLD: "Shokushkino"
               PUBLIC: "False"
               TYPE: "BepInEx"
-              ENABLE_CROSSPLAY: "True"
+              ENABLE_CROSSPLAY: 1
               HTTP_PORT: &port 1025
               AUTO_BACKUP: 1
               AUTO_BACKUP_ON_UPDATE: 1
               AUTO_BACKUP_ON_SHUTDOWN: 1
               AUTO_BACKUP_PAUSE_WITH_NO_PLAYERS: 1
               ADDRESS: "127.0.0.1:2457"
+              AUTO_UPDATE: 1
+              AUTO_UPDATE_PAUSE_WITH_PLAYERS: 1
+
               # It MUST be a link with a command and a new line at the end to be valid.
               MODS: |
                 https://thunderstore.io/package/download/ValheimModding/Jotunn/2.20.2/,
                 https://thunderstore.io/package/download/ValheimModding/HookGenPatcher/0.0.4/,
                 https://thunderstore.io/package/download/MathiasDecrock/PlanBuild/0.16.0/,
-                https://thunderstore.io/package/download/JereKuusela/Server_devcommands/1.81.0/
+                https://thunderstore.io/package/download/JereKuusela/Server_devcommands/1.81.0/,
+                https://thunderstore.io/package/download/nwesterhausen/DiscordConnector/2.3.1/
 
             envFrom:
               - secretRef:
@@ -73,6 +88,13 @@ spec:
                 cpu: 400m
               limits:
                 memory: 7Gi
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 111
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
     service:
       app:
         controller: valheim
@@ -116,6 +138,7 @@ spec:
         existingClaim: *app
         globalMounts:
           - path: /home/steam/valheim
+            readOnly: false
       saves:
         type: nfs
         server: "${NAS_URL}"
@@ -128,3 +151,16 @@ spec:
         path: "${NAS_PATH}/valheim/backup"
         globalMounts:
           - path: /home/steam/backups
+      # Workaround to overcome that k8s secrets are always readOnly. Mount secret to a emptyDir, then copy it with init
+      # container to the required path
+      data:
+        type: emptyDir
+        globalMounts:
+          - path: /temp-dir
+      discord-config:
+        type: secret
+        name: valheim-discord-secret
+        globalMounts:
+          - path: /temp-dir/discordconnector.cfg
+            subPath: discordconnector.cfg
+            readOnly: false
