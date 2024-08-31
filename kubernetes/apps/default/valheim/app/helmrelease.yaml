@@ -43,19 +43,23 @@ spec:
               WORLD: "Shokushkino"
               PUBLIC: "False"
               TYPE: "BepInEx"
-              ENABLE_CROSSPLAY: "True"
+              ENABLE_CROSSPLAY: 1
               HTTP_PORT: &port 1025
               AUTO_BACKUP: 1
               AUTO_BACKUP_ON_UPDATE: 1
               AUTO_BACKUP_ON_SHUTDOWN: 1
               AUTO_BACKUP_PAUSE_WITH_NO_PLAYERS: 1
               ADDRESS: "127.0.0.1:2457"
+              AUTO_UPDATE: 1
+              AUTO_UPDATE_PAUSE_WITH_PLAYERS: 1
+
               # It MUST be a link with a command and a new line at the end to be valid.
               MODS: |
                 https://thunderstore.io/package/download/ValheimModding/Jotunn/2.20.2/,
                 https://thunderstore.io/package/download/ValheimModding/HookGenPatcher/0.0.4/,
                 https://thunderstore.io/package/download/MathiasDecrock/PlanBuild/0.16.0/,
-                https://thunderstore.io/package/download/JereKuusela/Server_devcommands/1.81.0/
+                https://thunderstore.io/package/download/JereKuusela/Server_devcommands/1.81.0/,
+                https://thunderstore.io/package/download/nwesterhausen/DiscordConnector/2.3.1/
 
             envFrom:
               - secretRef:
