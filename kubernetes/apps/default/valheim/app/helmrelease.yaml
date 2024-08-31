@@ -119,6 +119,7 @@ spec:
       playit:
         controller: valheim
         type: ClusterIP
+        # https://discord.com/channels/686968015715172423/1205905773767430265/1205905773767430265
         clusterIP: 10.96.237.67 # FIXME: Remove if/when playit supports hostname tunnel endpoints
         ports: *ports
     ingress:
