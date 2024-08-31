@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 3.4.0
+      version: 3.3.2
       sourceRef:
         kind: HelmRepository
         name: bjw-s
@@ -32,17 +32,6 @@ spec:
       valheim:
         annotations:
           reloader.stakater.com/auto: "true"
-        initContainers:
-          copy-discord-secret:
-            image:
-              repository: docker.io/library/alpine
-              tag: 3.20.2
-            command:
-              - "sh"
-              - "-c"
-              - |
-                mkdir -p /home/steam/valheim/BepInEx/config/games.nwest.valheim.discordconnector &&
-                cp -f /temp-dir/discordconnector.cfg /home/steam/valheim/BepInEx/config/games.nwest.valheim.discordconnector/discordconnector.cfg
         containers:
           app:
             image:
@@ -54,7 +43,7 @@ spec:
               WORLD: "Shokushkino"
               PUBLIC: "False"
               TYPE: "BepInEx"
-              ENABLE_CROSSPLAY: 1
+              ENABLE_CROSSPLAY: 0
               HTTP_PORT: &port 1025
               AUTO_BACKUP: 1
               AUTO_BACKUP_ON_UPDATE: 1
@@ -67,10 +56,7 @@ spec:
               # It MUST be a link with a command and a new line at the end to be valid.
               MODS: |
                 https://thunderstore.io/package/download/ValheimModding/Jotunn/2.20.2/,
-                https://thunderstore.io/package/download/ValheimModding/HookGenPatcher/0.0.4/,
-                https://thunderstore.io/package/download/MathiasDecrock/PlanBuild/0.16.0/,
                 https://thunderstore.io/package/download/JereKuusela/Server_devcommands/1.81.0/,
-                https://thunderstore.io/package/download/nwesterhausen/DiscordConnector/2.3.1/
 
             envFrom:
               - secretRef:
@@ -119,7 +105,6 @@ spec:
       playit:
         controller: valheim
         type: ClusterIP
-        # https://discord.com/channels/686968015715172423/1205905773767430265/1205905773767430265
         clusterIP: 10.96.237.67 # FIXME: Remove if/when playit supports hostname tunnel endpoints
         ports: *ports
     ingress:
