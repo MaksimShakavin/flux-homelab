@@ -32,6 +32,17 @@ spec:
       valheim:
         annotations:
           reloader.stakater.com/auto: "true"
+        initContainers:
+          copy-discord-secret:
+            image:
+              repository: docker.io/library/alpine
+              tag: 3.20.2
+            command:
+              - "sh"
+              - "-c"
+              - |
+                mkdir -p /home/steam/valheim/BepInEx/config/games.nwest.valheim.discordconnector &&
+                cp -f /temp-dir/discordconnector.cfg /home/steam/valheim/BepInEx/config/games.nwest.valheim.discordconnector/discordconnector.cfg
         containers:
           app:
             image:
@@ -57,6 +68,7 @@ spec:
               MODS: |
                 https://thunderstore.io/package/download/ValheimModding/Jotunn/2.20.2/,
                 https://thunderstore.io/package/download/JereKuusela/Server_devcommands/1.81.0/,
+                https://thunderstore.io/package/download/nwesterhausen/DiscordConnector/2.3.1/
 
             envFrom:
               - secretRef:
