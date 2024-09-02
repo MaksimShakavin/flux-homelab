@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app APP_NAME
+  name: &app audiobookshelf
 spec:
   interval: 30m
   chart:
@@ -32,83 +32,79 @@ spec:
       namespace: storage
   values:
     controllers:
-      APP_NAME:
+      audiobookshelf:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
           app:
             image:
-              repository: APP_IMAGE
-              tag: VERSION
+              repository: ghcr.io/advplyr/audiobookshelf
+              tag: 2.12.3
             env:
               TZ: "${TIMEZONE}"
-            # Paste if have secret with envs
+              PORT: &port 8080
+              CONFIG_PATH: /config
+              METADATA_PATH: /config/metadata
+              AUDIOBOOKSHELF_UID: &uid 1000
+              AUDIOBOOKSHELF_GID: &gid 1000
             envFrom:
               - secretRef:
-                  name: APP_NAME-secret
+                  name: audiobookshelf-secret
             probes:
               liveness: &probes
                 enabled: true
                 custom: true
                 spec:
                   httpGet:
-                    path: /health
-                    port: &port 80
-                  initialDelaySeconds: 0
-                  periodSeconds: 10
-                  timeoutSeconds: 1
-                  failureThreshold: 3
+                    path: /healthcheck
+                    port: *port
               readiness: *probes
-              securityContext:
-                allowPrivilegeEscalation: false
-                readOnlyRootFilesystem: true
-                capabilities: { drop: [ "ALL" ] }
-              resources:
-                requests:
-                  cpu: 100m
-                limits:
-                  memory: 2Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: [ "ALL" ] }
+            resources:
+              requests:
+                cpu: 50m
+              limits:
+                memory: 600Mi
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: *uid
+        runAsGroup: *gid
+        fsGroup: *gid
         fsGroupChangePolicy: OnRootMismatch
-        supplementalGroups: [ 10000 ]
         seccompProfile: { type: RuntimeDefault }
     service:
       app:
-        controller: APP_NAME
-        type: LoadBalancer
-        # Add if it needs to have local network ip
-        annotations:
-          io.cilium/lb-ipam-ips: "${CLUSTER_LB_VALHEIM}"
+        controller: audiobookshelf
         ports:
           http:
             port: *port
     ingress:
       app:
         annotations:
-          # or internal
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
-        # or internal
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Media
+          gethomepage.dev/name: Audiobookshelf
+          gethomepage.dev/icon: audiobookshelf.svg
+          gethomepage.dev/widget.type: audiobookshelf
+          gethomepage.dev/widget.url: http://audiobookshelf.default:8080
+          gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_AUDIOBOOKSHELF_TOKEN}}`}}"
         className: external
         hosts:
-          - host: "APP_NAME.${SECRET_DOMAIN}"
+          - host: "audiobooks.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:
                   identifier: app
                   port: http
     persistence:
-      server:
+      config:
         existingClaim: *app
-        globalMounts:
-          - path: /home/steam/valheim
-      saves:
+      audiobooks:
         type: nfs
         server: "${NAS_URL}"
-        path: "${NAS_PATH}/path"
-        globalMounts:
-          - path: /home/steam/.config/unity3d/IronGate/Valheim
+        path: "${NAS_PATH}/media/audiobooks"

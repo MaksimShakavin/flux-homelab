@@ -18,3 +18,4 @@ resources:
   - ./paperless/ks.yaml
   - ./firefly-iii/ks.yaml
   - ./valheim/ks.yaml
+  - ./audiobookshelf/ks.yaml
