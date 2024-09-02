@@ -53,6 +53,11 @@ variable "redirect_uris" {
   type = list(string)
 }
 
+variable "additional_property_mappings" {
+  type    = list(string)
+  default = []
+}
+
 locals {
   client_secret = (
   var.client_type == "confidential"

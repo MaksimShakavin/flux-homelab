@@ -27,3 +27,19 @@ module "oauth2-paperless" {
   client_secret      = module.secret_paperless.fields["OIDC_CLIENT_SECRET"]
   redirect_uris      = ["https://paperless.exelent.click/accounts/oidc/authentik/login/callback/"]
 }
+
+module "oauth2-audiobookshelf" {
+  source             = "./oauth2_application"
+  name               = "Audiobookshelf"
+  icon_url           = "https://raw.githubusercontent.com/advplyr/audiobookshelf-web/master/static/Logo.png"
+  launch_url         = "https://audiobooks.exelent.click"
+  description        = "Media player"
+  newtab             = true
+  group              = "Selfhosted"
+  auth_groups        = [authentik_group.users.id]
+  authorization_flow = resource.authentik_flow.provider-authorization-implicit-consent.uuid
+  client_id          = module.secret_audiobookshelf.fields["OIDC_CLIENT_ID"]
+  client_secret      = module.secret_audiobookshelf.fields["OIDC_CLIENT_SECRET"]
+  additional_property_mappings = formatlist(authentik_scope_mapping.audiobookshelf.id)
+  redirect_uris      = ["https://audiobooks.exelent.click/auth/openid/callback", "audiobookshelf://oauth"]
+}

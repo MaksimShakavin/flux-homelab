@@ -30,7 +30,7 @@ resource "authentik_provider_oauth2" "oauth2-application" {
   authorization_flow         = var.authorization_flow
   signing_key                = data.authentik_certificate_key_pair.generated.id
   client_type                = var.client_type
-  property_mappings          = data.authentik_scope_mapping.scopes.ids
+  property_mappings          = concat(data.authentik_scope_mapping.scopes.ids, var.additional_property_mappings)
   redirect_uris              = var.redirect_uris
 }
 
