@@ -43,3 +43,18 @@ module "oauth2-audiobookshelf" {
   additional_property_mappings = formatlist(authentik_scope_mapping.audiobookshelf.id)
   redirect_uris      = ["https://audiobooks.exelent.click/auth/openid/callback", "audiobookshelf://oauth"]
 }
+
+module "oauth2-mealie" {
+  source             = "./oauth2_application"
+  name               = "Mealie"
+  icon_url           = "https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/mealie.svg"
+  launch_url         = "https://mealie.exelent.click"
+  description        = "Cooking receipts"
+  newtab             = true
+  group              = "Selfhosted"
+  auth_groups        = [authentik_group.users.id]
+  client_type        = "public"
+  authorization_flow = resource.authentik_flow.provider-authorization-implicit-consent.uuid
+  client_id          = module.secret_mealie.fields["OIDC_CLIENT_ID"]
+  redirect_uris      = ["https://mealie.exelent.click/login"]
+}

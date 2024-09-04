@@ -19,3 +19,4 @@ resources:
   - ./firefly-iii/ks.yaml
   - ./valheim/ks.yaml
   - ./audiobookshelf/ks.yaml
+  - ./mealie/ks.yaml

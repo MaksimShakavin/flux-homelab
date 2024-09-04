@@ -58,6 +58,12 @@ module "secret_audiobookshelf" {
   item   = "audiobookshelf"
 }
 
+module "secret_mealie" {
+  source = "github.com/bjw-s/terraform-1password-item?ref=main"
+  vault  = "Homelab"
+  item   = "mealie"
+}
+
 provider "authentik" {
   url   = "https://sso.exelent.click"
   token = module.secret_authentik.fields["AUTHENTIK_TOKEN"]
