@@ -30,7 +30,7 @@ spec:
       main:
         type: cronjob
         cronjob:
-          schedule: "@hourly"
+          schedule: "0 * * * *"
           timeZone: "${TIMEZONE}"
           concurrencyPolicy: Forbid
           successfulJobsHistory: 1

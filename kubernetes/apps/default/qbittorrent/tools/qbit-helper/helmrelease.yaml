@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: qbittorrent-tools-emonoda
+  name: qbittorrent-tools-helper
 spec:
   interval: 30m
   chart:
@@ -30,8 +30,8 @@ spec:
       main:
         type: cronjob
         cronjob:
-          # run it after qbit-helper
-          schedule: "10 * * * *"
+          # run it after qbit_manage
+          schedule: "5 * * * *"
           timeZone: "${TIMEZONE}"
           concurrencyPolicy: Forbid
           successfulJobsHistory: 1
@@ -39,29 +39,13 @@ spec:
         containers:
           main:
             image:
-              repository: ghcr.io/mglants/emonoda
-              tag: 2.1.37
-            command:
-              - emupdate
+              repository: ghcr.io/maksimshakavin/qbit-helper
+              tag: main@sha256:336055b71b6b6afd6b9d0a47c07d921043050f6d139a29fbc050a1fb8eac2e56
             args:
               - --config
-              - /app/config.yaml
-            resources:
-              requests:
-                cpu: 25m
-              limits:
-                memory: 256M
+              - &config /config/config.yaml
         pod:
           restartPolicy: OnFailure
-          affinity:
-            podAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                - labelSelector:
-                    matchExpressions:
-                      - key: app.kubernetes.io/name
-                        operator: In
-                        values: [ "qbittorrent" ]
-                  topologyKey: kubernetes.io/hostname
     defaultPodOptions:
       securityContext:
         runAsUser: 1000
@@ -69,17 +53,12 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
     persistence:
-      qbittorrent:
-        existingClaim: qbittorrent
-        globalMounts:
-          - path: /config
       config-file:
         type: secret
-        name: qbtools-emonoda-secret
+        name: qbit-helper-secret
         globalMounts:
-          - path: /app/config.yaml
+          - path: *config
             subPath: config.yaml
-            readOnly: true
       downloads:
         type: nfs
         server: "${NAS_URL}"
