@@ -50,7 +50,7 @@ spec:
               - "-c"
               - |
                 mkdir -p /config/qBittorrent/ &&
-                echo '{"movies": {"save_path": "/data/torrents/movies"}, "tv": {"save_path": "/data/torrents/tv"}}' > /config/qBittorrent/categories.json
+                echo '{"movies": {"save_path": "/data/torrents/movies"}, "tv": {"save_path": "/data/torrents/tv"}, "guardian": "/data/torrents/guardian"}' > /config/qBittorrent/categories.json
         containers:
           app:
             image:
