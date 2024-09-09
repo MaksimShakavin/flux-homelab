@@ -148,3 +148,12 @@ spec:
       enabled: false
     test:
       enabled: false
+    chunksCache:
+      resources:
+        requests:
+          cpu: 0
+    resultsCache:
+      resources:
+        requests:
+          cpu: 0
+
