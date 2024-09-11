@@ -17,6 +17,7 @@ resources:
   - ./nodered/ks.yaml
   - ./paperless/ks.yaml
   - ./firefly-iii/ks.yaml
-  - ./valheim/ks.yaml
+#  - ./valheim/ks.yaml
+  - ./satisfactory/ks.yaml
   - ./audiobookshelf/ks.yaml
   - ./mealie/ks.yaml
