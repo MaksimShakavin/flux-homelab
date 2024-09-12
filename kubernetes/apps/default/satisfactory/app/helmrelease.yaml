@@ -34,8 +34,7 @@ spec:
           app:
             image:
               repository: wolveix/satisfactory-server
-              # FIXME change to a semver version when it becomes more stable after release
-              tag: latest@sha256:2570735308d6a17876a638dda047a4effc8b02a2bdb01e83c85d4affd60f9b14
+              tag: v1.8.3
             env:
               ROOTLESS: "true"
             probes:
