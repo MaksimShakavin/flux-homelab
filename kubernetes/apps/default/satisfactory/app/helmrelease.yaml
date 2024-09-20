@@ -100,4 +100,4 @@ spec:
         server: "${NAS_URL}"
         path: "${NAS_PATH}/satisfactory"
         globalMounts:
-          - path: /home/steam/.config/Epic/FactoryGame/Saved
+          - path: /config/saved
