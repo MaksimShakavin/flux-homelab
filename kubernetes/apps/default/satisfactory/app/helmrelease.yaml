@@ -34,9 +34,9 @@ spec:
           app:
             image:
               repository: wolveix/satisfactory-server
-              tag: v1.8.5
+              tag: v1.8.6
             env:
-              ROOTLESS: "true"
+              ROOTLESS: "false"
             probes:
               liveness: &probes
                 enabled: true
