@@ -47,7 +47,7 @@ spec:
           app:
             image:
               repository: ghcr.io/mbround18/valheim
-              tag: 3.0.4
+              tag: 3.0.5
             env:
               TZ: "${TIMEZONE}"
               NAME: "Shojkborg"
