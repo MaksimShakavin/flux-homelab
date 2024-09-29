@@ -96,3 +96,7 @@ spec:
         existingClaim: *app
         globalMounts:
           - path: /app/data/
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
