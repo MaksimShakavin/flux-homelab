@@ -49,6 +49,7 @@ spec:
               TZ: "${TIMEZONE}"
               PUID: "1000"
               PGID: "1000"
+              LOG_LEVEL: "debug"
             envFrom: *envFrom
             securityContext:
               allowPrivilegeEscalation: false
