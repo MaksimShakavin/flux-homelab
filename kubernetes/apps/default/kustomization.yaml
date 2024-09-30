@@ -6,6 +6,7 @@ resources:
   - ./namespace.yaml
   - ./alert.yaml
   - ./qbittorrent/ks.yaml
+  - ./webtlo/ks.yaml
   - ./radarr/ks.yaml
   - ./sonarr/ks.yaml
   - ./prowlarr/ks.yaml
