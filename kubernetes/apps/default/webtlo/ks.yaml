@@ -1,0 +1,30 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app webtlo
+  namespace: flux-system
+spec:
+  targetNamespace: default
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  path: ./kubernetes/apps/default/webtlo/app
+  prune: true
+  dependsOn:
+    - name: external-secrets-stores
+  sourceRef:
+    kind: GitRepository
+    name: home-kubernetes
+  wait: false
+  interval: 30m
+  retryInterval: 1m
+  timeout: 5m
+  # add if you have volsync and\or gatus
+  postBuild:
+    substitute:
+      APP: *app
+      VOLSYNC_CAPACITY: 1Gi
+      VOLSYNC_UID: "1000"
+      VOLSYNC_GID: "1000"
