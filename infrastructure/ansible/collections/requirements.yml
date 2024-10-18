@@ -1,5 +1,5 @@
 ---
 collections:
   - name: prometheus.prometheus
-    version: 0.18.0
+    version: 0.21.0
   - name: onepassword.connect
