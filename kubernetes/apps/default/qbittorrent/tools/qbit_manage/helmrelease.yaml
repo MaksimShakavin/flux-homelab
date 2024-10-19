@@ -39,7 +39,7 @@ spec:
           main:
             image:
               repository: ghcr.io/stuffanthings/qbit_manage
-              tag: latest@sha256:3b750dc89e6b1f9f07d4cfb086d3d7bffd3e9dc6197865866c7db138b4ec911b
+              tag: latest@sha256:3f89a3dd8e104d90e9cc19cffcf865dc6980de6d9fd288a2832cc80cda47ef56
             env:
               QBT_RUN: "true"
               QBT_CONFIG: "/config/config.yaml"
