@@ -64,7 +64,7 @@ spec:
           gotenburg:
             image:
               repository: gotenberg/gotenberg
-              tag: 8.11.0@sha256:e60da3ecc52050303c3886630aa7ed82f9486660b82a1ce6e5bf253c3b0764d4
+              tag: 8.12.0@sha256:b10708db3ccabbee040d0b6d9ec68b6034a066c1d4e27b13fb7a6af4ade012e4
             securityContext:
               privileged: false
               runAsUser: 1001
