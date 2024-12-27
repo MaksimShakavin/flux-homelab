@@ -40,7 +40,7 @@ module "oauth2-audiobookshelf" {
   authorization_flow = resource.authentik_flow.provider-authorization-implicit-consent.uuid
   client_id          = module.secret_audiobookshelf.fields["OIDC_CLIENT_ID"]
   client_secret      = module.secret_audiobookshelf.fields["OIDC_CLIENT_SECRET"]
-  additional_property_mappings = formatlist(authentik_scope_mapping.audiobookshelf.id)
+  additional_property_mappings = formatlist(authentik_property_mapping_provider_scope.audiobookshelf.id)
   redirect_uris      = ["https://audiobooks.exelent.click/auth/openid/callback", "audiobookshelf://oauth"]
 }
 
@@ -53,8 +53,8 @@ module "oauth2-mealie" {
   newtab             = true
   group              = "Selfhosted"
   auth_groups        = [authentik_group.users.id]
-  client_type        = "public"
   authorization_flow = resource.authentik_flow.provider-authorization-implicit-consent.uuid
   client_id          = module.secret_mealie.fields["OIDC_CLIENT_ID"]
+  client_secret      = module.secret_mealie.fields["OIDC_CLIENT_SECRET"]
   redirect_uris      = ["https://mealie.exelent.click/login"]
 }
