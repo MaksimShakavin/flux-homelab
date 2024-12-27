@@ -10,7 +10,7 @@ data "authentik_certificate_key_pair" "generated" {
   name = "authentik Self-signed Certificate"
 }
 
-data "authentik_scope_mapping" "scopes" {
+data "authentik_property_mapping_provider_scope" "scopes" {
   managed_list = [
     "goauthentik.io/providers/oauth2/scope-email",
     "goauthentik.io/providers/oauth2/scope-openid",
@@ -30,7 +30,7 @@ resource "authentik_provider_oauth2" "oauth2-application" {
   authorization_flow         = var.authorization_flow
   signing_key                = data.authentik_certificate_key_pair.generated.id
   client_type                = var.client_type
-  property_mappings          = concat(data.authentik_scope_mapping.scopes.ids, var.additional_property_mappings)
+  property_mappings          = concat(data.authentik_property_mapping_provider_scope.scopes.ids, var.additional_property_mappings)
   redirect_uris              = var.redirect_uris
 }
 

@@ -1,4 +1,4 @@
-resource "authentik_scope_mapping" "audiobookshelf" {
+resource "authentik_property_mapping_provider_scope" "audiobookshelf" {
   name       = "OAuth Mapping: OpenID 'audiobookshelf'"
   scope_name = "groups"
   expression = <<EOF
