@@ -24,7 +24,7 @@ spec:
   values:
     image:
       repository: portainer/portainer-ce
-      tag: 2.24.1
+      tag: 2.26.0
     service:
       type: ClusterIP
       httpPort: 9000
