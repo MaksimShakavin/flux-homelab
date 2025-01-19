@@ -34,6 +34,12 @@ module "secret_minio" {
   item   = "minio"
 }
 
+module "secret_portainer" {
+  source = "github.com/bjw-s/terraform-1password-item?ref=main"
+  vault  = "Homelab"
+  item   = "portainer"
+}
+
 module "secret_grafana" {
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
   vault  = "Homelab"
