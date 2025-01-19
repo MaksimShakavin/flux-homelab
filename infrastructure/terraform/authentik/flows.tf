@@ -1,5 +1,10 @@
 ## Authenticator setup
 
+data "authentik_flow" "default-provider-invalidation-flow" {
+  slug = "default-provider-invalidation-flow"
+}
+
+
 resource "authentik_flow" "authenticator-totp-setup" {
   name           = "authenticator-totp-setup"
   title          = "Setup Two-Factor authentication"

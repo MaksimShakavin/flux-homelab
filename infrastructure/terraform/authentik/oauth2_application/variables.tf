@@ -44,6 +44,11 @@ variable "authorization_flow" {
   type = string
 }
 
+variable "invalidation_flow" {
+  type = string
+}
+
+
 variable "client_type" {
   type    = string
   default = "confidential"
