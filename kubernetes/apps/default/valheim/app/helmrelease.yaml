@@ -36,7 +36,7 @@ spec:
           copy-discord-secret:
             image:
               repository: docker.io/library/alpine
-              tag: 3.21.2
+              tag: 3.21.3
             command:
               - "sh"
               - "-c"
