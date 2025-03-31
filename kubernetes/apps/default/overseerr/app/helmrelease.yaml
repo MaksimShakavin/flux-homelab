@@ -5,7 +5,7 @@ kind: HelmRelease
 metadata:
   name: &app overseerr
 spec:
-  interval: 30m
+  interval: 1h
   chart:
     spec:
       chart: app-template
@@ -38,7 +38,7 @@ spec:
               repository: ghcr.io/sct/overseerr
               tag: 1.33.2@sha256:714ea6db2bc007a2262d112bef7eec74972eb33d9c72bddb9cbd98b8742de950
             env:
-              TZ: "${TIMEZONE}"
+              TZ: "Europe/Warsaw"
               LOG_LEVEL: "info"
               PORT: &port 80
             probes:

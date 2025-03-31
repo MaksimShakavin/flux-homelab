@@ -1,6 +1,0 @@
----
-
-kind: Kustomization
-resources:
-  - ./flux.yaml
-  - ./cluster.yaml
