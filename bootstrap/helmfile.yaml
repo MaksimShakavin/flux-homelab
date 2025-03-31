@@ -1,0 +1,62 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/helmfile
+
+helmDefaults:
+  cleanupOnFail: true
+  wait: true
+  waitForJobs: true
+
+repositories:
+  - name: cilium
+    url: https://helm.cilium.io
+  - name: coredns
+    url: https://coredns.github.io/helm
+  - name: postfinance
+    url: https://postfinance.github.io/kubelet-csr-approver
+
+releases:
+  - name: prometheus-operator-crds
+    namespace: observability
+    chart: oci://ghcr.io/prometheus-community/charts/prometheus-operator-crds
+    version: 19.0.0
+
+  - name: cilium
+    namespace: kube-system
+    atomic: true
+    chart: oci://ghcr.io/onedr0p/charts-mirror/cilium
+    version: 1.17.2
+    values: ['{{ requiredEnv "ROOT_DIR" }}/kubernetes/apps/kube-system/cilium/app/helm/values.yaml']
+    hooks:
+      - # Wait for cilium CRDs to be available
+        events: ['postsync']
+        command: bash
+        args:
+          - -c
+          - until kubectl get crd ciliumbgppeeringpolicies.cilium.io ciliuml2announcementpolicies.cilium.io ciliumloadbalancerippools.cilium.io &>/dev/null; do sleep 10; done
+        showlogs: true
+      - # Apply cilium network configuration
+        events: ['postsync']
+        command: kubectl
+        args:
+          - apply
+          - --namespace=kube-system
+          - --server-side
+          - --field-manager=kustomize-controller
+          - --filename={{ requiredEnv "ROOT_DIR" }}/kubernetes/apps/kube-system/cilium/app/networks.yaml
+        showlogs: true
+
+  - name: coredns
+    namespace: kube-system
+    atomic: true
+    chart: ghcr.io/coredns/charts/coredns
+    version: 1.39.1
+    values: ['{{ requiredEnv "ROOT_DIR" }}/kubernetes/apps/kube-system/coredns/app/helm/values.yaml']
+    needs: ['kube-system/cilium']
+
+  - name: spegel
+    namespace: kube-system
+    atomic: true
+    chart: ghcr.io/spegel-org/helm-charts/spegel
+    version: v0.0.30
+    values: [ '{{ requiredEnv "ROOT_DIR" }}/kubernetes/apps/kube-system/spegel/app/helm/values.yaml' ]
+    needs: [ 'kube-system/coredns' ]

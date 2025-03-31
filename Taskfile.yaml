@@ -20,11 +20,11 @@ env:
 includes:
   kubernetes:
     aliases: ["k8s"]
-    taskfile: .taskfiles/Kubernetes/Taskfile.yaml
+    taskfile: .taskfiles/kubernetes/Taskfile.yaml
   flux: .taskfiles/Flux/Taskfile.yaml
-  talos: .taskfiles/Talos/Taskfile.yaml
+  talos: .taskfiles/talos/Taskfile.yaml
   sops: .taskfiles/Sops/Taskfile.yaml
-  volsync: .taskfiles/VolSync/Taskfile.yaml
+  volsync: .taskfiles/volsync/Taskfile.yaml
   ansible: .taskfiles/Ansible/Taskfile.yaml
   secrets: .taskfiles/ExternalSecrets/Taskfile.yaml
 
