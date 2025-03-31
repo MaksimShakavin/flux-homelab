@@ -2,11 +2,16 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
+set: [pipefail]
+shopt: [globstar]
+
 vars:
   # Directories
   KUBERNETES_DIR: "{{.ROOT_DIR}}/kubernetes"
   INFRA_DIR: "{{.ROOT_DIR}}/infrastructure"
   ANSIBLE_DIR: "{{.INFRA_DIR}}/ansible"
+  SCRIPTS_DIR: "{{.KUBERNETES_DIR}}/bootstrap/scripts"
+  TALOS_DIR: "{{.KUBERNETES_DIR}}/talos"
   # Files
   AGE_FILE: "{{.ROOT_DIR}}/age.key"
   KUBECONFIG_FILE: "{{.ROOT_DIR}}/kubeconfig"
@@ -18,15 +23,14 @@ env:
   INFRA_SECRETS_FILE: "{{.INFRA_SECRETS_FILE}}"
 
 includes:
-  kubernetes:
-    aliases: ["k8s"]
-    taskfile: .taskfiles/Kubernetes/Taskfile.yaml
-  flux: .taskfiles/Flux/Taskfile.yaml
-  talos: .taskfiles/Talos/Taskfile.yaml
-  sops: .taskfiles/Sops/Taskfile.yaml
-  volsync: .taskfiles/VolSync/Taskfile.yaml
+  bootstrap: .taskfiles/bootstrap
+  kubernetes: .taskfiles/kubernetes
+  talos: .taskfiles/talos
+  volsync: .taskfiles/volsync
   ansible: .taskfiles/Ansible/Taskfile.yaml
   secrets: .taskfiles/ExternalSecrets/Taskfile.yaml
 
 tasks:
-  default: task -l
+  default:
+    cmd: task --list
+    silent: true

@@ -5,7 +5,7 @@ kind: HelmRelease
 metadata:
   name: &app APP_NAME
 spec:
-  interval: 30m
+  interval: 1h
   chart:
     spec:
       chart: app-template
@@ -41,7 +41,7 @@ spec:
               repository: APP_IMAGE
               tag: VERSION
             env:
-              TZ: "${TIMEZONE}"
+              TZ: "Europe/Warsaw"
             # Paste if have secret with envs
             envFrom:
               - secretRef:
@@ -108,7 +108,7 @@ spec:
           - path: /home/steam/valheim
       saves:
         type: nfs
-        server: "${NAS_URL}"
-        path: "${NAS_PATH}/path"
+        server: "192.168.20.5"
+        path: "/volume1/kubernetes/path"
         globalMounts:
           - path: /home/steam/.config/unity3d/IronGate/Valheim

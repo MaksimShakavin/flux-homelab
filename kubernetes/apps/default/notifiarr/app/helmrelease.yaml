@@ -6,7 +6,7 @@ metadata:
   name: notifiarr
   namespace: default
 spec:
-  interval: 30m
+  interval: 1h
   chart:
     spec:
       chart: app-template
@@ -48,7 +48,7 @@ spec:
               PUID: 1000
               PGID: 1000
               UMASK: 002
-              TZ: "${TIMEZONE}"
+              TZ: "Europe/Warsaw"
             envFrom:
               - secretRef:
                   name: notifiarr-secret

@@ -5,7 +5,7 @@ kind: HelmRelease
 metadata:
   name: &app audiobookshelf
 spec:
-  interval: 30m
+  interval: 1h
   chart:
     spec:
       chart: app-template
@@ -41,7 +41,7 @@ spec:
               repository: ghcr.io/advplyr/audiobookshelf
               tag: 2.19.5
             env:
-              TZ: "${TIMEZONE}"
+              TZ: "Europe/Warsaw"
               PORT: &port 8080
               CONFIG_PATH: /config
               METADATA_PATH: /config/metadata
@@ -106,5 +106,5 @@ spec:
         existingClaim: *app
       audiobooks:
         type: nfs
-        server: "${NAS_URL}"
-        path: "${NAS_PATH}/media/audiobooks"
+        server: "192.168.20.5"
+        path: "/volume1/kubernetes/media/audiobooks"

@@ -42,8 +42,8 @@ provider "proxmox" {
 }
 
 provider "unifi" {
-  username = module.secret_unifi.fields.username
-  password = module.secret_unifi.fields.password
+  username = module.secret_unifi.fields.TERRAFORM_USER
+  password = module.secret_unifi.fields.TERRAFORM_PASSWORD
   api_url  = "https://192.168.0.1"
   allow_insecure = true
 }

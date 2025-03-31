@@ -6,7 +6,7 @@ metadata:
   name: &app prowlarr
   namespace: default
 spec:
-  interval: 30m
+  interval: 1h
   chart:
     spec:
       chart: app-template
@@ -55,7 +55,7 @@ spec:
               repository: ghcr.io/onedr0p/prowlarr
               tag: 1.32@sha256:fa01195217ab1a7aac3aa516fcc50ff886ea26c177b2546ebe364e7b2cf1a282
             env:
-              TZ: "${TIMEZONE}"
+              TZ: "Europe/Warsaw"
               PROWLARR__INSTANCE_NAME: Prowlarr
               PROWLARR__PORT: &port 8080
               PROWLARR__LOG_LEVEL: info
@@ -101,7 +101,7 @@ spec:
           - path: /config
       downloads:
         type: nfs
-        server: "${NAS_URL}"
-        path: "${NAS_PATH}"
+        server: "192.168.20.5"
+        path: "/volume1/kubernetes"
         globalMounts:
           - path: /data

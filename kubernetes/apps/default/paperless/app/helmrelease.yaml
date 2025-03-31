@@ -5,22 +5,16 @@ kind: HelmRelease
 metadata:
   name: &app paperless
 spec:
-  interval: 30m
-  chart:
-    spec:
-      chart: app-template
-      version: 3.7.3
-      sourceRef:
-        kind: HelmRepository
-        name: bjw-s
-        namespace: flux-system
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
   install:
     remediation:
-      retries: 3
+      retries: -1
   upgrade:
     cleanupOnFail: true
     remediation:
-      strategy: rollback
       retries: 3
   dependsOn:
     - name: longhorn
@@ -46,7 +40,7 @@ spec:
               repository: ghcr.io/paperless-ngx/paperless-ngx
               tag: 2.14.7@sha256:2a6d9f6461ad7e8335f5b2123a173b9e6002fda209af8a66483b0c00629569ab
             env:
-              PAPERLESS_TIME_ZONE: "${TIMEZONE}"
+              PAPERLESS_TIME_ZONE: "Europe/Warsaw"
               PAPERLESS_URL: "https://paperless.${SECRET_DOMAIN}"
               PAPERLESS_PORT: &port 8000
               PAPERLESS_REDIS: redis://dragonfly.database.svc.cluster.local:6379
@@ -101,8 +95,8 @@ spec:
           - path: /usr/src/paperless/data
       files:
         type: nfs
-        server: "${NAS_URL}"
-        path: "${NAS_PATH}/paperless"
+        server: "192.168.20.5"
+        path: "/volume1/kubernetes/paperless"
         globalMounts:
           - subPath: media
             path: /usr/src/paperless/media

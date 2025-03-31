@@ -2,23 +2,23 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+components:
+  - ../../components/common
 resources:
-  - ./namespace.yaml
-  - ./alert.yaml
   - ./qbittorrent/ks.yaml
-  - ./webtlo/ks.yaml
-  - ./radarr/ks.yaml
-  - ./sonarr/ks.yaml
-  - ./prowlarr/ks.yaml
-  - ./plex/ks.yaml
-  - ./tautulli/ks.yaml
-  - ./notifiarr/ks.yaml
-  - ./overseerr/ks.yaml
-  - ./homepage/ks.yaml
-  - ./nodered/ks.yaml
-  - ./paperless/ks.yaml
-  - ./firefly-iii/ks.yaml
+#  - ./webtlo/ks.yaml
+#  - ./radarr/ks.yaml
+#  - ./sonarr/ks.yaml
+#  - ./prowlarr/ks.yaml
+#  - ./plex/ks.yaml
+#  - ./tautulli/ks.yaml
+#  - ./notifiarr/ks.yaml
+#  - ./overseerr/ks.yaml
+#  - ./homepage/ks.yaml
+#  - ./nodered/ks.yaml
+#  - ./paperless/ks.yaml
+#  - ./firefly-iii/ks.yaml
+#  - ./audiobookshelf/ks.yaml
+#  - ./mealie/ks.yaml
+#  - ./satisfactory/ks.yaml
 #  - ./valheim/ks.yaml
-  - ./satisfactory/ks.yaml
-  - ./audiobookshelf/ks.yaml
-  - ./mealie/ks.yaml
