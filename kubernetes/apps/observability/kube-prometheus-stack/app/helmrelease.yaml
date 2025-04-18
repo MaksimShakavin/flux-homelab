@@ -114,7 +114,7 @@ spec:
         image:
           registry: quay.io
           repository: prometheus/prometheus
-          tag: v3.2.1
+          tag: v3.3.0
         maximumStartupDurationSeconds: 1000
         podMetadata:
           annotations:
