@@ -38,7 +38,7 @@ spec:
           app:
             image:
               repository: berkut174/webtlo
-              tag: 3.3.1
+              tag: 3.3.2
             env:
               TZ: "${TIMEZONE}"
               WEBTLO_CRON: "true"
