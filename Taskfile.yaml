@@ -11,7 +11,7 @@ vars:
   INFRA_DIR: "{{.ROOT_DIR}}/infrastructure"
   ANSIBLE_DIR: "{{.INFRA_DIR}}/ansible"
   SCRIPTS_DIR: "{{.KUBERNETES_DIR}}/bootstrap/scripts"
-  TALOS_DIR: "{{.KUBERNETES_DIR}}/talos"
+  TALOS_DIR: "{{.KUBERNETES_DIR}}/bootstrap/talos"
   # Files
   AGE_FILE: "{{.ROOT_DIR}}/age.key"
   KUBECONFIG_FILE: "{{.ROOT_DIR}}/kubeconfig"
@@ -27,8 +27,7 @@ includes:
   kubernetes: .taskfiles/kubernetes
   talos: .taskfiles/talos
   volsync: .taskfiles/volsync
-  ansible: .taskfiles/Ansible/Taskfile.yaml
-  secrets: .taskfiles/ExternalSecrets/Taskfile.yaml
+  ansible: .taskfiles/ansible/Taskfile.yaml
 
 tasks:
   default:

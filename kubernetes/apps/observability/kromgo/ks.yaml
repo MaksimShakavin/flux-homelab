@@ -6,20 +6,21 @@ metadata:
   name: &app kromgo
   namespace: &namespace observability
 spec:
-  targetNamespace: *namespace
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   components:
     - ../../../../components/gatus/external
+  interval: 1h
   path: ./kubernetes/apps/observability/kromgo/app
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
   wait: false
-  interval: 1h
-  retryInterval: 1m
   timeout: 5m
   postBuild:
     substitute:

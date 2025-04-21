@@ -12,12 +12,10 @@ spec:
       app.kubernetes.io/name: *app
   path: ./kubernetes/apps/default/firefly-iii/app
   prune: true
-  dependsOn:
-    - name: cloudnative-pg-cluster
-    - name: external-secrets-stores
   sourceRef:
     kind: GitRepository
     name: flux-system
+    namespace: flux-system
   wait: false
   interval: 1h
   retryInterval: 1m
