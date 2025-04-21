@@ -6,7 +6,7 @@ metadata:
   name: &app radarr
   namespace: default
 spec:
-  interval: 30m
+  interval: 1h
   driftDetection:
     mode: enabled
   chart:
@@ -56,7 +56,7 @@ spec:
               repository: ghcr.io/onedr0p/radarr-develop
               tag: 5.20.1.9773@sha256:8187c129a78fdfe15b1603db9175abd2be0e1ca2e99ea3733987c3ae941da165
             env:
-              TZ: "${TIMEZONE}"
+              TZ: "Europe/Warsaw"
               RADARR__INSTANCE_NAME: Radarr
               RADARR__PORT: &port 8080
               RADARR__APPLICATION_URL: "https://radarr.${SECRET_DOMAIN}"
@@ -102,7 +102,7 @@ spec:
           - path: /config
       downloads:
         type: nfs
-        server: "${NAS_URL}"
-        path: "${NAS_PATH}"
+        server: "192.168.20.5"
+        path: "/volume1/kubernetes"
         globalMounts:
           - path: /data

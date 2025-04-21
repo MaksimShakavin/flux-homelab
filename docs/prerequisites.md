@@ -1,22 +1,64 @@
 ## Prerequisites
 
 ### 1. Set up cloudflare
+
 1. Go to [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens) and create an API Token.
 2. Under the `API Tokens` section, click the blue `Create Token` button.
 3. Select the `Edit zone DNS` template by clicking the blue `Use template` button.
 4. Under `Permissions`, click `+ Add More` and add the following permissions:
-  - `Zone - DNS - Edit`
-  - `Account - Cloudflare Tunnel - Read`
+
+- `Zone - DNS - Edit`
+- `Account - Cloudflare Tunnel - Read`
+
 5. Limit the permissions to specific account and zone resources.
 6. Click the blue `Continue to Summary` button and then the blue `Create Token` button.
 7. Copy the token and save it to the secrets store under a `CF_API_TOKEN` field.
 
 ### 2. Set up secrets store
-I use 1Password as the secrets store for my homelab cluster. To execute the IaC scripts that provision the
-infrastructure, the [1Password Connect](https://developer.1password.com/docs/connect/) must be set up separately with access
-to the 1Password vault. Once the cluster setup is complete, 1Password Connect will be hosted inside the cluster.
 
-Ensure you update `OP_CONNECT_HOST` and `OP_CONNECT_TOKEN` in the [env file](../infrastructure/secrets.sops.yaml).
+### 2. Set up secrets store
+
+I use **1Password** as the secrets store for my homelab cluster. To execute the IaC scripts that provision the
+infrastructure, the [1Password Connect](https://developer.1password.com/docs/connect/) server must be set up separately
+with access to the relevant 1Password vault(s). Once the cluster setup is complete, 1Password Connect will be hosted
+inside the cluster.
+
+#### 🔧 Temporary 1Password Connect (Outside the Cluster)
+
+Before the cluster is up, we run a temporary instance of the 1Password Connect server locally using Docker Compose.
+
+**Steps:**
+
+1. **Prepare credentials**
+
+- Place your `1password-credentials.json` (downloaded from 1Password) into the following directory:
+  ```
+  infrastructure/1password-store/1password-credentials.json
+  ```
+
+2. **Start the temporary Connect server**
+
+- Run the following from the project root:
+  ```bash
+  docker-compose -f infrastructure/1password-store/docker-compose.yaml up -d
+  ```
+
+3. **Export environment variables**
+
+- These are required for Terraform and other IaC tools to authenticate with 1Password:
+  ```bash
+  export OP_CONNECT_HOST=http://localhost:8080
+  ```
+- Alternatively, you can update these variables in the [
+  `../infrastructure/secrets.sops.yaml`](../infrastructure/secrets.sops.yaml) file, which is decrypted and loaded by the
+  automation scripts.
+
+4. **Verify it's running**
+
+- Visit [http://localhost:8080/health](http://localhost:8080/health) — it should return a `200 OK` response.
+
+💡 Once the Kubernetes cluster is ready, 1Password Connect will be deployed inside the cluster as a permanent service.
+The temporary setup is only needed for bootstrapping.
 
 The 1Password vault should contain the following items:
 <details>
@@ -73,18 +115,22 @@ The 1Password vault should contain the following items:
 | grafana                   | GRAFANA_POSTGRESS_USER                          |                                                           |
 |                           | GRAFANA_POSTGRESS_PASS                          |                                                           |
 | pihole                    | HOMEPAGE_PI_HOLE_TOKEN                          |                                                           |
+
 </details>
 
 ### 3. Set up UDM
 
 1. Set up the unifipoller user (TODO docs).
-2. Forward port for qBittorrent (TODO docs).
+3. Set up BGP network .
+  - Go to Settings -> Routing -> BGP
+  - Create k8s entry with [config file content](../kubernetes/apps/kube-system/cilium)
 
 ### 4. Get discord token
 
 1. Go to Server settings -> Integrations and create two webhooks:
-  - Webhook for Prometheus alerts. Save it to the `ALERTMANAGER_DISCORD_WEBHOOK` item in 1Password.
-  - Webhook for Gatus alerts. Save it to the `GATUS_DISCORD_WEBHOOK` item in 1Password.
+
+- Webhook for Prometheus alerts. Save it to the `ALERTMANAGER_DISCORD_WEBHOOK` item in 1Password.
+- Webhook for Gatus alerts. Save it to the `GATUS_DISCORD_WEBHOOK` item in 1Password.
 
 ### 5. Set up pihole and generate token for Homepage
 
@@ -93,19 +139,26 @@ The 1Password vault should contain the following items:
 
 ### 6. NAS set up
 
+### 7. Set up healthchecks.io
+
+1. Go to [healthchecks.io](https://healthchecks.io), set up account and create healthcheck
+2. Copy healthcheck url to 1Password healthchecks object to `ALERTMANAGER_HEARTBEAT_WEBHOOK`
+
 #### Install and Configure Minio on NAS
 
 1. **Install Synology Container Manager:**
-   1. Install the `Synology Container Manager` package from the Package Center.
-   2. Open the `Synology Container Manager` and run a Docker container using the `minio/minio` image. Ensure that port `9000` is forwarded.
+  1. Install the `Synology Container Manager` package from the Package Center.
+  2. Open the `Synology Container Manager` and run a Docker container using the `minio/minio` image. Ensure that port
+     `9000` is forwarded.
 
 2. **Create Minio Buckets:**
-  - Use [terraform module](../infrastructure/terraform/minio) to create necessary buckets and users
+
+- Use [terraform module](../infrastructure/terraform/minio) to create necessary buckets and users
 
 #### Configure NFS Connections
 
 1. **Create a Shared Folder:**
-   1. Open the Synology Control Panel and navigate to `Shared Folders`.
-   2. Create a shared folder for the Kubernetes cluster.
-   3. Go to the folder settings and select `NFS Permissions`.
-   4. Add the IP addresses of all Kubernetes nodes. Select `Squash` as `No`.
+  1. Open the Synology Control Panel and navigate to `Shared Folders`.
+  2. Create a shared folder for the Kubernetes cluster.
+  3. Go to the folder settings and select `NFS Permissions`.
+  4. Add the IP addresses of all Kubernetes nodes. Select `Squash` as `No`.

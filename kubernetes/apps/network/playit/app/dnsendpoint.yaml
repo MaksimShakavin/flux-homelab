@@ -6,7 +6,7 @@ metadata:
   name: playit
 spec:
   endpoints:
-    - dnsName: "play.${SECRET_DOMAIN}"
+    - dnsName: "play.exelent.click"
       recordType: A
       targets: [ '209.25.141.16' ]
       # https://github.com/kubernetes-sigs/external-dns/issues/2418#issuecomment-987587518

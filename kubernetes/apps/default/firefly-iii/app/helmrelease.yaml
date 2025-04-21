@@ -6,7 +6,7 @@ metadata:
   name: &app firefly
   namespace: default
 spec:
-  interval: 30m
+  interval: 1h
   chart:
     spec:
       chart: app-template
@@ -52,7 +52,7 @@ spec:
               APP_DEBUG: false
               DEFAULT_LANGUAGE: ru_RU
               DB_CONNECTION: pgsql
-              TZ: "${TIMEZONE}"
+              TZ: "Europe/Warsaw"
               LOG_CHANNEL: stdout
               CACHE_DRIVER: redis
               SESSION_DRIVER: redis

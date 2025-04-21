@@ -5,22 +5,16 @@ kind: HelmRelease
 metadata:
   name: &app valheim
 spec:
-  interval: 30m
-  chart:
-    spec:
-      chart: app-template
-      version: 3.7.3
-      sourceRef:
-        kind: HelmRepository
-        name: bjw-s
-        namespace: flux-system
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
   install:
     remediation:
-      retries: 3
+      retries: -1
   upgrade:
     cleanupOnFail: true
     remediation:
-      strategy: rollback
       retries: 3
   dependsOn:
     - name: longhorn
@@ -49,7 +43,7 @@ spec:
               repository: ghcr.io/mbround18/valheim
               tag: 3.1.2
             env:
-              TZ: "${TIMEZONE}"
+              TZ: "Europe/Warsaw"
               NAME: "Shojkborg"
               WORLD: "Shokushkino"
               PUBLIC: "False"
@@ -139,14 +133,14 @@ spec:
             readOnly: false
       saves:
         type: nfs
-        server: "${NAS_URL}"
-        path: "${NAS_PATH}/valheim/saves"
+        server: "192.168.20.5"
+        path: "/volume1/kubernetes/valheim/saves"
         globalMounts:
           - path: /home/steam/.config/unity3d/IronGate/Valheim
       backup:
         type: nfs
-        server: "${NAS_URL}"
-        path: "${NAS_PATH}/valheim/backup"
+        server: "192.168.20.5"
+        path: "/volume1/kubernetes/valheim/backup"
         globalMounts:
           - path: /home/steam/backups
       # Workaround to overcome that k8s secrets are always readOnly. Mount secret to a emptyDir, then copy it with init

@@ -1,28 +1,34 @@
 ---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/ocirepository_v1beta2.json
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: authentik
+spec:
+  interval: 5m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: 2025.2.1
+  url: oci://ghcr.io/goauthentik/helm/authentik
+---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: authentik
 spec:
-  interval: 30m
-  chart:
-    spec:
-      chart: authentik
-      version: 2025.2.4
-      sourceRef:
-        kind: HelmRepository
-        name: authentik-charts
-        namespace: flux-system
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: authentik
   install:
     remediation:
-      # Retries is the number of retries that should be attempted on failures before bailing. Remediation, using an uninstall, is performed between each attempt.
-      retries: 3
+      retries: -1
   upgrade:
-    # CleanupOnFail allows deletion of new resources created during the Helm rollback action when it fails
     cleanupOnFail: true
     remediation:
-      strategy: rollback
       retries: 3
   values:
     global:
@@ -50,22 +56,25 @@ spec:
         enabled: true
         serviceMonitor:
           enabled: true
-      ingress:
-        enabled: true
-        ingressClassName: external
-        annotations:
-          gethomepage.dev/enabled: "true"
-          gethomepage.dev/icon: authentik.png
-          gethomepage.dev/name: Authentik
-          gethomepage.dev/group: Infrastructure
-          gethomepage.dev/app: authentik
-          gethomepage.dev/description: OIDC User Management
-          gethomepage.dev/widget.type: authentik
-          gethomepage.dev/widget.url: http://authentik-server.security
-          gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_AUTHENTIK_TOKEN}}"
-          external-dns.alpha.kubernetes.io/target: external.${SECRET_DOMAIN}
-        hosts:
-          - sso.${SECRET_DOMAIN}
+      route:
+        main:
+          enable: true
+          parentRefs:
+            - name: external
+              namespace: kube-system
+          hostnames:
+            - sso.exelent.click
+          https: true
+          annotations:
+            gethomepage.dev/enabled: "true"
+            gethomepage.dev/icon: authentik.png
+            gethomepage.dev/name: Authentik
+            gethomepage.dev/group: Infrastructure
+            gethomepage.dev/app: authentik
+            gethomepage.dev/description: OIDC User Management
+            gethomepage.dev/widget.type: authentik
+            gethomepage.dev/widget.url: http://authentik-server.security
+            gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_AUTHENTIK_TOKEN}}"
     worker:
       autoscaling:
         enabled: true

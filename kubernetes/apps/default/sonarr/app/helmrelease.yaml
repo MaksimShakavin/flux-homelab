@@ -6,7 +6,7 @@ metadata:
   name: &app sonarr
   namespace: default
 spec:
-  interval: 30m
+  interval: 1h
   chart:
     spec:
       chart: app-template
@@ -55,7 +55,7 @@ spec:
               repository: ghcr.io/onedr0p/sonarr-develop
               tag: 4.0.14.2938@sha256:75da01d2da78d226cd89352fbab919f2eb26ea9a8d6c592bf812dde5f8949243
             env:
-              TZ: "${TIMEZONE}"
+              TZ: "Europe/Warsaw"
               SONARR__AUTH__METHOD: External
               SONARR__AUTH__REQUIRED: DisabledForLocalAddresses
               SONARR__APP__INSTANCENAME: Sonarr
@@ -104,7 +104,7 @@ spec:
           - path: /config
       downloads:
         type: nfs
-        server: "${NAS_URL}"
-        path: "${NAS_PATH}"
+        server: "192.168.20.5"
+        path: "/volume1/kubernetes"
         globalMounts:
           - path: /data

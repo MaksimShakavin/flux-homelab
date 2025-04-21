@@ -6,7 +6,7 @@ locals {
   // if changing, don't forget to change it in other places. DRY is to hard
   mac_addresses = ["BC:24:11:B5:DD:1F", "BC:24:11:0C:FD:22", "BC:24:11:A8:19:33"]
   # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-  talos_version = "v1.7.5"
+  talos_version = "v1.9.5"
 }
 
 module "talos-controlplanes" {
