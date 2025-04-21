@@ -1,5 +1,4 @@
 ---
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/ocirepository_v1beta2.json
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
 metadata:
@@ -34,6 +33,15 @@ spec:
       retries: 3
   values:
     controller:
+      volumeSnapshotClasses:
+        - name: longhorn-snapclass
+          annotations:
+            snapshot.storage.kubernetes.io/is-default-class: "true"
+          driver: driver.longhorn.io
+          deletionPolicy: Delete
+          # Ref: https://github.com/longhorn/longhorn/issues/2534#issuecomment-1010508714
+          parameters:
+            type: snap
       replicaCount: 2
       serviceMonitor:
         create: true

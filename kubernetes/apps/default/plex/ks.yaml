@@ -6,22 +6,30 @@ metadata:
   name: &app plex
   namespace: &namespace default
 spec:
-  targetNamespace: *namespace
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  path: ./kubernetes/apps/default/plex/app
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  wait: false
+  components:
+    - ../../../../components/gatus/external
+    - ../../../../components/volsync
+  dependsOn:
+    - name: intel-device-plugin-gpu
+      namespace: kube-system
+    - name: longhorn
+      namespace: storage
   interval: 1h
-  retryInterval: 1m
-  timeout: 5m
+  path: ./kubernetes/apps/default/plex/app
   postBuild:
     substitute:
       APP: *app
       GATUS_PATH: /web/index.html
       VOLSYNC_CAPACITY: 10Gi
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  wait: false

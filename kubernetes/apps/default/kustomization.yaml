@@ -15,7 +15,7 @@ resources:
 #  - ./tautulli/ks.yaml
 #  - ./notifiarr/ks.yaml
 #  - ./overseerr/ks.yaml
-#  - ./homepage/ks.yaml
+  - ./homepage/ks.yaml
 #  - ./nodered/ks.yaml
 #  - ./paperless/ks.yaml
 #  - ./firefly-iii/ks.yaml
