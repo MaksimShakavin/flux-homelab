@@ -5,6 +5,7 @@ kind: Cluster
 metadata:
   name: postgres-cluster
 spec:
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.8-9
   instances: 3
   storage:
     size: 9Gi
