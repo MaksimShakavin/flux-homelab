@@ -33,7 +33,7 @@ spec:
       endpointURL: http://192.168.20.5:9000
       # Note: serverName version needs to be inclemented
       # when recovering from an existing cnpg cluster
-      serverName: &currentCluster postgres-v2
+      serverName: &currentCluster postgres-v3
       s3Credentials:
         accessKeyId:
           name: cloudnative-pg-secret
@@ -45,7 +45,7 @@ spec:
   # cluster when recovering from an existing cnpg cluster
   bootstrap:
     recovery:
-      source: &previousCluster postgres-v1
+      source: &previousCluster postgres-v2
   # Note: externalClusters is needed when recovering from an existing cnpg cluster
   externalClusters:
     - name: *previousCluster

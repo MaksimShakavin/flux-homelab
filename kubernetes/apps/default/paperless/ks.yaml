@@ -14,10 +14,11 @@ spec:
   prune: true
   dependsOn:
     - name: cloudnative-pg-cluster
-    - name: external-secrets-stores
+      namespace: database
   sourceRef:
     kind: GitRepository
     name: flux-system
+    namespace: flux-system
   wait: false
   interval: 1h
   retryInterval: 1m

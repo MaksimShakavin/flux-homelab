@@ -101,7 +101,7 @@ patches:
   - |-
     machine:
       kubelet:
-        extraArgs:
+        extraConfig:
           serializeImagePulls: false
         nodeIP:
           validSubnets:
@@ -114,6 +114,13 @@ patches:
         nameservers:
           - "1.1.1.1"
           - "1.0.0.1"
+
+  - |-
+    machine:
+      features:
+        hostDNS:
+          resolveMemberNames: true
+          forwardKubeDNSToHost: false
 
   # Custom sysctl settings
   - |-

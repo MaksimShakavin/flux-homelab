@@ -6,23 +6,24 @@ metadata:
   name: &app grafana
   namespace: &namespace observability
 spec:
-  targetNamespace: *namespace
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   components:
-    - ../../../../components/gatus/guarded
+    - ../../../../components/gatus/internal
   dependsOn:
-    - name: external-secrets-stores
     - name: cloudnative-pg-cluster
+      namespace: database
+  interval: 1h
   path: ./kubernetes/apps/observability/grafana/app
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
   wait: false
-  interval: 1h
-  retryInterval: 1m
   timeout: 5m
   postBuild:
     substitute:

@@ -9,7 +9,12 @@
   outputs = { nixpkgs, talhelper, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = import nixpkgs {
+          inherit system;
+          config = {
+            allowUnfree = true;
+          };
+        };
       in
       {
         devShells.default = pkgs.mkShell {
@@ -24,6 +29,8 @@
             pkgs.stern
             pkgs.yq-go
             pkgs.envsubst
+            pkgs.minijinja
+            pkgs._1password-cli
             talhelper.packages.${system}.default
           ];
         };

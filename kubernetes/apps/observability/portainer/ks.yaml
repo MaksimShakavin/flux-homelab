@@ -10,7 +10,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   components:
-    - ../../../../components/gatus/guarded
+    - ../../../../components/gatus/internal
     - ../../../../components/volsync
   interval: 1h
   path: ./kubernetes/apps/observability/portainer/app
@@ -19,6 +19,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
+    namespace: flux-system
   wait: false
   targetNamespace: *namespace
   timeout: 5m

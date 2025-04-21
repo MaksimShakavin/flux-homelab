@@ -10,16 +10,17 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   components:
-    - ../../../../components/gatus/guarded
+    - ../../../../components/gatus/internal
     - ../../../../components/volsync
   interval: 1h
   path: ./kubernetes/apps/default/qbittorrent/app
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
+    namespace: flux-system
   wait: false
-  retryInterval: 1m
   targetNamespace: *namespace
   timeout: 5m
   postBuild:
@@ -40,12 +41,11 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/default/qbittorrent/tools
   prune: true
-  dependsOn:
-    - name: external-secrets-stores
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
+    namespace: flux-system
   wait: false
-  retryInterval: 1m
   targetNamespace: *namespace
   timeout: 5m
