@@ -5,22 +5,16 @@ kind: HelmRelease
 metadata:
   name: tautulli
 spec:
-  interval: 30m
-  chart:
-    spec:
-      chart: app-template
-      version: 3.7.3
-      sourceRef:
-        kind: HelmRepository
-        name: bjw-s
-        namespace: flux-system
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
   install:
     remediation:
-      retries: 3
+      retries: -1
   upgrade:
     cleanupOnFail: true
     remediation:
-      strategy: rollback
       retries: 3
   dependsOn:
     - name: longhorn
@@ -38,7 +32,7 @@ spec:
               repository: ghcr.io/tautulli/tautulli
               tag: v2.15.2@sha256:0003dd1f2c6d8cd1ce3013ff94f62b17530b3573439de6b52aefa3a10e724f9e
             env:
-              TZ: "${TIMEZONE}"
+              TZ: "Europe/Warsaw"
             command: ["/usr/local/bin/python", "Tautulli.py"]
             args: [
               "--config", "/config/config.ini",

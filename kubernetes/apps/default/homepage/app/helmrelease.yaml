@@ -5,12 +5,12 @@ kind: HelmRelease
 metadata:
   name: homepage
 spec:
-  interval: 30m
+  interval: 1h
   chart:
     spec:
       chart: app-template
       version: 3.7.3
-      interval: 30m
+      interval: 1h
       sourceRef:
         kind: HelmRepository
         name: bjw-s
@@ -35,7 +35,7 @@ spec:
               repository: ghcr.io/gethomepage/homepage
               tag: v0.10.9
             env:
-              TZ: "${TIMEZONE}"
+              TZ: "Europe/Warsaw"
             envFrom:
               - secretRef:
                   name: homepage-secret

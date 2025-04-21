@@ -4,12 +4,14 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app authentik
-  namespace: flux-system
+  namespace: &namespace security
 spec:
-  targetNamespace: security
+  targetNamespace: *namespace
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/gatus/guarded
   path: ./kubernetes/apps/security/authentik/app
   prune: true
   dependsOn:
@@ -18,9 +20,9 @@ spec:
     - name: dragonfly
   sourceRef:
     kind: GitRepository
-    name: home-kubernetes
+    name: flux-system
   wait: false
-  interval: 30m
+  interval: 1h
   retryInterval: 1m
   timeout: 5m
   # add if you have volsync and\or gatus

@@ -5,7 +5,7 @@ metadata:
   name: synology-external-service
 spec:
   type: ExternalName
-  externalName: "${NAS_URL}"
+  externalName: "192.168.20.5"
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -18,7 +18,7 @@ metadata:
     gethomepage.dev/group: Storage
     gethomepage.dev/description: Synology nas disk station
     gethomepage.dev/widget.type: diskstation
-    gethomepage.dev/widget.url: "http://${NAS_URL}:5000"
+    gethomepage.dev/widget.url: "http://192.168.20.5:5000"
     gethomepage.dev/widget.username: "{{HOMEPAGE_VAR_SYNOLOGY_USERNAME}}"
     gethomepage.dev/widget.password: "{{HOMEPAGE_VAR_SYNOLOGY_PASSWORD}}"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
