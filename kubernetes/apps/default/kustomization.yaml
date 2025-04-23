@@ -18,6 +18,7 @@ resources:
   - ./plex/ks.yaml
   - ./tautulli/ks.yaml
   - ./notifiarr/ks.yaml
+  - ./calcom/ks.yaml
 #  - ./nodered/ks.yaml
 #  - ./firefly-iii/ks.yaml
 #  - ./audiobookshelf/ks.yaml
