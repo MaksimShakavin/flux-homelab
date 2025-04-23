@@ -29,8 +29,11 @@ data:
   docker.yaml: ""
   kubernetes.yaml: |
     mode: cluster
+    gateway: true
+    ingress: false
+    traefik: false
   services.yaml: |
-    - Network:
+    - Observability:
         - Cloudflared:
             href: https://dash.cloudflare.com
             icon: cloudflare-zero-trust.png
@@ -49,10 +52,6 @@ data:
       Home:
         style: column
         icon: mdi-home-analytics
-      Network:
-        style: row
-        columns: 3
-        icon: mdi-server
       Observability:
         style: column
         icon: mdi-chart-line
