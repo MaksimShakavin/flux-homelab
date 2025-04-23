@@ -71,23 +71,24 @@ spec:
         ports:
           http:
             port: *port
-    ingress:
+    route:
       app:
+        hostnames:
+          - "{{ .Release.Name }}.exelent.click"
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/icon: mdi-harddisk
           gethomepage.dev/name: Webtlo
           gethomepage.dev/group: Media
           gethomepage.dev/description: Guardian torrent management
-          external-dns.alpha.kubernetes.io/target: "internal.${SECRET_DOMAIN}"
-        className: internal
-        hosts:
-          - host: "webtlo.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
     persistence:
       data:
         existingClaim: *app

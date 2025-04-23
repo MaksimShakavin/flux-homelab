@@ -6,20 +6,20 @@ namespace: default
 components:
   - ../../components/common
 resources:
-  - ./qbittorrent/ks.yaml
-#  - ./webtlo/ks.yaml
-#  - ./radarr/ks.yaml
-#  - ./sonarr/ks.yaml
-#  - ./prowlarr/ks.yaml
-#  - ./plex/ks.yaml
-#  - ./tautulli/ks.yaml
-#  - ./notifiarr/ks.yaml
-#  - ./overseerr/ks.yaml
   - ./homepage/ks.yaml
+  - ./qbittorrent/ks.yaml
+  - ./webtlo/ks.yaml
+  - ./prowlarr/ks.yaml
+  - ./radarr/ks.yaml
+  - ./sonarr/ks.yaml
+  - ./overseerr/ks.yaml
+  - ./mealie/ks.yaml
+  - ./paperless/ks.yaml
+  - ./plex/ks.yaml
+  - ./tautulli/ks.yaml
+  - ./notifiarr/ks.yaml
 #  - ./nodered/ks.yaml
-#  - ./paperless/ks.yaml
 #  - ./firefly-iii/ks.yaml
 #  - ./audiobookshelf/ks.yaml
-#  - ./mealie/ks.yaml
 #  - ./satisfactory/ks.yaml
 #  - ./valheim/ks.yaml
