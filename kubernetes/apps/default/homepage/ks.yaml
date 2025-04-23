@@ -9,6 +9,8 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/gatus/internal
   interval: 1h
   path: ./kubernetes/apps/default/homepage/app
   prune: true
@@ -17,8 +19,8 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  wait: false
   targetNamespace: *namespace
+  wait: false
   timeout: 5m
   postBuild:
     substitute:
