@@ -13,3 +13,4 @@ resources:
   - ./loki/ks.yaml
   - ./unpoller/ks.yaml
   - ./kromgo/ks.yaml
+  - ./promtail/ks.yaml
