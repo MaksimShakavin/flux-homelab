@@ -6,6 +6,18 @@ metadata:
   name: &app APP_NAME
 spec:
   interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      # Retries is the number of retries that should be attempted on failures before bailing. Remediation, using an uninstall, is performed between each attempt.
+      retries: -1
+  upgrade:
+    # CleanupOnFail allows deletion of new resources created during the Helm rollback action when it fails
+    cleanupOnFail: true
+    remediation:
+      retries: 3
   chart:
     spec:
       chart: app-template
@@ -14,16 +26,6 @@ spec:
         kind: HelmRepository
         name: bjw-s
         namespace: flux-system
-  install:
-    remediation:
-      # Retries is the number of retries that should be attempted on failures before bailing. Remediation, using an uninstall, is performed between each attempt.
-      retries: 3
-  upgrade:
-    # CleanupOnFail allows deletion of new resources created during the Helm rollback action when it fails
-    cleanupOnFail: true
-    remediation:
-      strategy: rollback
-      retries: 3
   # Generally storage dependencies goes here
   dependsOn:
     - name: longhorn
@@ -79,36 +81,32 @@ spec:
         seccompProfile: { type: RuntimeDefault }
     service:
       app:
-        controller: APP_NAME
-        type: LoadBalancer
+        controller: *app
         # Add if it needs to have local network ip
         annotations:
-          io.cilium/lb-ipam-ips: "${CLUSTER_LB_VALHEIM}"
+          lbipam.cilium.io/ips: 192.168.20.65, ::ffff:192.168.20.65
         ports:
           http:
             port: *port
-    ingress:
+    route:
       app:
-        annotations:
-          # or internal
-          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
-        # or internal
-        className: external
-        hosts:
-          - host: "APP_NAME.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
+        hostnames: [ "{{ .Release.Name }}.exelent.click" ]
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port
     persistence:
       server:
         existingClaim: *app
         globalMounts:
-          - path: /home/steam/valheim
+          - path: /path/to/the/data
       saves:
         type: nfs
         server: "192.168.20.5"
         path: "/volume1/kubernetes/path"
         globalMounts:
-          - path: /home/steam/.config/unity3d/IronGate/Valheim
+          - path: /to/the/nfs/data

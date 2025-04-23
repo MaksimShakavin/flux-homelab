@@ -24,6 +24,7 @@
 - siderolabs/iscsi-tools -- for Longhorn
 - siderolabs/util-linux-tools -- for Longhorn
 - siderolabs/qemu-guest-agent -- for managing VMs from the Proxmox UI
+- siderolsbs/i915 -- for GPU support
 
 2. Go to `/infrastructure/terraform/talos.tf` and update the ISO URL if needed.
 3. Check the Terraform changes with `terraform plan`.
@@ -36,7 +37,7 @@
 
 1. Deploy the Talos cluster to machines:
    ```sh
-   task talos:bootstrap
+   task bootstrap:talos
    ```
    It might take a while for the cluster to be set up (10+ minutes is normal), during which time you will see various
    error messages like: “couldn’t get current server API group list,” “error: no matching resources found,” etc. This is
@@ -58,38 +59,7 @@
     # k8s-control-3   Ready    control-plane   4d21h   v1.30.1   192.168.20.53   <none>        Talos (v1.7.2)   6.6.30-talos     containerd://1.7.16
     ```
 
-3. Continue with installing flux
-
-## Install Flux
-
-1. Verify Flux can be installed
-
+3. Continue with installing apps
     ```sh
-    flux check --pre
-    # ► checking prerequisites
-    # ✔ kubectl 1.30.1 >=1.18.0-0
-    # ✔ Kubernetes 1.30.1 >=1.16.0-0
-    # ✔ prerequisites checks passed
-    ```
-
-2. Install Flux and sync the cluster to the Git repository
-
-   📍 _Run `task flux:github-deploy-key` first if using a private repository._
-
-    ```sh
-    task flux:bootstrap
-    # namespace/flux-system configured
-    # customresourcedefinition.apiextensions.k8s.io/alerts.notification.toolkit.fluxcd.io created
-    # ...
-    ```
-
-3. Verify Flux components are running in the cluster
-
-    ```sh
-    kubectl -n flux-system get pods -o wide
-    # NAME                                       READY   STATUS    RESTARTS   AGE
-    # helm-controller-5bbd94c75-89sb4            1/1     Running   0          1h
-    # kustomize-controller-7b67b6b77d-nqc67      1/1     Running   0          1h
-    # notification-controller-7c46575844-k4bvr   1/1     Running   0          1h
-    # source-controller-7d6875bcb4-zqw9f         1/1     Running   0          1h
-    ```
+   task bootstrap:apps
+   ```
