@@ -7,6 +7,7 @@ locals {
   mac_addresses = ["BC:24:11:B5:DD:1F", "BC:24:11:0C:FD:22", "BC:24:11:A8:19:33"]
   # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
   talos_version = "v1.9.5"
+  talos_image_id = "583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e"
 }
 
 module "talos-controlplanes" {
@@ -16,7 +17,7 @@ module "talos-controlplanes" {
   machine_name    = "k8s-control-${count.index + 1}"
   vmid            = sum([100, count.index])
   target_node     = "proxmox${count.index + 1}"
-  iso_path        = "https://factory.talos.dev/image/88d1f7a5c4f1d3aba7df787c448c1d3d008ed29cfb34af53fa0df4336a56040b/${local.talos_version}/nocloud-amd64.iso"
+  iso_path        = "https://factory.talos.dev/image/${local.talos_image_id}/${local.talos_version}/nocloud-amd64.iso"
   cpu_cores       = 4
   memory          = 29 * 1024
   vlan_id         = data.unifi_network.Servers.vlan_id

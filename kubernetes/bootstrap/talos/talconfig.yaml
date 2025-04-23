@@ -24,7 +24,7 @@ nodes:
   - hostname: "k8s-control-1"
     ipAddress: "192.168.20.51"
     installDisk: /dev/sda
-    talosImageURL: factory.talos.dev/installer/88d1f7a5c4f1d3aba7df787c448c1d3d008ed29cfb34af53fa0df4336a56040b
+    talosImageURL: factory.talos.dev/installer/583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e
     controlPlane: true
     nodeLabels:
       "intel.feature.node.kubernetes.io/gpu": "true"
@@ -46,7 +46,7 @@ nodes:
   - hostname: "k8s-control-2"
     ipAddress: "192.168.20.52"
     installDisk: /dev/sda
-    talosImageURL: factory.talos.dev/installer/88d1f7a5c4f1d3aba7df787c448c1d3d008ed29cfb34af53fa0df4336a56040b
+    talosImageURL: factory.talos.dev/installer/583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e
     controlPlane: true
     nodeLabels:
       "intel.feature.node.kubernetes.io/gpu": "true"
@@ -68,7 +68,7 @@ nodes:
   - hostname: "k8s-control-3"
     ipAddress: "192.168.20.53"
     installDisk: /dev/sda
-    talosImageURL: factory.talos.dev/installer/88d1f7a5c4f1d3aba7df787c448c1d3d008ed29cfb34af53fa0df4336a56040b
+    talosImageURL: factory.talos.dev/installer/583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e
     controlPlane: true
     nodeLabels:
       "intel.feature.node.kubernetes.io/gpu": "true"

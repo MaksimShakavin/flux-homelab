@@ -28,7 +28,7 @@ talosctl --talosconfig=./kubernetes/bootstrap/talos/clusterconfig/talosconfig --
    ```
 2. Delete the node from Kubernetes
    ```shell
-   Add the disk as hardware to the VM. Don’t forget to disable backup.
+   kubectl delete node <nodename>
    ```
 3. Delete the node from the Proxmox cluster. SSH to an existing node and run:
    ```sh
@@ -69,4 +69,17 @@ Delete information about rest nodes in /etc/pve/nodes
    ...
    -----END RSA PRIVATE KEY-----
    ```
+
+### Update talos image on a node
+
+1. Generate talosctl command
+    ```shell
+    talhelper gencommand upgrade --node 192.168.20.52 --extra-flags "--timeout=10m"
+    ```
+2. Copy-paste and execute result command
+    ```shell
+    talosctl upgrade --talosconfig=./clusterconfig/talosconfig --nodes=192.168.20.52 --image=factory.talos.dev/installer/583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e:v1.9.5 --timeout=10m;
+
+    ```
+
 
