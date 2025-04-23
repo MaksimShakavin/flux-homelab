@@ -25,9 +25,10 @@ spec:
           app:
             image:
               repository: ghcr.io/gethomepage/homepage
-              tag: v0.10.9
+              tag: v1.1.1
             env:
               TZ: "Europe/Warsaw"
+              HOMEPAGE_ALLOWED_HOSTS: "home.exelent.click,home.default,home.default.swc,home.default.swc.cluster,home.default.swc.cluster.local"
             envFrom:
               - secretRef:
                   name: homepage-secret
@@ -40,7 +41,6 @@ spec:
     route:
       app:
         hostnames:
-          - "{{ .Release.Name }}.exelent.click"
           - home.exelent.click
         parentRefs:
           - name: internal
@@ -69,3 +69,4 @@ spec:
             path: /app/config/widgets.yaml
     serviceAccount:
       create: true
+      name: *app

@@ -84,7 +84,7 @@ spec:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/icon: paperless-ngx.png
           gethomepage.dev/name: Paperless
-          gethomepage.dev/group: Storage
+          gethomepage.dev/group: Documents
           gethomepage.dev/description: Document management
           gethomepage.dev/widget.type: paperlessngx
           gethomepage.dev/widget.url: http://paperless.default.svc.cluster.local:8000

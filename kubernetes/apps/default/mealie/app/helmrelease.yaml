@@ -85,8 +85,9 @@ spec:
           gethomepage.dev/name: Mealie
           gethomepage.dev/icon: mealie.svg
           gethomepage.dev/widget.type: mealie
-          gethomepage.dev/widget.url: http://mealie.default:8080
+          gethomepage.dev/widget.url: http://mealie.default:9000
           gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_MEALIE_TOKEN}}`}}"
+          gethomepage.dev/widget.version: "2"
     persistence:
       data:
         existingClaim: *app
