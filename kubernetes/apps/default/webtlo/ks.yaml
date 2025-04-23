@@ -6,21 +6,23 @@ metadata:
   name: &app webtlo
   namespace: &namespace default
 spec:
-  targetNamespace: *namespace
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/gatus/internal
+    - ../../../../components/volsync
+  interval: 1h
   path: ./kubernetes/apps/default/webtlo/app
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  wait: false
-  interval: 1h
-  retryInterval: 1m
+  targetNamespace: *namespace
   timeout: 5m
-  # add if you have volsync and\or gatus
+  wait: false
   postBuild:
     substitute:
       APP: *app

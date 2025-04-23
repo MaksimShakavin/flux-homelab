@@ -6,22 +6,16 @@ metadata:
   name: &app overseerr
 spec:
   interval: 1h
-  chart:
-    spec:
-      chart: app-template
-      version: 3.7.3
-      sourceRef:
-        kind: HelmRepository
-        name: bjw-s
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: app-template
   install:
     remediation:
-      retries: 3
+      retries: -1
   upgrade:
     cleanupOnFail: true
     remediation:
       retries: 3
-      strategy: uninstall
   dependsOn:
     - name: longhorn
       namespace: storage
@@ -78,9 +72,18 @@ spec:
         ports:
           http:
             port: *port
-    ingress:
+    route:
       app:
-        className: external
+        hostnames:
+          - "{{ .Release.Name }}.exelent.click"
+        parentRefs:
+          - name: external
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/group: Media
@@ -90,14 +93,6 @@ spec:
           gethomepage.dev/widget.type: overseerr
           gethomepage.dev/widget.url: http://overseerr.default.svc.cluster.local
           gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_OVERSEERR_TOKEN}}` }}"
-          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
-        hosts:
-          - host: "overseerr.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
     persistence:
       config:
         existingClaim: *app

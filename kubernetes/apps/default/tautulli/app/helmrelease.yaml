@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: tautulli
+  name: &app tautulli
 spec:
   interval: 1h
   chartRef:
@@ -70,14 +70,23 @@ spec:
         seccompProfile: { type: RuntimeDefault }
     service:
       app:
-        controller: tautulli
+        controller: *app
         ports:
           http:
             port: *port
-    ingress:
+    route:
       app:
+        hostnames:
+          - "{{ .Release.Name }}.exelent.click"
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port
         annotations:
-          external-dns.alpha.kubernetes.io/target: "internal.${SECRET_DOMAIN}"
           gethomepage.dev/enabled: "true"
           gethomepage.dev/group: Media
           gethomepage.dev/name: Tautulli
@@ -86,14 +95,6 @@ spec:
           gethomepage.dev/widget.type: tautulli
           gethomepage.dev/widget.url: http://tautulli.default.svc.cluster.local
           gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_TAUTULLI_API_KEY}}` }}"
-        className: internal
-        hosts:
-          - host: "{{ .Release.Name }}.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
     persistence:
       config:
         existingClaim: tautulli

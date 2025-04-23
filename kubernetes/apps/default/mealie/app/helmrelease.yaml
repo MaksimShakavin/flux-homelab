@@ -63,14 +63,23 @@ spec:
         seccompProfile: { type: RuntimeDefault }
     service:
       app:
-        controller: mealie
+        controller: *app
         ports:
           http:
-            port: 9000
-    ingress:
+            port: &port 9000
+    route:
       app:
+        hostnames:
+          - "{{ .Release.Name }}.exelent.click"
+        parentRefs:
+          - name: external
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port
         annotations:
-          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
           gethomepage.dev/enabled: "true"
           gethomepage.dev/group: Documents
           gethomepage.dev/name: Mealie
@@ -78,14 +87,6 @@ spec:
           gethomepage.dev/widget.type: mealie
           gethomepage.dev/widget.url: http://mealie.default:8080
           gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_MEALIE_TOKEN}}`}}"
-        className: external
-        hosts:
-          - host: "mealie.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
     persistence:
       data:
         existingClaim: *app
@@ -95,3 +96,9 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /tmp
+      # TODO remove when fix is deployed https://github.com/mealie-recipes/mealie/issues/5242
+      nltk:
+        type: emptyDir
+        globalMounts:
+          - path: /nltk_data
+

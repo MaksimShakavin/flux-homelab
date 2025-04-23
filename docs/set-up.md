@@ -58,15 +58,7 @@
     # k8s-control-3   Ready    control-plane   4d21h   v1.30.1   192.168.20.53   <none>        Talos (v1.7.2)   6.6.30-talos     containerd://1.7.16
     ```
 
-3. Add longhorn annotations to each node
-
-   ```shell
-   kubectl annotate node k8s-control-1 node.longhorn.io/default-disks-config='[{"name": "nvme","path":"/var/lib/longhorn","tags":["nvme"]},{"name": "ssd","path":"/var/mnt/ssd/longhorn","allowScheduling":true,"tags":["ssd"]}]'
-   kubectl annotate node k8s-control-2 node.longhorn.io/default-disks-config='[{"name": "nvme","path":"/var/lib/longhorn","tags":["nvme"]},{"name": "ssd","path":"/var/mnt/ssd/longhorn","allowScheduling":true,"tags":["ssd"]}]'
-   kubectl annotate node k8s-control-3 node.longhorn.io/default-disks-config='[{"name": "nvme","path":"/var/lib/longhorn","tags":["nvme"]},{"name": "ssd","path":"/var/mnt/ssd/longhorn","allowScheduling":true,"tags":["ssd"]}]'
-   ```
-
-4. Continue with installing flux
+3. Continue with installing flux
 
 ## Install Flux
 

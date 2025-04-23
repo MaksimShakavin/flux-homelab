@@ -27,7 +27,10 @@ nodes:
     talosImageURL: factory.talos.dev/installer/88d1f7a5c4f1d3aba7df787c448c1d3d008ed29cfb34af53fa0df4336a56040b
     controlPlane: true
     nodeLabels:
+      "intel.feature.node.kubernetes.io/gpu": "true"
       "node.longhorn.io/create-default-disk": "config"
+    nodeAnnotations:
+      node.longhorn.io/default-disks-config: '[{"name": "nvme","path":"/var/lib/longhorn","tags":["nvme"]},{"name": "ssd","path":"/var/mnt/ssd/longhorn","allowScheduling":true,"tags":["ssd"]}]'
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "bc:24:11:b5:dd:1f"
@@ -46,7 +49,10 @@ nodes:
     talosImageURL: factory.talos.dev/installer/88d1f7a5c4f1d3aba7df787c448c1d3d008ed29cfb34af53fa0df4336a56040b
     controlPlane: true
     nodeLabels:
+      "intel.feature.node.kubernetes.io/gpu": "true"
       "node.longhorn.io/create-default-disk": "config"
+    nodeAnnotations:
+      node.longhorn.io/default-disks-config: '[{"name": "nvme","path":"/var/lib/longhorn","tags":["nvme"]},{"name": "ssd","path":"/var/mnt/ssd/longhorn","allowScheduling":true,"tags":["ssd"]}]'
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "bc:24:11:0c:fd:22"
@@ -65,7 +71,10 @@ nodes:
     talosImageURL: factory.talos.dev/installer/88d1f7a5c4f1d3aba7df787c448c1d3d008ed29cfb34af53fa0df4336a56040b
     controlPlane: true
     nodeLabels:
+      "intel.feature.node.kubernetes.io/gpu": "true"
       "node.longhorn.io/create-default-disk": "config"
+    nodeAnnotations:
+      node.longhorn.io/default-disks-config: '[{"name": "nvme","path":"/var/lib/longhorn","tags":["nvme"]},{"name": "ssd","path":"/var/mnt/ssd/longhorn","allowScheduling":true,"tags":["ssd"]}]'
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "bc:24:11:a8:19:33"

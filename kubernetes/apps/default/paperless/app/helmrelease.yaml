@@ -41,7 +41,7 @@ spec:
               tag: 2.15.2@sha256:80d1a7fe4f638cb00c1dcf5ff4ce2c15d92f13a6287db1e1b94f58c35a689e47
             env:
               PAPERLESS_TIME_ZONE: "Europe/Warsaw"
-              PAPERLESS_URL: "https://paperless.${SECRET_DOMAIN}"
+              PAPERLESS_URL: "https://paperless.exelent.click"
               PAPERLESS_PORT: &port 8000
               PAPERLESS_REDIS: redis://dragonfly.database.svc.cluster.local:6379
               PAPERLESS_TIKA_ENABLED: true
@@ -68,9 +68,18 @@ spec:
         ports:
           http:
             port: *port
-    ingress:
+    route:
       app:
-        className: external
+        hostnames:
+          - "{{ .Release.Name }}.exelent.click"
+        parentRefs:
+          - name: external
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/icon: paperless-ngx.png
@@ -80,14 +89,6 @@ spec:
           gethomepage.dev/widget.type: paperlessngx
           gethomepage.dev/widget.url: http://paperless.default.svc.cluster.local:8000
           gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_PAPERLESS_TOKEN}}` }}"
-          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
-        hosts:
-          - host: "paperless.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
     persistence:
       data:
         existingClaim: *app
