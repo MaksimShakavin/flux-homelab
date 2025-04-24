@@ -68,9 +68,6 @@ The 1Password vault should contain the following items:
 |                           | MINO_LOKI_BUCKET                                |                                                           |
 |                           | MINO_LOKI_SECRET_KEY                            |                                                           |
 |                           | MINO_LOKI_ACCESS_KEY                            |                                                           |
-|                           | MINO_THANOS_BUCKET                              |                                                           |
-|                           | MINO_THANOS_SECRET_KEY                          |                                                           |
-|                           | MINO_THANOS_ACCESS_KEY                          |                                                           |
 |                           | VOLSYNC_RESTIC_PASSWORD                         | rectic repo encryption key                                |
 | cloudnative-pg            | POSTGRESS_SUPER_USER                            |                                                           |
 |                           | POSTGRESS_SUPER_PASS                            |                                                           |
@@ -152,6 +149,16 @@ The 1Password vault should contain the following items:
   2. Create a shared folder for the Kubernetes cluster.
   3. Go to the folder settings and select `NFS Permissions`.
   4. Add the IP addresses of all Kubernetes nodes. Select `Squash` as `No`.
+
+#### Configure Reverse proxy
+
+1. Go to Config Panel -> Login Portal -> Advanced -> Reverse proxy and add:
+   - proxmox.exelent.click -> https 192.168.0.41:8006 with WebSocket custom header
+   - sprut.exelent.click -> http 192.168.20.3:7777 with WebSocket custom header
+   - minio.exelent.click -> http localhost:9090
+2. Go to Config Panel -> Login Portal and add Domain nas.exelent.click
+3. Click on Certificates and upload tls.key and tls.crt from Onepassword
+4. Click Settings and apply the certificate to added domains
 
 ### 7. Set up healthchecks.io
 

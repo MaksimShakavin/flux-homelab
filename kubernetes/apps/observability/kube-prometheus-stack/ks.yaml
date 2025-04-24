@@ -24,7 +24,5 @@ spec:
   wait: false
   postBuild:
     substitute:
-      # renovate: datasource=docker depName=quay.io/thanos/thanos
-      THANOS_VERSION: v0.37.2
       APP: *app
       GATUS_SUBDOMAIN: prometheus
