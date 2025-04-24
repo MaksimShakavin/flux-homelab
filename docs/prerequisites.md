@@ -65,9 +65,6 @@ The 1Password vault should contain the following items:
 |---------------------------|-------------------------------------------------|-----------------------------------------------------------|
 | mino                      | MINIO_ROOT_USER                                 |                                                           |
 |                           | MINO_ROOT_PASSWORD                              |                                                           |
-|                           | MINO_LOKI_BUCKET                                |                                                           |
-|                           | MINO_LOKI_SECRET_KEY                            |                                                           |
-|                           | MINO_LOKI_ACCESS_KEY                            |                                                           |
 |                           | VOLSYNC_RESTIC_PASSWORD                         | rectic repo encryption key                                |
 | cloudnative-pg            | POSTGRESS_SUPER_USER                            |                                                           |
 |                           | POSTGRESS_SUPER_PASS                            |                                                           |
