@@ -111,10 +111,16 @@ The 1Password vault should contain the following items:
 
 ### 3. Set up UDM
 
-1. Set up the unifipoller user (TODO docs).
-3. Set up BGP network .
+1. Set up the api token and add it to 1Password `unifi/UNIFI_API_KEY`
+2. Set up BGP network .
   - Go to Settings -> Routing -> BGP
   - Create k8s entry with [config file content](../kubernetes/apps/kube-system/cilium)
+3. Add custom DNS names:
+   - `nas.exelent.click to the Nas IP
+   - CNAME `proxmox.exelent.click` to `nas.exelent.click`
+   - CNAME `minio.exelent.click` to `nas.exelent.click`
+   - CNAME `sprut.exelent.click` to `nas.exelent.click`
+   - CNAME `unifi.exelent.click` to `nas.exelent.click`
 
 ### 4. Get discord token
 
@@ -123,12 +129,7 @@ The 1Password vault should contain the following items:
 - Webhook for Prometheus alerts. Save it to the `ALERTMANAGER_DISCORD_WEBHOOK` item in 1Password.
 - Webhook for Gatus alerts. Save it to the `GATUS_DISCORD_WEBHOOK` item in 1Password.
 
-### 5. Set up pihole and generate token for Homepage
-
-1. Set up Pi-hole on a separate Raspberry Pi.
-2. Generate a token for the Homepage widget in Pi-hole and save it to the `HOMEPAGE_PI_HOLE_TOKEN` item in 1Password.
-
-### 6. NAS set up
+### 5. NAS set up
 
 #### Install and Configure Minio on NAS
 
@@ -150,14 +151,15 @@ The 1Password vault should contain the following items:
 #### Configure Reverse proxy
 
 1. Go to Config Panel -> Login Portal -> Advanced -> Reverse proxy and add:
-   - proxmox.exelent.click -> https 192.168.0.41:8006 with WebSocket custom header
-   - sprut.exelent.click -> http 192.168.20.3:7777 with WebSocket custom header
-   - minio.exelent.click -> http localhost:9090
-2. Go to Config Panel -> Login Portal and add Domain nas.exelent.click
+   - `proxmox.exelent.click` -> `https 192.168.0.41:8006` with WebSocket
+   - `sprut.exelent.click` -> `http 192.168.20.3:7777` with WebSocket
+   - `minio.exelent.click` -> `http localhost:9090`
+   - `unifi.exelent.click` -> `https 192.168.0.1:9090` with WebSocket
+2. Go to Config Panel -> Login Portal and add Domain `nas.exelent.click`
 3. Click on Certificates and upload tls.key and tls.crt from Onepassword
 4. Click Settings and apply the certificate to added domains
 
-### 7. Set up healthchecks.io
+### 6. Set up healthchecks.io
 
 1. Go to [healthchecks.io](https://healthchecks.io), set up account and create healthcheck
 2. Copy healthcheck url to 1Password healthchecks object to `ALERTMANAGER_HEARTBEAT_WEBHOOK`
