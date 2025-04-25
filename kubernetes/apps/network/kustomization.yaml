@@ -11,5 +11,4 @@ resources:
   - ./echo/ks.yaml
   - ./unifi-dns/ks.yaml
   - ./k8s-gateway/ks.yaml
-#  - ./external-services/ks.yaml TODO redeploy
   - ./playit/ks.yaml
