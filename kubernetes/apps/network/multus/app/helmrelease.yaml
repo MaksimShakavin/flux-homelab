@@ -1,0 +1,57 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app multus
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      multus:
+        type: daemonset
+        initContainers:
+          cni-plugins:
+            image:
+              repository: ghcr.io/home-operations/cni-plugins
+              tag: 1.7.1@sha256:a2b59b11a9cd50b5e699d7162a899a81c9b30a9386378b1deb01c054eedb38fe
+        containers:
+          multus:
+            image:
+              repository: ghcr.io/k8snetworkplumbingwg/multus-cni
+              tag: latest@sha256:d950f0ce4b1973c1515c36e15aae3880f92b9f729be4af6e88b338fde43ba222
+            args:
+              - --cleanup-config-on-exit
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 32Mi
+            securityContext:
+              privileged: true
+      defaultPodOptions:
+        hostNetwork: true
+      persistence:
+        etc-cni-net-d:
+          type: hostPath
+          hostPath: /etc/cni/net.d
+          globalMounts:
+            - path: /host/etc/cni/net.d
+        opt-cni-bin:
+          type: hostPath
+          hostPath: /opt/cni/bin
+          globalMounts:
+            - path: /host/opt/cni/bin
+      serviceAccount:
+        create: true
+        name: *app
