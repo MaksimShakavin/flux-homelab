@@ -3,7 +3,7 @@
 # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
 talosVersion: v1.9.5
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-kubernetesVersion: v1.33.0
+kubernetesVersion: v1.32.0
 
 clusterName: "home-kubernetes"
 endpoint: https://192.168.20.60:6443
@@ -37,6 +37,7 @@ nodes:
           mode: active-backup
           deviceSelectors:
             - hardwareAddr: bc:24:11:b5:dd:1f
+              driver: virtio_net
         dhcp: false
         addresses:
           - "192.168.20.51/24"
@@ -46,11 +47,6 @@ nodes:
         mtu: 1500
         vip:
           ip: "192.168.20.60"
-        vlans:
-          - &vlan20
-            vlanId: 20
-            mtu: 1500
-            dhcp: false
   - hostname: "k8s-control-2"
     ipAddress: "192.168.20.52"
     installDisk: /dev/sda
@@ -67,6 +63,7 @@ nodes:
           mode: active-backup
           deviceSelectors:
             - hardwareAddr: bc:24:11:0c:fd:22
+              driver: virtio_net
         dhcp: false
         addresses:
           - "192.168.20.52/24"
@@ -76,11 +73,6 @@ nodes:
         mtu: 1500
         vip:
           ip: "192.168.20.60"
-        vlans:
-          - &vlan20
-            vlanId: 20
-            mtu: 1500
-            dhcp: false
   - hostname: "k8s-control-3"
     ipAddress: "192.168.20.53"
     installDisk: /dev/sda
@@ -97,6 +89,7 @@ nodes:
           mode: active-backup
           deviceSelectors:
             - hardwareAddr: bc:24:11:a8:19:33
+              driver: virtio_net
         dhcp: false
         addresses:
           - "192.168.20.53/24"
@@ -106,11 +99,6 @@ nodes:
         mtu: 1500
         vip:
           ip: "192.168.20.60"
-        vlans:
-          - &vlan20
-            vlanId: 20
-            mtu: 1500
-            dhcp: false
 
 patches:
   # Configure containerd
