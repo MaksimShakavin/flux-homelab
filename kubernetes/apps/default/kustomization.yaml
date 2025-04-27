@@ -19,8 +19,6 @@ resources:
   - ./tautulli/ks.yaml
   - ./notifiarr/ks.yaml
   - ./calcom/ks.yaml
-#  - ./nodered/ks.yaml
-#  - ./firefly-iii/ks.yaml
 #  - ./audiobookshelf/ks.yaml
 #  - ./satisfactory/ks.yaml
 #  - ./valheim/ks.yaml
