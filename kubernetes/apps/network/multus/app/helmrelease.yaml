@@ -39,19 +39,19 @@ spec:
                 memory: 32Mi
             securityContext:
               privileged: true
-      defaultPodOptions:
-        hostNetwork: true
-      persistence:
-        etc-cni-net-d:
-          type: hostPath
-          hostPath: /etc/cni/net.d
-          globalMounts:
-            - path: /host/etc/cni/net.d
-        opt-cni-bin:
-          type: hostPath
-          hostPath: /opt/cni/bin
-          globalMounts:
-            - path: /host/opt/cni/bin
-      serviceAccount:
-        create: true
-        name: *app
+    defaultPodOptions:
+      hostNetwork: true
+    persistence:
+      etc-cni-net-d:
+        type: hostPath
+        hostPath: /etc/cni/net.d
+        globalMounts:
+          - path: /host/etc/cni/net.d
+      opt-cni-bin:
+        type: hostPath
+        hostPath: /opt/cni/bin
+        globalMounts:
+          - path: /host/opt/cni/bin
+    serviceAccount:
+      create: true
+      name: *app
