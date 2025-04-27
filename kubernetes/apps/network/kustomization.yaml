@@ -10,5 +10,4 @@ resources:
   - ./cloudflare-dns/ks.yaml
   - ./echo/ks.yaml
   - ./unifi-dns/ks.yaml
-  - ./k8s-gateway/ks.yaml
   - ./playit/ks.yaml

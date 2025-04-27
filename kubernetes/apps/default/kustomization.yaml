@@ -19,6 +19,7 @@ resources:
   - ./tautulli/ks.yaml
   - ./notifiarr/ks.yaml
   - ./calcom/ks.yaml
+  - ./go2rtc/ks.yaml
 #  - ./audiobookshelf/ks.yaml
 #  - ./satisfactory/ks.yaml
 #  - ./valheim/ks.yaml

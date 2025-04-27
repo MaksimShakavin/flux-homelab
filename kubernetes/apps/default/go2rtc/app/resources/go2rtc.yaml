@@ -1,0 +1,18 @@
+---
+api:
+  listen: :80
+rtsp:
+  listen: :554
+webrtc:
+  listen: :8555
+  candidates:
+    - 192.168.20.62:8555
+#    - stun:8555
+#  ice_servers:
+#    - urls:
+#       - stun:stun.cloudflare.com:3478
+streams:
+  kitchen:
+    - rtsps://192.168.0.1:7441/CVi13AhjeOaxEbUz
+homekit:
+  kitchen:
