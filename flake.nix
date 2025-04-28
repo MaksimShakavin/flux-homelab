@@ -31,6 +31,7 @@
             pkgs.envsubst
             pkgs.minijinja
             pkgs._1password-cli
+            pkgs.cilium-cli
             talhelper.packages.${system}.default
           ];
         };
