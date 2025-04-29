@@ -11,4 +11,4 @@ resources:
   - ./echo/ks.yaml
   - ./unifi-dns/ks.yaml
   - ./playit/ks.yaml
-  - ./multus/ks.yaml
+#  - ./multus/ks.yaml
