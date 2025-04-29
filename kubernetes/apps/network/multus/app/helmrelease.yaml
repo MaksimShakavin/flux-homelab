@@ -24,12 +24,14 @@ spec:
           cni-plugins:
             image:
               repository: ghcr.io/home-operations/cni-plugins
-              tag: 1.7.1@sha256:a2b59b11a9cd50b5e699d7162a899a81c9b30a9386378b1deb01c054eedb38fe
+              tag: 1.7.1
         containers:
           multus:
             image:
               repository: ghcr.io/k8snetworkplumbingwg/multus-cni
-              tag: latest@sha256:d950f0ce4b1973c1515c36e15aae3880f92b9f729be4af6e88b338fde43ba222
+              tag: v4.2.0
+            command:
+              - /thin_entrypoint
             args:
               - --cleanup-config-on-exit
             resources:

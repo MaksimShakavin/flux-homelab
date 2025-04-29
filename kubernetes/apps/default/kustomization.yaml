@@ -20,6 +20,7 @@ resources:
   - ./notifiarr/ks.yaml
   - ./calcom/ks.yaml
   - ./go2rtc/ks.yaml
+  - ./scrypted/ks.yaml
 #  - ./audiobookshelf/ks.yaml
 #  - ./satisfactory/ks.yaml
 #  - ./valheim/ks.yaml
