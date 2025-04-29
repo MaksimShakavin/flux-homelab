@@ -81,7 +81,7 @@ spec:
                 port: *port
         annotations:
           gethomepage.dev/enabled: "true"
-          gethomepage.dev/group: Documents
+          gethomepage.dev/group: "Home Apps"
           gethomepage.dev/name: Mealie
           gethomepage.dev/icon: mealie.svg
           gethomepage.dev/widget.type: mealie

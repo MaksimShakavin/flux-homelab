@@ -82,7 +82,7 @@ spec:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/icon: prowlarr.png
           gethomepage.dev/name: Prowlarr
-          gethomepage.dev/group: Media
+          gethomepage.dev/group: "Media & Downloading"
           gethomepage.dev/description: Torrent/NZB Indexer Management
           gethomepage.dev/widget.type: prowlarr
           gethomepage.dev/widget.url: http://prowlarr.default.svc.cluster.local:8080

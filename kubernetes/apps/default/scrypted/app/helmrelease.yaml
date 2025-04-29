@@ -83,6 +83,11 @@ spec:
           - backendRefs:
               - name: *app
                 port: *port
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/icon: scrypted.png
+          gethomepage.dev/name: Scrypted
+          gethomepage.dev/group: "Home Apps"
     persistence:
       config:
         existingClaim: *app

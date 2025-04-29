@@ -60,5 +60,5 @@ spec:
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/icon: notifiarr.png
-          gethomepage.dev/name: notifiarr
-          gethomepage.dev/group: Media
+          gethomepage.dev/name: Notifiarr
+          gethomepage.dev/group: "Monitoring & Observability"
