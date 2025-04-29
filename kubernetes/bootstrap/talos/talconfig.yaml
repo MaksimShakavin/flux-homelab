@@ -32,12 +32,8 @@ nodes:
     nodeAnnotations:
       node.longhorn.io/default-disks-config: '[{"name": "nvme","path":"/var/lib/longhorn","tags":["nvme"]},{"name": "ssd","path":"/var/mnt/ssd/longhorn","allowScheduling":true,"tags":["ssd"]}]'
     networkInterfaces:
-      - interface: bond0
-        bond:
-          mode: active-backup
-          deviceSelectors:
-            - hardwareAddr: bc:24:11:b5:dd:1f
-              driver: virtio_net
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:b5:dd:1f"
         dhcp: false
         addresses:
           - "192.168.20.51/24"
@@ -58,12 +54,8 @@ nodes:
     nodeAnnotations:
       node.longhorn.io/default-disks-config: '[{"name": "nvme","path":"/var/lib/longhorn","tags":["nvme"]},{"name": "ssd","path":"/var/mnt/ssd/longhorn","allowScheduling":true,"tags":["ssd"]}]'
     networkInterfaces:
-      - interface: bond0
-        bond:
-          mode: active-backup
-          deviceSelectors:
-            - hardwareAddr: bc:24:11:0c:fd:22
-              driver: virtio_net
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:0c:fd:22"
         dhcp: false
         addresses:
           - "192.168.20.52/24"
@@ -84,12 +76,8 @@ nodes:
     nodeAnnotations:
       node.longhorn.io/default-disks-config: '[{"name": "nvme","path":"/var/lib/longhorn","tags":["nvme"]},{"name": "ssd","path":"/var/mnt/ssd/longhorn","allowScheduling":true,"tags":["ssd"]}]'
     networkInterfaces:
-      - interface: bond0
-        bond:
-          mode: active-backup
-          deviceSelectors:
-            - hardwareAddr: bc:24:11:a8:19:33
-              driver: virtio_net
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:a8:19:33"
         dhcp: false
         addresses:
           - "192.168.20.53/24"
