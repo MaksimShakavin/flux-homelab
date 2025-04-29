@@ -18,8 +18,6 @@ resources:
   - ./plex/ks.yaml
   - ./tautulli/ks.yaml
   - ./notifiarr/ks.yaml
-  - ./calcom/ks.yaml
-  - ./go2rtc/ks.yaml
   - ./scrypted/ks.yaml
 #  - ./audiobookshelf/ks.yaml
 #  - ./satisfactory/ks.yaml
