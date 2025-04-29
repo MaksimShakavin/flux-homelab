@@ -86,7 +86,7 @@ spec:
                 port: *port
         annotations:
           gethomepage.dev/enabled: "true"
-          gethomepage.dev/group: Media
+          gethomepage.dev/group: "Media & Downloading"
           gethomepage.dev/name: Overseerr
           gethomepage.dev/icon: overseerr.png
           gethomepage.dev/description: Media Request Management

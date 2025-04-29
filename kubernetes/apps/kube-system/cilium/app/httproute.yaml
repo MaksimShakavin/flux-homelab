@@ -8,7 +8,7 @@ metadata:
     gethomepage.dev/enabled: "true"
     gethomepage.dev/icon: cilium.png
     gethomepage.dev/name: Hubble
-    gethomepage.dev/group: Observability
+    gethomepage.dev/group: "Monitoring & Observability"
     gethomepage.dev/description: Network Monitoring Dashboard
 spec:
   hostnames: ["hubble.exelent.click"]

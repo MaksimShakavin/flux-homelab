@@ -88,7 +88,7 @@ spec:
                 port: *port
         annotations:
           gethomepage.dev/enabled: "true"
-          gethomepage.dev/group: Media
+          gethomepage.dev/group: "Media & Downloading"
           gethomepage.dev/name: Tautulli
           gethomepage.dev/icon: tautulli.svg
           gethomepage.dev/description: Monitor Plex Media Server

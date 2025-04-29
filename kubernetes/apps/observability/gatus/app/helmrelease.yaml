@@ -114,7 +114,7 @@ spec:
                 port: *port
         annotations:
           gethomepage.dev/enabled: "true"
-          gethomepage.dev/group: Observability
+          gethomepage.dev/group: "Monitoring & Observability"
           gethomepage.dev/name: Gatus
           gethomepage.dev/icon: gatus.png
           gethomepage.dev/description: Status page

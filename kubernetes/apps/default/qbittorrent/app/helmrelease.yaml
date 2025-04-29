@@ -126,7 +126,7 @@ spec:
                 port: *port
         annotations:
           gethomepage.dev/enabled: "true"
-          gethomepage.dev/group: Media
+          gethomepage.dev/group: "Media & Downloading"
           gethomepage.dev/name: qBittorrent
           gethomepage.dev/icon: qbittorrent.png
           gethomepage.dev/description: Torrent Client
