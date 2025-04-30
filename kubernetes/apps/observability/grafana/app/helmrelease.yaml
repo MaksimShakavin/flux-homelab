@@ -328,6 +328,7 @@ spec:
           gethomepage.dev/name: Grafana
           gethomepage.dev/group: "Monitoring & Observability"
           gethomepage.dev/description: Visual analytics & monitoring platform
+          gethomepage.dev/weight: "2"
           gethomepage.dev/widget.type: grafana
           gethomepage.dev/widget.url: http://grafana.observability.svc.cluster.local
           gethomepage.dev/widget.username: "{{`{{HOMEPAGE_VAR_GRAFANA_USER}}`}}"

@@ -63,3 +63,4 @@ spec:
           gethomepage.dev/name: Notifiarr
           gethomepage.dev/group: "Monitoring & Observability"
           gethomepage.dev/description: Arr notifications management
+          gethomepage.dev/weight: "5"
