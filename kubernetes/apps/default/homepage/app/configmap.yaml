@@ -50,10 +50,6 @@ data:
               url: http://192.168.20.5:5000
               username: "{{HOMEPAGE_VAR_SYNOLOGY_USERNAME}}"
               password: "{{HOMEPAGE_VAR_SYNOLOGY_PASSWORD}}"
-        - Minio:
-            href: https://minio.exelent.click
-            icon: minio.png
-            description: S3 compatible object storage
         - Proxmox:
             href: https://proxmox.exelent.click
             icon: proxmox.png
@@ -64,6 +60,10 @@ data:
               username: "{{HOMEPAGE_VAR_PROXMOX_USERNAME}}"
               password: "{{HOMEPAGE_VAR_PROXMOX_PASSWORD}}"
               node: proxmox1
+        - Minio:
+            href: https://minio.exelent.click
+            icon: minio.png
+            description: S3 compatible object storage
   settings.yaml: |
     title: Pohulanka home
     theme: dark
@@ -73,14 +73,14 @@ data:
         Home Apps:
           icon: mdi-home-assistant
           style: row
-          columns: 3
+          columns: 2
         Media & Downloading:
           icon: mdi-movie
           style: row
           columns: 4
         Monitoring & Observability:
           icon: mdi-chart-line
-          style: columns
+          style: row
           columns: 3
         Infrastructure:
           icon: mdi-server
