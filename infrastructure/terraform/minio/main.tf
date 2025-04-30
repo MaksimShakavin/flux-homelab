@@ -1,4 +1,20 @@
 terraform {
+  # comment out backend in case you are running it first time on a fresh minio. After you are done, run
+  # terraform init -migrate-state to migrate state to newly create minio bucket
+  backend "s3" {
+    bucket                      = "terraform"
+    key                         = "minio/state.tfstate"
+    region                      = "main"
+    endpoints = {
+      s3                          = "http://192.168.20.5:9000"
+    }
+    skip_credentials_validation = true
+    skip_metadata_api_check     = true
+    skip_region_validation      = true
+    force_path_style            = true
+    skip_requesting_account_id  = true
+  }
+
   required_providers {
     minio = {
       source  = "aminueza/minio"

@@ -1,12 +1,17 @@
 terraform {
-#  backend "s3" {
-#    bucket                      = "terraform"
-#    key                         = "proxmox/state.tfstate"
-#    skip_credentials_validation = true
-#    skip_metadata_api_check     = true
-#    skip_region_validation      = true
-#    force_path_style            = true
-#  }
+  backend "s3" {
+    bucket                      = "terraform"
+    key                         = "proxmox/state.tfstate"
+    region                      = "main"
+    endpoints = {
+      s3                          = "http://192.168.20.5:9000"
+    }
+    skip_credentials_validation = true
+    skip_metadata_api_check     = true
+    skip_region_validation      = true
+    force_path_style            = true
+    skip_requesting_account_id  = true
+  }
 
   required_providers {
     proxmox = {

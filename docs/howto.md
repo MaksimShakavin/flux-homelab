@@ -82,4 +82,15 @@ Delete information about rest nodes in /etc/pve/nodes
 
     ```
 
+### Remove minio bucket
+
+1. Authenticate to minio
+    ```shell
+    mc alias set myminio http://192.168.20.5:9000 [USER] [PASSWORD]
+    ```
+2. Remove the bucket
+    ```shell
+    mc rb --force --dangerous myminio/mybucket
+    ```
+
 
