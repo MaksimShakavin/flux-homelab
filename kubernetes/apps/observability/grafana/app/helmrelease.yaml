@@ -331,8 +331,8 @@ spec:
           gethomepage.dev/weight: "2"
           gethomepage.dev/widget.type: grafana
           gethomepage.dev/widget.url: http://grafana.observability.svc.cluster.local
-          gethomepage.dev/widget.username: "{{`{{HOMEPAGE_VAR_GRAFANA_USER}}`}}"
-          gethomepage.dev/widget.password: "{{`{{HOMEPAGE_VAR_GRAFANA_PASSWORD}}`}}"
+          gethomepage.dev/widget.username: "{{HOMEPAGE_VAR_GRAFANA_USER}}"
+          gethomepage.dev/widget.password: "{{HOMEPAGE_VAR_GRAFANA_PASSWORD}}"
     persistence:
       enabled: false
     testFramework:
