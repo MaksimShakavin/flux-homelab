@@ -10,6 +10,7 @@ metadata:
     gethomepage.dev/name: Hubble
     gethomepage.dev/group: "Monitoring & Observability"
     gethomepage.dev/description: Network Monitoring Dashboard
+    gethomepage.dev/weight: "4"
 spec:
   hostnames: ["hubble.exelent.click"]
   parentRefs:
