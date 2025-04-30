@@ -41,6 +41,15 @@ data:
               tunnelid: "{{HOMEPAGE_VAR_CLOUDFLARED_TUNNELID}}"
               key: "{{HOMEPAGE_VAR_CLOUDFLARED_API_TOKEN}}"
     - Infrastructure:
+        - Unifi:
+            href: https://unifi.exelent.click
+            icon: unifi-controller.png
+            description: Home Network Management
+            widget:
+              type: unifi
+              url: https://192.168.20.1
+              username: "{{HOMEPAGE_VAR_UNIFI_USERNAME}}"
+              password: "{{HOMEPAGE_VAR_UNIFI_PASSWORD}}"
         - Synology:
             href: https://nas.exelent.click
             icon: synology.png
