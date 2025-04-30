@@ -87,14 +87,18 @@ data:
           icon: mdi-movie
           style: row
           columns: 4
-        Monitoring & Observability:
-          icon: mdi-chart-line
+        Parent:
+          heading: false
           style: row
           columns: 3
-        Infrastructure:
-          icon: mdi-server
-          style: row
-          columns: 3
+          Monitoring & Observability:
+            icon: mdi-chart-line
+            style: columns
+    #        columns: 3
+          Infrastructure:
+            icon: mdi-server
+            style: columns
+    #        columns: 3
     providers:
       longhorn:
         url: http://longhorn-frontend.storage.svc.cluster.local
