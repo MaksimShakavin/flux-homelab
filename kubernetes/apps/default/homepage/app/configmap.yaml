@@ -15,6 +15,9 @@ data:
         - onedr0p:
             - icon: github.png
               href: https://github.com/onedr0p/home-ops
+        - flux-homelab:
+            - icon: github.png
+              href: https://github.com/MaksimShakavin/flux-homelab
         - kubesearch:
             - icon: kubernetes-dashboard.png
               href: https://kubesearch.dev
@@ -78,6 +81,9 @@ data:
     theme: dark
     color: slate
     headerStyle: boxedWidgets
+    background:
+      image: https://minio-content.exelent.click/static-content/homepage_wallpaper.jpg
+      opacity: 27 # 0-100
     layout:
         Home Apps:
           icon: mdi-home-assistant
