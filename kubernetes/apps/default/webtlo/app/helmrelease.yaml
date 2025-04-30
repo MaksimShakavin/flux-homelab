@@ -89,6 +89,7 @@ spec:
           gethomepage.dev/name: Webtlo
           gethomepage.dev/group: "Media & Downloading"
           gethomepage.dev/description: Guardian torrent management
+          gethomepage.dev/weight: "8"
     persistence:
       data:
         existingClaim: *app

@@ -62,3 +62,4 @@ spec:
           gethomepage.dev/icon: notifiarr.png
           gethomepage.dev/name: Notifiarr
           gethomepage.dev/group: "Monitoring & Observability"
+          gethomepage.dev/description: Arr notifications management

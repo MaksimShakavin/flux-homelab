@@ -68,22 +68,22 @@ data:
     title: Pohulanka home
     theme: dark
     color: slate
-    headerStyle: clean
+    headerStyle: boxedWidgets
     layout:
         Home Apps:
-          icon: mdi:home-assistant
+          icon: mdi-home-assistant
           style: row
           columns: 3
         Media & Downloading:
-          icon: mdi:movie
+          icon: mdi-movie
           style: row
           columns: 4
         Monitoring & Observability:
-          icon: mdi:chart-line
-          style: row
+          icon: mdi-chart-line
+          style: columns
           columns: 3
         Infrastructure:
-          icon: mdi:server
+          icon: mdi-server
           style: row
           columns: 3
     providers:

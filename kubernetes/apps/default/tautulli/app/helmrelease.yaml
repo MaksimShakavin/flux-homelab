@@ -92,6 +92,7 @@ spec:
           gethomepage.dev/name: Tautulli
           gethomepage.dev/icon: tautulli.svg
           gethomepage.dev/description: Monitor Plex Media Server
+          gethomepage.dev/weight: "7"
           gethomepage.dev/widget.type: tautulli
           gethomepage.dev/widget.url: http://tautulli.default.svc.cluster.local
           gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_TAUTULLI_API_KEY}}` }}"

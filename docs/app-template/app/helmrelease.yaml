@@ -91,6 +91,13 @@ spec:
           - backendRefs:
               - name: *app
                 port: *port
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/icon: mdi-harddisk
+          gethomepage.dev/name: APP_NAME
+          gethomepage.dev/group: "APP_GROUP"
+          gethomepage.dev/description: APP_DESCRIPTION
+          gethomepage.dev/weight: "7"
     persistence:
       server:
         existingClaim: *app
