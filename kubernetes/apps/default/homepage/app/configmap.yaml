@@ -84,6 +84,7 @@ data:
     background:
       image: https://minio-content.exelent.click/static-content/homepage_wallpaper.jpg
       opacity: 27 # 0-100
+    cardBlur: sm
     layout:
         Home Apps:
           icon: mdi-home-assistant
@@ -109,20 +110,31 @@ data:
       longhorn:
         url: http://longhorn-frontend.storage.svc.cluster.local
   widgets.yaml: |
-    - resources:
-        backend: kubernetes
-        cpu: true
-        expanded: true
-        memory: true
+    - logo:
+        icon: https://minio-content.exelent.click/static-content/homepage-logo.png
     - greeting:
         text_size: xl
-        text: "Welcome!"
+        text: "My homepage"
     - datetime:
         text_size: l
         format:
           dateStyle: long
           timeStyle: short
           hourCycle: h23
+    - openmeteo:
+        label: Warsaw # optional
+        latitude: 52.27711744254185
+        longitude: 21.083154604223424
+        timezone: Europe/Warsaw # optional
+        units: metric # or imperial
+        cache: 5 # Time in minutes to cache API responses, to stay within limits
+        format: # optional, Intl.NumberFormat options
+          maximumFractionDigits: 1
+    - resources:
+        backend: kubernetes
+        cpu: true
+        expanded: true
+        memory: true
     - longhorn:
         expanded: true
         total: true
