@@ -154,10 +154,15 @@ The 1Password vault should contain the following items:
    - `proxmox.exelent.click` -> `https 192.168.0.41:8006` with WebSocket
    - `sprut.exelent.click` -> `http 192.168.20.3:7777` with WebSocket
    - `minio.exelent.click` -> `http localhost:9090`
+   - `minio-content.exelent.click` -> `http localhost:9090`
    - `unifi.exelent.click` -> `https 192.168.0.1:9090` with WebSocket
 2. Go to Config Panel -> Login Portal and add Domain `nas.exelent.click`
 3. Click on Certificates and upload tls.key and tls.crt from Onepassword
 4. Click Settings and apply the certificate to added domains
+5. Add DNS entries for each domain in Unifi dashboard. Currently is is not allowed to create CNAME manually,
+   so better to wait until cluster external-dns creates some entries and modify them. They will be
+   recreated on next run. Create `nas.exelent.click` -> `192.168.20.5` HOST enty. And CNAME entries should
+   point to `nas.exelent.click`.
 
 ### 6. Set up healthchecks.io
 

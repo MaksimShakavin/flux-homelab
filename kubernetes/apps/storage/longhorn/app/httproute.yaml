@@ -10,7 +10,7 @@ metadata:
     gethomepage.dev/name: Longhorn
     gethomepage.dev/group: Infrastructure
     gethomepage.dev/description: K8s distributed block storage
-    gethomepage.dev/weight: "105"
+    gethomepage.dev/weight: "205"
     gethomepage.dev/pod-selector: "app.kubernetes.io/instance=longhorn"
 spec:
   hostnames: ["longhorn.exelent.click"]
