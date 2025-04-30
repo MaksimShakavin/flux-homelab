@@ -88,6 +88,7 @@ spec:
           gethomepage.dev/icon: scrypted.png
           gethomepage.dev/name: Scrypted
           gethomepage.dev/group: "Home Apps"
+          gethomepage.dev/description: Manage homekit webcams
     persistence:
       config:
         existingClaim: *app

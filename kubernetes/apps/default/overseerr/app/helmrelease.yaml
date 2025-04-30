@@ -90,6 +90,7 @@ spec:
           gethomepage.dev/name: Overseerr
           gethomepage.dev/icon: overseerr.png
           gethomepage.dev/description: Media Request Management
+          gethomepage.dev/weight: "2"
           gethomepage.dev/widget.type: overseerr
           gethomepage.dev/widget.url: http://overseerr.default.svc.cluster.local
           gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_OVERSEERR_TOKEN}}` }}"

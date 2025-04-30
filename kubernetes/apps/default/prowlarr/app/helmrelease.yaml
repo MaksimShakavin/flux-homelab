@@ -84,6 +84,7 @@ spec:
           gethomepage.dev/name: Prowlarr
           gethomepage.dev/group: "Media & Downloading"
           gethomepage.dev/description: Torrent/NZB Indexer Management
+          gethomepage.dev/weight: "6"
           gethomepage.dev/widget.type: prowlarr
           gethomepage.dev/widget.url: http://prowlarr.default.svc.cluster.local:8080
           gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_PROWLARR_TOKEN}}` }}"
