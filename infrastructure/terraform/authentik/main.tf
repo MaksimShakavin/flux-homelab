@@ -64,6 +64,12 @@ module "secret_audiobookshelf" {
   item   = "audiobookshelf"
 }
 
+module "secret_lubelogger" {
+  source = "github.com/bjw-s/terraform-1password-item?ref=main"
+  vault  = "Homelab"
+  item   = "lubelogger"
+}
+
 module "secret_mealie" {
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
   vault  = "Homelab"

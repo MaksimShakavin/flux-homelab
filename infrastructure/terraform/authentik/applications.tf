@@ -78,3 +78,19 @@ module "oauth2-portainer" {
   client_secret      = module.secret_portainer.fields["OIDC_CLIENT_SECRET"]
   redirect_uris      = ["https://portainer.exelent.click/"]
 }
+
+module "oauth2-lubelogger" {
+  source             = "./oauth2_application"
+  name               = "Lubelogger"
+  icon_url           = "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/lubelogger.png"
+  launch_url         = "https://lubelogger.exelent.click"
+  description        = "Vehicle management"
+  newtab             = true
+  group              = "Selfhosted"
+  auth_groups        = [authentik_group.users.id]
+  authorization_flow = resource.authentik_flow.provider-authorization-implicit-consent.uuid
+  invalidation_flow  = data.authentik_flow.default-provider-invalidation-flow.id
+  client_id          = module.secret_lubelogger.fields["OIDC_CLIENT_ID"]
+  client_secret      = module.secret_lubelogger.fields["OIDC_CLIENT_SECRET"]
+  redirect_uris      = ["https://lubelogger.exelent.click/Login/RemoteAuth"]
+}
