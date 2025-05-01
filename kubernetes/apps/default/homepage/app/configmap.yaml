@@ -33,6 +33,7 @@ data:
             href: https://sprut.exelent.click
             icon: https://spruthub.ru/favicon.ico
             description: Zigbee hub and Homekit integration
+            weight: 5
     - Monitoring & Observability:
         - Cloudflared:
             href: https://dash.cloudflare.com
