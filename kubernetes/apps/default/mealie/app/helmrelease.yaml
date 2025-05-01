@@ -85,6 +85,7 @@ spec:
           gethomepage.dev/name: Mealie
           gethomepage.dev/icon: mealie.svg
           gethomepage.dev/description: Recipe management
+          gethomepage.dev/weight: "2"
           gethomepage.dev/widget.type: mealie
           gethomepage.dev/widget.url: http://mealie.default:9000
           gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_MEALIE_TOKEN}}`}}"
