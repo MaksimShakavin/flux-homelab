@@ -38,6 +38,11 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  dependsOn:
+    - name: qbittorrent
+      namespace: default
+    - name: external-secrets-stores
+      namespace: external-secrets
   interval: 1h
   path: ./kubernetes/apps/default/qbittorrent/tools
   prune: true

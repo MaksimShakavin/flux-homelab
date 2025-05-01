@@ -19,6 +19,8 @@ spec:
       namespace: database
     - name: dragonfly-cluster
       namespace: database
+    - name: external-secrets-stores
+      namespace: external-secrets
   retryInterval: 1m
   sourceRef:
     kind: GitRepository

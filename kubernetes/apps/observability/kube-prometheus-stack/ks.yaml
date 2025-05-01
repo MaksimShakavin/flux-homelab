@@ -11,6 +11,9 @@ spec:
       app.kubernetes.io/name: *app
   components:
     - ../../../../components/gatus/internal
+  dependsOn:
+    - name: external-secrets-stores
+      namespace: external-secrets
   interval: 1h
   path: ./kubernetes/apps/observability/kube-prometheus-stack/app
   prune: true

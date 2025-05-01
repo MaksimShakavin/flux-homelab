@@ -17,6 +17,8 @@ spec:
   dependsOn:
     - name: cloudnative-pg-cluster
       namespace: database
+    - name: external-secrets-stores
+      namespace: external-secrets
   prune: true
   retryInterval: 1m
   sourceRef:
