@@ -89,7 +89,7 @@ spec:
           gethomepage.dev/name: Scrypted
           gethomepage.dev/group: "Home Apps"
           gethomepage.dev/description: Manage homekit webcams
-          gethomepage.dev/weight: "10"
+          gethomepage.dev/weight: "4"
     persistence:
       config:
         existingClaim: *app

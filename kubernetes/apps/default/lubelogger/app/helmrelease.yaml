@@ -85,6 +85,7 @@ spec:
           gethomepage.dev/name: Lubelogger
           gethomepage.dev/group: "Home Apps"
           gethomepage.dev/description: Vehicle management
+          gethomepage.dev/weight: "3"
 #          gethomepage.dev/widget.type: lubelogger
 #          gethomepage.dev/widget.url: http://lubelogger.default.svc.cluster.local
 #          gethomepage.dev/widget.username: "{{ `{{HOMEPAGE_VAR_LUBELOGGER_USERNAME}}` }}"
