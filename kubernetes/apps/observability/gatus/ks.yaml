@@ -12,6 +12,8 @@ spec:
   dependsOn:
     - name: cloudnative-pg-cluster
       namespace: database
+    - name: external-secrets-stores
+      namespace: external-secrets
   interval: 1h
   path: ./kubernetes/apps/observability/gatus/app
   prune: true
