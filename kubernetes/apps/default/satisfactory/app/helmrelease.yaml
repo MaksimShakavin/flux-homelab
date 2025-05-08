@@ -28,7 +28,7 @@ spec:
           app:
             image:
               repository: wolveix/satisfactory-server
-              tag: v1.9.7
+              tag: v1.9.8
             env:
               ROOTLESS: "true"
             probes:
