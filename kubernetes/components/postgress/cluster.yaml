@@ -40,8 +40,15 @@ spec:
           topologyKey: "kubernetes.io/hostname"
           whenUnsatisfiable: "DoNotSchedule"
           labelSelector:
-            matchLabels:
-              postgres-operator.crunchydata.com/cluster: *name
+            matchExpressions:
+              - key: postgres-operator.crunchydata.com/cluster
+                operator: In
+                values:
+                  - *name
+              - key: postgres-operator.crunchydata.com/instance-set
+                operator: In
+                values:
+                  - instance
   users:
     # Superuser
     - name: "postgres"
