@@ -36,17 +36,7 @@ spec:
               PUID: "1000"
               PGID: "1000"
               LOG_LEVEL: "debug"
-              # database
-              DB_ENGINE: 'postgres'
-              POSTGRES_SERVER: mealie-pgbouncer.default.svc
-              POSTGRES_PORT: "5432"
-              POSTGRES_USER: *app
-              POSTGRES_PASSWORD:
-                valueFrom:
-                  secretKeyRef:
-                    name: mealie-pguser-mealie
-                    key: password
-              POSTGRES_DB: *app
+
             envFrom:
               - secretRef:
                   name: mealie-secret
