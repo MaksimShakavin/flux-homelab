@@ -26,14 +26,6 @@ spec:
       mealie:
         annotations:
           reloader.stakater.com/auto: "true"
-        initContainers:
-          init-db:
-            image:
-              repository: ghcr.io/onedr0p/postgres-init
-              tag: 16
-            envFrom: &envFrom
-              - secretRef:
-                  name: mealie-secret
         containers:
           app:
             image:
@@ -44,7 +36,20 @@ spec:
               PUID: "1000"
               PGID: "1000"
               LOG_LEVEL: "debug"
-            envFrom: *envFrom
+              # database
+              DB_ENGINE: 'postgres'
+              POSTGRES_SERVER: mealie-pgbouncer.default.svc
+              POSTGRES_PORT: "5432"
+              POSTGRES_USER: *app
+              POSTGRES_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: mealie-pguser-mealie
+                    key: password
+              POSTGRES_DB: *app
+            envFrom:
+              - secretRef:
+                  name: mealie-secret
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
