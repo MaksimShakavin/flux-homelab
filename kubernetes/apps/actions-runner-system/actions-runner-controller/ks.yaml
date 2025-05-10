@@ -36,6 +36,8 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
+    - name: external-secrets-stores
+      namespace: external-secrets
     - name: actions-runner-controller
       namespace: *namespace
   interval: 1h

@@ -11,10 +11,13 @@ spec:
       app.kubernetes.io/name: *app
   components:
     - ../../../../components/gatus/external
+    - ../../../../components/postgress
   interval: 1h
   path: ./kubernetes/apps/security/authentik/app
   prune: true
   dependsOn:
+    - name: crunchy-postgres-operator
+      namespace: database
     - name: cloudnative-pg-cluster
       namespace: database
     - name: dragonfly-cluster

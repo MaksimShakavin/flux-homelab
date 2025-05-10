@@ -12,13 +12,21 @@ spec:
   components:
     - ../../../../components/gatus/internal
     - ../../../../components/volsync
+    - ../../../../components/postgress
   interval: 1h
   path: ./kubernetes/apps/default/radarr/app
   dependsOn:
+    - name: crunchy-postgres-operator
+      namespace: database
     - name: cloudnative-pg-cluster
       namespace: database
     - name: external-secrets-stores
       namespace: external-secrets
+  healthCheckExprs:
+    - apiVersion: postgres-operator.crunchydata.com/v1beta1
+      kind: PostgresCluster
+      failed: status.conditions.filter(e, e.type == 'ProxyAvailable').all(e, e.status == 'False')
+      current: status.conditions.filter(e, e.type == 'ProxyAvailable').all(e, e.status == 'True')
   prune: true
   retryInterval: 1m
   sourceRef:

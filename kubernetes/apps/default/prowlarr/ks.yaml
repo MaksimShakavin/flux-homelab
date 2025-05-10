@@ -12,6 +12,7 @@ spec:
   components:
     - ../../../../components/gatus/internal
     - ../../../../components/volsync
+    - ../../../../components/postgress
   interval: 1h
   path: ./kubernetes/apps/default/prowlarr/app
   dependsOn:
