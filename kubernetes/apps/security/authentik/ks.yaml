@@ -18,8 +18,6 @@ spec:
   dependsOn:
     - name: crunchy-postgres-operator
       namespace: database
-    - name: cloudnative-pg-cluster
-      namespace: database
     - name: dragonfly-cluster
       namespace: database
     - name: external-secrets-stores
@@ -37,3 +35,4 @@ spec:
     substitute:
       APP: *app
       GATUS_SUBDOMAIN: sso
+      POOL_MODE: transaction
