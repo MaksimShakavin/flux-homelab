@@ -91,7 +91,7 @@ spec:
         - name: repo1
           s3: &minio
             bucket: "postgress"
-            endpoint: "192.168.20.5:9000"
+            endpoint: "minio-content.exelent.click"
             region: "us-east-1"
           schedules:
             full: "30 1 * * 0" # Sunday at 01:30

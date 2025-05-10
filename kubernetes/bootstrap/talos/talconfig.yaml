@@ -31,6 +31,8 @@ nodes:
       "node.longhorn.io/create-default-disk": "config"
     nodeAnnotations:
       node.longhorn.io/default-disks-config: '[{"name": "nvme","path":"/var/lib/longhorn","tags":["nvme"]},{"name": "ssd","path":"/var/mnt/ssd/longhorn","allowScheduling":true,"tags":["ssd"]}]'
+    nameservers:
+      - 192.168.20.1
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "bc:24:11:b5:dd:1f"
@@ -53,6 +55,8 @@ nodes:
       "node.longhorn.io/create-default-disk": "config"
     nodeAnnotations:
       node.longhorn.io/default-disks-config: '[{"name": "nvme","path":"/var/lib/longhorn","tags":["nvme"]},{"name": "ssd","path":"/var/mnt/ssd/longhorn","allowScheduling":true,"tags":["ssd"]}]'
+    nameservers:
+      - 192.168.20.1
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "bc:24:11:0c:fd:22"
@@ -75,6 +79,8 @@ nodes:
       "node.longhorn.io/create-default-disk": "config"
     nodeAnnotations:
       node.longhorn.io/default-disks-config: '[{"name": "nvme","path":"/var/lib/longhorn","tags":["nvme"]},{"name": "ssd","path":"/var/mnt/ssd/longhorn","allowScheduling":true,"tags":["ssd"]}]'
+    nameservers:
+      - 192.168.20.1
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "bc:24:11:a8:19:33"
