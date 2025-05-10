@@ -12,6 +12,9 @@ spec:
   components:
     - ../../../../components/gatus/internal
     - ../../../../components/volsync
+  dependsOn:
+    - name: external-secrets-stores
+      namespace: external-secrets
   interval: 1h
   path: ./kubernetes/apps/default/tautulli/app
   prune: true

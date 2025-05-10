@@ -13,6 +13,8 @@ spec:
     - ../../../../components/gatus/external
     - ../../../../components/volsync
   dependsOn:
+    - name: external-secrets-stores
+      namespace: external-secrets
     - name: intel-device-plugin-gpu
       namespace: kube-system
     - name: longhorn
