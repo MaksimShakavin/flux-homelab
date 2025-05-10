@@ -26,14 +26,6 @@ spec:
       lubelogger:
         annotations:
           reloader.stakater.com/auto: "true"
-        initContainers:
-          init-db:
-            image:
-              repository: ghcr.io/onedr0p/postgres-init
-              tag: 16
-            envFrom: &envFrom
-              - secretRef:
-                  name: lubelogger-secret
         containers:
           app:
             image:
@@ -43,7 +35,9 @@ spec:
               LC_ALL: ru_RU.UTF-8
               LANG: ru_RU.UTF-8
               TZ: "Europe/Warsaw"
-            envFrom: *envFrom
+            envFrom:
+              - secretRef:
+                  name: lubelogger-secret
             securityContext:
               allowPrivilegeEscalation: false
               capabilities: { drop: [ "ALL" ] }
