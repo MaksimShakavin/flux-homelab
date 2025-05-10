@@ -26,14 +26,6 @@ spec:
       paperless:
         annotations:
           reloader.stakater.com/auto: "true"
-        initContainers:
-          init-db:
-            image:
-              repository: ghcr.io/onedr0p/postgres-init
-              tag: 16
-            envFrom: &envFrom
-              - secretRef:
-                  name: paperless-secret
         containers:
           app:
             image:
@@ -50,7 +42,20 @@ spec:
               PAPERLESS_LOGROTATE_MAX_BACKUPS: 0 #disable logging backup since anyway is done by locki
               PAPERLESS_OCR_LANGUAGE: rus+pol+eng
               PAPERLESS_OCR_LANGUAGES: pol rus
-            envFrom: *envFrom
+              # Database
+              PAPERLESS_DBENGINE: postgresql
+              PAPERLESS_DBPORT: "5432"
+              PAPERLESS_DBHOST: paperless-pgbouncer.default.svc
+              PAPERLESS_DBUSER: *app
+              PAPERLESS_DBNAME: *app
+              PAPERLESS_DBPASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-pguser-paperless
+                    key: password
+            envFrom:
+              - secretRef:
+                  name: paperless-secret
           tika:
             image:
               repository: ghcr.io/paperless-ngx/tika
