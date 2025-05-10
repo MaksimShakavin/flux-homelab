@@ -33,27 +33,34 @@ spec:
       radarr:
         annotations:
           reloader.stakater.com/auto: "true"
-        initContainers:
-          init-db:
-            image:
-              repository: ghcr.io/onedr0p/postgres-init
-              tag: 16
-            envFrom: &envFrom
-              - secretRef:
-                  name: radarr-secret
         containers:
           app:
             image:
-              repository: ghcr.io/onedr0p/radarr-develop
-              tag: 5.20.1.9773@sha256:8187c129a78fdfe15b1603db9175abd2be0e1ca2e99ea3733987c3ae941da165
+              repository: ghcr.io/home-operations/radarr
+              tag: 5.23.1.9914@sha256:794fb31c2773491429cdf50906443c301c61298b1e53f1e95ccf723c30c73d3f
             env:
               TZ: "Europe/Warsaw"
-              RADARR__INSTANCE_NAME: Radarr
-              RADARR__PORT: &port 8080
-              RADARR__APPLICATION_URL: "https://radarr.exelent.click"
-              RADARR__LOG_LEVEL: info
-              RADARR__THEME: dark
-            envFrom: *envFrom
+              RADARR__APP__INSTANCENAME: Radarr
+              RADARR__APP__THEME: dark
+              RADARR__AUTH__METHOD: External
+              RADARR__AUTH__REQUIRED: DisabledForLocalAddresses
+              RADARR__LOG__DBENABLED: "False"
+              RADARR__LOG__LEVEL: info
+              RADARR__SERVER__PORT: &port 8080
+              RADARR__UPDATE__BRANCH: develop
+              # Database
+              RADARR__POSTGRES__HOST: radarr-pgbouncer.default.svc
+              RADARR__POSTGRES__PORT: "5432"
+              RADARR__POSTGRES__USER: *app
+              RADARR__POSTGRES__PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: radarr-pguser-radarr
+                    key: password
+              RADARR__POSTGRES__MAINDB: radarr
+            envFrom:
+              - secretRef:
+                  name: radarr-secret
             resources:
               requests:
                 cpu: 500m
