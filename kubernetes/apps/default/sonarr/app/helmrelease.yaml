@@ -33,29 +33,34 @@ spec:
       sonarr:
         annotations:
           reloader.stakater.com/auto: "true"
-        initContainers:
-          init-db:
-            image:
-              repository: ghcr.io/onedr0p/postgres-init
-              tag: 16
-            envFrom: &envFrom
-              - secretRef:
-                  name: sonarr-secret
         containers:
           app:
             image:
-              repository: ghcr.io/onedr0p/sonarr-develop
-              tag: 4.0.14.2938@sha256:75da01d2da78d226cd89352fbab919f2eb26ea9a8d6c592bf812dde5f8949243
+              repository: ghcr.io/home-operations/sonarr
+              tag: 4.0.14.2938@sha256:95c3d63b46c2ff242a0b646086da557a13ef1376f415bb755b9d87c0d94d0330
             env:
               TZ: "Europe/Warsaw"
+              SONARR__APP__INSTANCENAME: Sonarr
+              SONARR__APP__THEME: dark
               SONARR__AUTH__METHOD: External
               SONARR__AUTH__REQUIRED: DisabledForLocalAddresses
-              SONARR__APP__INSTANCENAME: Sonarr
               SONARR__SERVER__PORT: &port 8080
               SONARR__LOG__DBENABLED: "False"
               SONARR__LOG__LEVEL: info
-              SONARR__APP__THEME: dark
-            envFrom: *envFrom
+              SONARR__UPDATE__BRANCH: develop
+              # Database
+              SONARR__POSTGRES__HOST: sonarr-pgbouncer.default.svc
+              SONARR__POSTGRES__PORT: "5432"
+              SONARR__POSTGRES__USER: *app
+              SONARR__POSTGRES__PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: sonarr-pguser-sonarr
+                    key: password
+              SONARR__POSTGRES__MAINDB: sonarr
+            envFrom:
+              - secretRef:
+                  name: sonarr-secret
             resources:
               requests:
                 cpu: 500m
