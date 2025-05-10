@@ -31,12 +31,6 @@ spec:
     remediation:
       retries: 3
   values:
-    extraInitContainers:
-      - name: 01-init-db
-        image: ghcr.io/onedr0p/postgres-init:16
-        envFrom:
-          - secretRef:
-              name: &secret grafana-secret
     env:
       GF_DATE_FORMATS_USE_BROWSER_LOCALE: true
       GF_EXPLORE_ENABLED: true
@@ -45,8 +39,19 @@ spec:
       GF_SECURITY_ANGULAR_SUPPORT_ENABLED: true
       GF_SECURITY_COOKIE_SAMESITE: grafana
       GF_SERVER_ROOT_URL: "https://grafana.exelent.click"
+      # Database
+      GF_DATABASE_NAME: grafana
+      GF_DATABASE_HOST: grafana-pgbouncer.observability.svc
+      GF_DATABASE_USER: grafana
+      GF_DATABASE_SSL_MODE: require
+      GF_DATABASE_TYPE: postgres
+    envValueFrom:
+      GF_DATABASE_PASSWORD:
+        secretKeyRef:
+          name: grafana-pguser-grafana
+          key: password
     envFromSecrets:
-      - name: *secret
+      - name: grafana-secret
     grafana.ini:
       analytics:
         check_for_updates: false
@@ -171,12 +176,6 @@ spec:
           # renovate: depName="Node Exporter Full"
           gnetId: 1860
           revision: 40
-          datasource:
-            - { name: DS_PROMETHEUS, value: Prometheus }
-        spegel:
-          # renovate: depName="Spegel"
-          gnetId: 18089
-          revision: 1
           datasource:
             - { name: DS_PROMETHEUS, value: Prometheus }
         unpackerr:

@@ -15,8 +15,6 @@ spec:
   dependsOn:
     - name: crunchy-postgres-operator
       namespace: database
-    - name: cloudnative-pg-cluster
-      namespace: database
     - name: external-secrets-stores
       namespace: external-secrets
   healthCheckExprs:
