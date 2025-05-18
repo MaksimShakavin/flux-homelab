@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: homepage
+  name: &app homepage
 spec:
   interval: 1h
   chartRef:
@@ -32,9 +32,11 @@ spec:
             envFrom:
               - secretRef:
                   name: homepage-secret
+        serviceAccount:
+          identifier: *app
     service:
       app:
-        controller: &app homepage
+        controller: *app
         ports:
           http:
             port: &port 3000
@@ -48,7 +50,7 @@ spec:
             sectionName: https
         rules:
           - backendRefs:
-              - name: *app
+              - identifier: app
                 port: *port
     persistence:
       config:
@@ -68,5 +70,4 @@ spec:
           - subPath: widgets.yaml
             path: /app/config/widgets.yaml
     serviceAccount:
-      create: true
-      name: *app
+      homepage: {}

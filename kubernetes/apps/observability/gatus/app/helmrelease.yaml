@@ -75,6 +75,8 @@ spec:
               readOnlyRootFilesystem: true
               capabilities: { drop: [ "ALL" ] }
             resources: *resources
+        serviceAccount:
+          identifier: *app
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
@@ -109,7 +111,7 @@ spec:
             sectionName: https
         rules:
           - backendRefs:
-              - name: *app
+              - identifier: app
                 port: *port
         annotations:
           gethomepage.dev/enabled: "true"
@@ -120,9 +122,6 @@ spec:
           gethomepage.dev/weight: "1"
           gethomepage.dev/widget.type: gatus
           gethomepage.dev/widget.url: http://gatus.observability.svc.cluster.local
-    serviceAccount:
-      create: true
-      name: gatus
     persistence:
       config:
         type: emptyDir
@@ -133,3 +132,5 @@ spec:
           - path: /config/config.yaml
             subPath: config.yaml
             readOnly: true
+    serviceAccount:
+      gatus: { }

@@ -78,7 +78,7 @@ spec:
             sectionName: https
         rules:
           - backendRefs:
-              - name: *app
+              - identifier: app
                 port: *port
             filters:
               - type: RequestHeaderModifier
@@ -89,7 +89,7 @@ spec:
                   type: PathPrefix
                   value: /library/streams
           - backendRefs:
-              - name: *app
+              - identifier: app
                 port: *port
         annotations:
           nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"

@@ -41,6 +41,8 @@ spec:
                 memory: 32Mi
             securityContext:
               privileged: true
+        serviceAccount:
+          identifier: *app
     defaultPodOptions:
       hostNetwork: true
     persistence:
@@ -55,5 +57,4 @@ spec:
         globalMounts:
           - path: /host/opt/cni/bin
     serviceAccount:
-      create: true
-      name: *app
+      multus: { }
