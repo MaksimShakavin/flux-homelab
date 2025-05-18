@@ -6,7 +6,7 @@
       matchDatasources: ["docker"],
       automerge: true,
       automergeType: "pr",
-      matchUpdateTypes: ["digest"],
+      matchUpdateTypes: ["digest", "patch"],
       matchPackageNames: ["/home-operations/"],
       ignoreTests: false,
     },
