@@ -29,6 +29,21 @@ spec:
           concurrencyPolicy: Forbid
           successfulJobsHistory: 1
           failedJobsHistory: 1
+        initContainers:
+          copy-config-secret:
+            image:
+              repository: docker.io/library/alpine
+              tag: 3.21.3
+            command:
+              - "sh"
+              - "-c"
+              - |
+                mkdir -p /config &&
+                cp -f /temp-dir/config.yaml /config/config.yaml &&
+                ls -al /config
+            securityContext:
+              runAsUser: 1000
+              runAsGroup: 1000
         containers:
           main:
             image:
@@ -37,9 +52,9 @@ spec:
             env:
               QBT_RUN: "true"
               QBT_CONFIG: "/config/config.yaml"
-            args:
-              - --config
-              - /app/config.yaml
+#            args:
+#              - --config-file
+#              - /app/config.yaml
             resources:
               requests:
                 cpu: 25m
@@ -54,19 +69,26 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
     persistence:
-      logs:
-        type: emptyDir
-        globalMounts:
-          - path: /config/logs
-      config-file:
-        type: secret
-        name: qbit-manage-secret
-        globalMounts:
-          - path: /config/config.yaml
-            subPath: config.yaml
       downloads:
         type: nfs
         server: "192.168.20.5"
         path: "/volume1/kubernetes"
         globalMounts:
           - path: /data
+      # Workaround to overcome that k8s secrets are always readOnly. Mount secret to a emptyDir, then copy it with init
+      # container to the required path
+      config-tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /temp-dir
+      config:
+        type: emptyDir
+        globalMounts:
+          - path: /config
+      config-file:
+        type: secret
+        name: qbit-manage-secret
+        globalMounts:
+          - path: /temp-dir/config.yaml
+            subPath: config.yaml
+            readOnly: false
