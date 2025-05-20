@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./configmap.yaml
+  - ./helmrelease.yaml
+  - ./externalsecret.yaml
+configMapGenerator:
+  - name: immich-database-init-sql
+    files:
+      - init.sql=dbinit/database-init-cm.sql
+  - name: immich-config-tpl
+    files:
+      - ./config/immich.config.json
+generatorOptions:
+  disableNameSuffixHash: true
+labels:
+  - pairs:
+      app.kubernetes.io/name: immich

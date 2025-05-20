@@ -1,0 +1,65 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app immich
+  namespace: &namespace default
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/postgress
+    - ../../../../components/gatus/external
+  dependsOn:
+    - name: crunchy-postgres-operator
+      namespace: database
+    - name: dragonfly-cluster
+      namespace: database
+    - name: external-secrets-stores
+      namespace: external-secrets
+  interval: 1h
+  path: ./kubernetes/apps/default/immich/app
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  wait: false
+  postBuild:
+    substitute:
+      APP: *app
+      GATUS_SUBDOMAIN: photos
+  patches:
+    - patch: |
+        - op: add
+          path: /spec/patroni/dynamicConfiguration/postgresql/parameters
+          value:
+            shared_preload_libraries: "vectors.so"
+            search_path: '"$user", public, vectors"'
+      target:
+        kind: PostgresCluster
+    - patch: |
+        - op: replace
+          path: /spec/image
+          value: ghcr.io/budimanjojo/cdpgvecto.rs:ubi9-16.8-2516
+      target:
+        kind: PostgresCluster
+    - patch: |
+        - op: replace
+          path: /spec/postgresVersion
+          value: 16
+      target:
+        kind: PostgresCluster
+    - patch: |
+        - op: add
+          path: /spec/databaseInitSQL
+          value:
+            name: immich-database-init-sql
+            key: init.sql
+      target:
+        kind: PostgresCluster
