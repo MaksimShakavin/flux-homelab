@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: immich-configmap
+data:
+  IMMICH_CONFIG_FILE: "/config/immich.config.json"
+  REDIS_HOSTNAME: "dragonfly.database.svc.cluster.local"
+  REDIS_DBINDEX: "3"
+  DB_HOSTNAME: "immich-pgbouncer.default.svc"
+  DB_USERNAME: "immich"
+  DB_DATABASE_NAME: "immich"

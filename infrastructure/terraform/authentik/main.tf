@@ -70,6 +70,12 @@ module "secret_lubelogger" {
   item   = "lubelogger"
 }
 
+module "secret_immich" {
+  source = "github.com/bjw-s/terraform-1password-item?ref=main"
+  vault  = "Homelab"
+  item   = "immich"
+}
+
 module "secret_mealie" {
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
   vault  = "Homelab"

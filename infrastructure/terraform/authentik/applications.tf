@@ -94,3 +94,19 @@ module "oauth2-lubelogger" {
   client_secret      = module.secret_lubelogger.fields["OIDC_CLIENT_SECRET"]
   redirect_uris      = ["https://lubelogger.exelent.click/Login/RemoteAuth"]
 }
+
+module "oauth2-immich" {
+  source             = "./oauth2_application"
+  name               = "Immich"
+  icon_url           = "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/immich.png"
+  launch_url         = "https://photos.exelent.click"
+  description        = "Self-hosted google photos"
+  newtab             = true
+  group              = "Selfhosted"
+  auth_groups        = [authentik_group.users.id]
+  authorization_flow = resource.authentik_flow.provider-authorization-implicit-consent.uuid
+  invalidation_flow  = data.authentik_flow.default-provider-invalidation-flow.id
+  client_id          = module.secret_immich.fields["OIDC_CLIENT_ID"]
+  client_secret      = module.secret_immich.fields["OIDC_CLIENT_SECRET"]
+  redirect_uris      = ["https://photos.exelent.click/auth/login", "app.immich:///oauth-callback", "https://photos.exelent.click/user-settings"]
+}
