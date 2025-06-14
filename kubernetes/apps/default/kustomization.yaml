@@ -21,6 +21,7 @@ resources:
   - ./scrypted/ks.yaml
   - ./lubelogger/ks.yaml
   - ./immich/ks.yaml
+  - ./ghostfolio/ks.yaml
 #  - ./audiobookshelf/ks.yaml
 #  - ./satisfactory/ks.yaml
 #  - ./valheim/ks.yaml
