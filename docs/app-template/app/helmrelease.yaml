@@ -69,8 +69,6 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
-        supplementalGroups: [ 10000 ]
-        seccompProfile: { type: RuntimeDefault }
     service:
       app:
         controller: *app
@@ -87,10 +85,6 @@ spec:
           - name: internal
             namespace: kube-system
             sectionName: https
-        rules:
-          - backendRefs:
-              - identifier: app
-                port: *port
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/icon: mdi-harddisk
