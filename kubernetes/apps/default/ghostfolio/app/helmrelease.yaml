@@ -37,17 +37,10 @@ spec:
               REDIS_DB: "4"
               REDIS_PORT: 6379
               # POSTGRES
-              POSTGRES_DB: *app
-              POSTGRES_USER: postgres
-              POSTGRES_PASSWORD:
-                valueFrom:
-                  secretKeyRef:
-                    name: ghostfolio-pguser-postgres
-                    key: password
               DATABASE_URL:
                 valueFrom:
                   secretKeyRef:
-                    name: ghostfolio-pguser-postgres
+                    name: ghostfolio-pguser-ghostfolio
                     key: pgbouncer-uri
             envFrom:
               - secretRef:
@@ -61,13 +54,13 @@ spec:
                     path: /api/v1/health
                     port: &port 3333
                   initialDelaySeconds: 0
-                  periodSeconds: 10
+                  periodSeconds: 20
                   timeoutSeconds: 1
                   failureThreshold: 3
               readiness: *probes
             securityContext:
               allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
+              readOnlyRootFilesystem: false
               capabilities: { drop: [ "ALL" ] }
             resources:
               requests:
@@ -102,5 +95,5 @@ spec:
           gethomepage.dev/description: "Investment Management"
           gethomepage.dev/weight: "2"
           gethomepage.dev/widget.type: ghostfolio
-          gethomepage.dev/widget.url: http://mealie.default:3333
+          gethomepage.dev/widget.url: http://ghostfolio.default:3333
           gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_GHOSTFOLIO_TOKEN}}`}}"
