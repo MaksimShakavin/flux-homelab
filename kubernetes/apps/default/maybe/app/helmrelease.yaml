@@ -30,7 +30,7 @@ spec:
           web:
             image:
               repository: ghcr.io/maybe-finance/maybe
-              tag: latest@sha256:f4d2d40b3721a6dd099028aee70ea23ba18da7a49870b70398e0569c47b0de53
+              tag: latest@sha256:08109a563c042cd67d14ada8960efdaa0f5045bbfb2df89f01c5a6a9fd3e1340
             env: &env
               TZ: "Europe/Warsaw"
               SELF_HOSTED: "true"
@@ -60,7 +60,7 @@ spec:
           worker:
             image:
               repository: ghcr.io/maybe-finance/maybe
-              tag: latest@sha256:f4d2d40b3721a6dd099028aee70ea23ba18da7a49870b70398e0569c47b0de53
+              tag: latest@sha256:08109a563c042cd67d14ada8960efdaa0f5045bbfb2df89f01c5a6a9fd3e1340
             command: ["bundle", "exec", "sidekiq"]
             env: *env
             envFrom:
