@@ -99,13 +99,14 @@ spec:
     persistence:
       config:
         existingClaim: tautulli
-      cache:
+      tmpfs:
         type: emptyDir
-        globalMounts:
-          - path: /config/cache
-      logs:
-        type: emptyDir
-        globalMounts:
-          - path: /config/logs
-      tmp:
-        type: emptyDir
+        advancedMounts:
+          tautulli:
+            app:
+              - path: /config/logs
+                subPath: logs
+              - path: /tmp
+                subPath: tmp
+              - path: /config/cache
+                subPath: cache

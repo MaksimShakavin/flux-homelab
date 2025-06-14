@@ -94,9 +94,9 @@ spec:
             endpoint: "minio-content.exelent.click"
             region: "us-east-1"
           schedules:
-            full: "30 1 * * 0" # Sunday at 01:30
-            differential: "30 1 * * 1-6" # Mon-Sat at 01:30
-            incremental: "30 3-23 * * *" # Every hour except 01:30-2:30
+            full: "0 3 * * 0" # every Sunday at 03:00
+            differential: "0 5 * * 1-6" # every Monday-Saturday at 05:00
+            incremental: "0 6-23 * * *" # every hour from 06:00 to 23:00 every day
 #  dataSource:
 #    pgbackrest:
 #      stanza: db
