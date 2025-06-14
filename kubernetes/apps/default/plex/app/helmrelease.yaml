@@ -112,10 +112,6 @@ spec:
         existingClaim: plex-cache
         globalMounts:
           - path: /config/Library/Application Support/Plex Media Server/Cache
-      tmp:
-        type: emptyDir
-      transcode:
-        type: emptyDir
       media:
         type: nfs
         server: "192.168.20.5"
@@ -123,3 +119,14 @@ spec:
         globalMounts:
           - path: /media
             readOnly: true
+      tmpfs:
+        type: emptyDir
+        advancedMounts:
+          plex:
+            app:
+              - path: /config/Library/Application Support/Plex Media Server/Logs
+                subPath: logs
+              - path: /transcode
+                subPath: transcode
+              - path: /tmp
+                subPath: tmp
