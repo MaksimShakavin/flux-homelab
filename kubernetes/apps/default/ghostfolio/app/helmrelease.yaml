@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app APP_NAME
+  name: &app ghostfolio
 spec:
   interval: 1h
   chartRef:
@@ -11,14 +11,11 @@ spec:
     name: app-template
   install:
     remediation:
-      # Retries is the number of retries that should be attempted on failures before bailing. Remediation, using an uninstall, is performed between each attempt.
       retries: -1
   upgrade:
-    # CleanupOnFail allows deletion of new resources created during the Helm rollback action when it fails
     cleanupOnFail: true
     remediation:
       retries: 3
-  # Generally storage dependencies goes here
   dependsOn:
     - name: longhorn
       namespace: storage
@@ -26,28 +23,43 @@ spec:
       namespace: storage
   values:
     controllers:
-      APP_NAME:
+      ghostfolio:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
           app:
             image:
-              repository: APP_IMAGE
-              tag: VERSION
+              repository: docker.io/ghostfolio/ghostfolio
+              tag: 2.170.0@sha256:dce0622f830521456e714e78104623f5f90ff5d45c9da8f0e2f15744a8677da3
             env:
               TZ: "Europe/Warsaw"
-            # Paste if have secret with envs
+              REDIS_HOST: "dragonfly.database.svc.cluster.local"
+              REDIS_DB: "4"
+              REDIS_PORT: 6379
+              # POSTGRES
+              POSTGRES_DB: *app
+              POSTGRES_USER: postgres
+              POSTGRES_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: ghostfolio-pguser-postgres
+                    key: password
+              DATABASE_URL:
+                valueFrom:
+                  secretKeyRef:
+                    name: ghostfolio-pguser-postgres
+                    key: pgbouncer-uri
             envFrom:
               - secretRef:
-                  name: APP_NAME-secret
+                  name: ghostfolio-secret
             probes:
               liveness: &probes
                 enabled: true
                 custom: true
                 spec:
                   httpGet:
-                    path: /health
-                    port: &port 80
+                    path: /api/v1/health
+                    port: &port 3333
                   initialDelaySeconds: 0
                   periodSeconds: 10
                   timeoutSeconds: 1
@@ -72,9 +84,6 @@ spec:
     service:
       app:
         controller: *app
-        # Add if it needs to have local network ip
-        annotations:
-          lbipam.cilium.io/ips: 192.168.20.65, ::ffff:192.168.20.65
         ports:
           http:
             port: *port
@@ -82,24 +91,16 @@ spec:
       app:
         hostnames: [ "{{ .Release.Name }}.exelent.click" ]
         parentRefs:
-          - name: internal
+          - name: external
             namespace: kube-system
             sectionName: https
         annotations:
           gethomepage.dev/enabled: "true"
-          gethomepage.dev/icon: APP_NAME.png
-          gethomepage.dev/name: APP_NAME
-          gethomepage.dev/group: "APP_GROUP"
-          gethomepage.dev/description: APP_DESCRIPTION
-          gethomepage.dev/weight: "7"
-    persistence:
-      server:
-        existingClaim: *app
-        globalMounts:
-          - path: /path/to/the/data
-      saves:
-        type: nfs
-        server: "192.168.20.5"
-        path: "/volume1/kubernetes/path"
-        globalMounts:
-          - path: /to/the/nfs/data
+          gethomepage.dev/icon: ghostfolio.png
+          gethomepage.dev/name: Ghostfolio
+          gethomepage.dev/group: "Home Apps"
+          gethomepage.dev/description: "Investment Management"
+          gethomepage.dev/weight: "2"
+          gethomepage.dev/widget.type: ghostfolio
+          gethomepage.dev/widget.url: http://mealie.default:3333
+          gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_GHOSTFOLIO_TOKEN}}`}}"
