@@ -22,7 +22,6 @@ resources:
   - ./lubelogger/ks.yaml
   - ./immich/ks.yaml
   - ./ghostfolio/ks.yaml
-  - ./maybe/ks.yaml
 #  - ./audiobookshelf/ks.yaml
 #  - ./satisfactory/ks.yaml
 #  - ./valheim/ks.yaml
