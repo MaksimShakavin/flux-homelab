@@ -69,6 +69,7 @@ spec:
               limits:
                 memory: 2Gi
       microservices:
+        replicas: 3
         annotations:
           secret.reloader.stakater.com/reload: *secret
           configmap.reloader.stakater.com/reload: *configmap
@@ -80,7 +81,7 @@ spec:
               labelSelector:
                 matchLabels:
                   app.kubernetes.io/instance: *app
-                  app.kubernetes.io/component: microservices
+                  app.kubernetes.io/controller: microservices
           nodeSelector:
             intel.feature.node.kubernetes.io/gpu: "true"
         containers:
