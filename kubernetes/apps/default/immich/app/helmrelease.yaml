@@ -69,7 +69,7 @@ spec:
               limits:
                 memory: 2Gi
       microservices:
-        replicas: 3
+        replicas: 1
         annotations:
           secret.reloader.stakater.com/reload: *secret
           configmap.reloader.stakater.com/reload: *configmap
