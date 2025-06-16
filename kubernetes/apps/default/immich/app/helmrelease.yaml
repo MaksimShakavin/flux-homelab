@@ -246,3 +246,8 @@ spec:
           machine-learning:
             machine-learning:
               - path: /cache
+                subPath: cache
+              - path: /.cache
+                subPath: dotCache
+      tmp:
+        type: emptyDir
