@@ -23,7 +23,7 @@
     "twoPass": false,
     "preferredHwDevice": "auto",
     "transcode": "required",
-    "accelDecode": "true",
+    "accelDecode": "false",
     "tonemap": "hable",
     "accel": "qsv"
   },
