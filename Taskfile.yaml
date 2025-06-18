@@ -28,6 +28,7 @@ includes:
   talos: .taskfiles/talos
   volsync: .taskfiles/volsync
   ansible: .taskfiles/ansible/Taskfile.yaml
+  secrets: .taskfiles/secrets/Taskfile.yaml
 
 tasks:
   default:
