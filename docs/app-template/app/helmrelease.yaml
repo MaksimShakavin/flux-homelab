@@ -73,7 +73,7 @@ spec:
       app:
         # Add if it needs to have local network ip
         annotations:
-          lbipam.cilium.io/ips: 192.168.20.65, ::ffff:192.168.20.65
+          lbipam.cilium.io/ips: 192.168.20.65
         ports:
           http:
             port: *port
