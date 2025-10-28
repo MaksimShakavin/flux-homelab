@@ -30,7 +30,7 @@ spec:
           app:
             image:
               repository: golift/notifiarr
-              tag: 0.8@sha256:13b0dcc1321099a52abd00b9b7e15c99c1a83acbe0dad5be8a21a2a69b2ebc80
+              tag: 0.9@sha256:76ddae2ff464e10b73f511858b81d3bcde5c6d84c29d473fb31f1b9c224529a9
             env:
               PUID: 1000
               PGID: 1000
