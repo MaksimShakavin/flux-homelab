@@ -30,7 +30,7 @@ spec:
           app:
             image:
               repository: ghcr.io/hargata/lubelogger
-              tag: v1.5.0
+              tag: v1.5.5
             env:
               LC_ALL: ru_RU.UTF-8
               LANG: ru_RU.UTF-8
