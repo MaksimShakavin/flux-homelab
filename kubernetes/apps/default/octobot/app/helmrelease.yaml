@@ -30,7 +30,7 @@ spec:
           app:
             image:
               repository: drakkarsoftware/octobot
-              tag: 2.0.12@sha256:b2bc19106ecc1dd0a5c4ee891b576703b732a0089fd635e493dc8f361e02598b
+              tag: 2.1.13@sha256:56c42b40066afea4ebad52c44423ae23360e3ff51735efafe5a27fb499d6dd87
             env:
               HOST: octobot.exelent.click
     service:
