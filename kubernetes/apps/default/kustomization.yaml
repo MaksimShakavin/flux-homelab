@@ -12,7 +12,7 @@ resources:
   - ./prowlarr/ks.yaml
   - ./radarr/ks.yaml
   - ./sonarr/ks.yaml
-  - ./overseerr/ks.yaml
+#  - ./overseerr/ks.yaml
   - ./mealie/ks.yaml
   - ./paperless/ks.yaml
   - ./plex/ks.yaml
