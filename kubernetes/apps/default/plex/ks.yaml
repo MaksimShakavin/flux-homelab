@@ -3,35 +3,26 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app plex
-  namespace: &namespace default
+  name: plex
 spec:
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
   components:
-    - ../../../../components/gatus/external
     - ../../../../components/volsync
   dependsOn:
-    - name: external-secrets-stores
-      namespace: external-secrets
-    - name: intel-device-plugin-gpu
+    - name: intel-gpu-resource-driver
       namespace: kube-system
     - name: longhorn
       namespace: storage
   interval: 1h
   path: ./kubernetes/apps/default/plex/app
-  postBuild:
-    substitute:
-      APP: *app
-      GATUS_PATH: /web/index.html
-      VOLSYNC_CAPACITY: 10Gi
   prune: true
-  retryInterval: 2m
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: *namespace
-  timeout: 5m
+  targetNamespace: default
   wait: false
+  postBuild:
+    substitute:
+      APP: plex
+      GATUS_PATH: /web/index.html
+      VOLSYNC_CAPACITY: 10Gi

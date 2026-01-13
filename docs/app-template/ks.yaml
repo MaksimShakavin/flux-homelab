@@ -3,14 +3,9 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app APP_NAME
-  namespace: &namespace default
+  name: APP_NAME
 spec:
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
   components:
-    - ../../../../components/gatus/external
     - ../../../../components/volsync
     - ../../../../components/postgress
   dependsOn:
@@ -30,15 +25,13 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/default/APP_NAME/app
   prune: true
-  retryInterval: 2m
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: *namespace
-  timeout: 5m
+  targetNamespace: default
   wait: false
   postBuild:
     substitute:
-      APP: *app
+      APP: APP_NAME
       VOLSYNC_CAPACITY: 5Gi

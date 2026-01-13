@@ -7,3 +7,4 @@ resources:
   - ./snapshot.yaml
   - ./local.yaml
   - ./httproute.yaml
+  - ./ocirepository.yaml

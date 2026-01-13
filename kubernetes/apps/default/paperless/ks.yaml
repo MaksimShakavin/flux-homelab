@@ -3,21 +3,14 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app paperless
-  namespace: &namespace default
+  name: paperless
 spec:
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
   components:
-    - ../../../../components/gatus/external
     - ../../../../components/volsync
     - ../../../../components/postgress
   dependsOn:
     - name: crunchy-postgres-operator
       namespace: database
-    - name: external-secrets-stores
-      namespace: external-secrets
   healthCheckExprs:
     - apiVersion: dragonflydb.io/v1alpha1
       kind: Dragonfly
@@ -30,15 +23,13 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/default/paperless/app
   prune: true
-  retryInterval: 2m
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: *namespace
-  timeout: 5m
+  targetNamespace: default
   wait: false
   postBuild:
     substitute:
-      APP: *app
+      APP: paperless
       VOLSYNC_CAPACITY: 1Gi

@@ -7,3 +7,4 @@ resources:
   - ./configmap.yaml
   - ./helmrelease.yaml
   - ./rbac.yaml
+  - ./ocirepository.yaml

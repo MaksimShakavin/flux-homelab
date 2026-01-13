@@ -1,0 +1,32 @@
+machine:
+  kubelet:
+    defaultRuntimeSeccompProfileEnabled: true
+    disableManifestsDirectory: true
+    extraConfig:
+      serializeImagePulls: false
+    nodeIP:
+      validSubnets:
+        - 192.168.20.0/24
+    # Mount longhorn and local-hostpath in kubelet
+    extraMounts:
+      - destination: /var/lib/longhorn
+        type: bind
+        source: /var/lib/longhorn
+        options:
+          - bind
+          - rshared
+          - rw
+      - destination: /var/mnt/ssd/longhorn
+        type: bind
+        source: /var/mnt/ssd/longhorn
+        options:
+          - bind
+          - rshared
+          - rw
+      - destination: /var/mnt/ssd/democratic-csi/local
+        type: bind
+        source: /var/mnt/ssd/democratic-csi/local
+        options:
+          - bind
+          - rshared
+          - rw

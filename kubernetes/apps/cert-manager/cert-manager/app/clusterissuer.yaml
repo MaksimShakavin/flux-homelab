@@ -16,4 +16,5 @@ spec:
               name: cloudflare-secret
               key: CF_API_TOKEN
         selector:
-          dnsZones: ["exelent.click"]
+          dnsZones:
+            - exelent.click

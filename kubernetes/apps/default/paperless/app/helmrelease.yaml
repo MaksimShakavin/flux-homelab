@@ -3,24 +3,12 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app paperless
+  name: paperless
 spec:
   interval: 1h
   chartRef:
     kind: OCIRepository
-    name: app-template
-  install:
-    remediation:
-      retries: -1
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
-  dependsOn:
-    - name: longhorn
-      namespace: storage
-    - name: volsync
-      namespace: storage
+    name: paperless
   values:
     controllers:
       paperless:
@@ -46,8 +34,8 @@ spec:
               PAPERLESS_DBENGINE: postgresql
               PAPERLESS_DBPORT: "5432"
               PAPERLESS_DBHOST: paperless-pgbouncer.default.svc
-              PAPERLESS_DBUSER: *app
-              PAPERLESS_DBNAME: *app
+              PAPERLESS_DBUSER: paperless
+              PAPERLESS_DBNAME: paperless
               PAPERLESS_DBPASS:
                 valueFrom:
                   secretKeyRef:
@@ -58,8 +46,8 @@ spec:
                   name: paperless-secret
           tika:
             image:
-              repository: ghcr.io/paperless-ngx/tika
-              tag: 2.9.1-minimal@sha256:20db3df89eaeb1b271dd840888fe909b88b12f4b86ef641ec07a1d45d4c5168f
+              repository: apache/tika
+              tag: 3.2.3.0@sha256:3fafa194474c5f3a8cff25a0eefd07e7c0513b7f552074ad455e1af58a06bbea
           gotenburg:
             image:
               repository: gotenberg/gotenberg
@@ -69,7 +57,6 @@ spec:
               runAsUser: 1001
     service:
       app:
-        controller: paperless
         ports:
           http:
             port: *port
@@ -78,9 +65,8 @@ spec:
         hostnames:
           - "{{ .Release.Name }}.exelent.click"
         parentRefs:
-          - name: external
-            namespace: kube-system
-            sectionName: https
+          - name: envoy-external
+            namespace: network
         rules:
           - backendRefs:
               - identifier: app
@@ -97,7 +83,7 @@ spec:
           gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_PAPERLESS_TOKEN}}` }}"
     persistence:
       data:
-        existingClaim: *app
+        existingClaim: "{{ .Release.Name }}"
         globalMounts:
           - path: /usr/src/paperless/data
       files:

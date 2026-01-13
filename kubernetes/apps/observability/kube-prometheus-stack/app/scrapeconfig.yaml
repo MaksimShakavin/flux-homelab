@@ -3,7 +3,7 @@
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: ScrapeConfig
 metadata:
-  name: &name node-exporter
+  name: node-exporter
 spec:
   staticConfigs:
     - targets:
@@ -12,13 +12,13 @@ spec:
   relabelings:
     - action: replace
       targetLabel: job
-      replacement: *name
+      replacement: node-exporter
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/scrapeconfig_v1alpha1.json
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: ScrapeConfig
 metadata:
-  name: &name minio-cluster
+  name: minio-cluster
 spec:
   staticConfigs:
     - targets:
@@ -27,13 +27,13 @@ spec:
   relabelings:
     - action: replace
       targetLabel: job
-      replacement: *name
+      replacement: minio-cluster
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/scrapeconfig_v1alpha1.json
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: ScrapeConfig
 metadata:
-  name: &name minio-bucket
+  name: minio-bucket
 spec:
   staticConfigs:
     - targets:
@@ -42,13 +42,13 @@ spec:
   relabelings:
     - action: replace
       targetLabel: job
-      replacement: *name
+      replacement: minio-bucket
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/scrapeconfig_v1alpha1.json
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: ScrapeConfig
 metadata:
-  name: &name minio-node
+  name: minio-node
 spec:
   staticConfigs:
     - targets:
@@ -57,13 +57,13 @@ spec:
   relabelings:
     - action: replace
       targetLabel: job
-      replacement: *name
+      replacement: minio-node
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/scrapeconfig_v1alpha1.json
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: ScrapeConfig
 metadata:
-  name: &name minio-resources
+  name: minio-resources
 spec:
   staticConfigs:
     - targets:
@@ -72,4 +72,4 @@ spec:
   relabelings:
     - action: replace
       targetLabel: job
-      replacement: *name
+      replacement: minio-resources

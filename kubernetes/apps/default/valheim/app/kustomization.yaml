@@ -6,6 +6,5 @@ resources:
   - ./externalsecret.yaml
   - ./discordconfig.externalsecret.yaml
   - ./helmrelease.yaml
-  - ../../../../templates/volsync
-  - ../../../../templates/gatus/external
+  - ./ocirepository.yaml
 

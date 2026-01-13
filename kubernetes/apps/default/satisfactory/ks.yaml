@@ -3,13 +3,11 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app satisfactory
-  namespace: &namespace default
+  name: satisfactory
 spec:
-  targetNamespace: *namespace
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/volsync
+  interval: 1h
   path: ./kubernetes/apps/default/satisfactory/app
   prune: true
   sourceRef:
@@ -17,12 +15,10 @@ spec:
     name: flux-system
     namespace: flux-system
   wait: false
-  interval: 1h
-  retryInterval: 1m
-  timeout: 5m
+  targetNamespace: default
   postBuild:
     substitute:
-      APP: *app
+      APP: satisfactory
       VOLSYNC_CAPACITY: 20Gi
       VOLSYNC_UID: "1000"
       VOLSYNC_GID: "1000"

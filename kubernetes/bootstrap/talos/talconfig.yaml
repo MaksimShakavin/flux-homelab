@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
 ---
 # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-talosVersion: v1.11.5
+talosVersion: v1.12.1
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-kubernetesVersion: v1.33.3
+kubernetesVersion: v1.35.0
 
 clusterName: "home-kubernetes"
 endpoint: https://192.168.20.60:6443
@@ -43,8 +43,6 @@ nodes:
           - network: 0.0.0.0/0
             gateway: "192.168.20.1"
         mtu: 1500
-        vip:
-          ip: "192.168.20.60"
   - hostname: "k8s-control-2"
     ipAddress: "192.168.20.52"
     installDisk: /dev/sda
@@ -67,8 +65,6 @@ nodes:
           - network: 0.0.0.0/0
             gateway: "192.168.20.1"
         mtu: 1500
-        vip:
-          ip: "192.168.20.60"
   - hostname: "k8s-control-3"
     ipAddress: "192.168.20.53"
     installDisk: /dev/sda
@@ -95,157 +91,11 @@ nodes:
           ip: "192.168.20.60"
 
 patches:
-  # Configure containerd
-  - |-
-    machine:
-      files:
-        - op: create
-          path: /etc/cri/conf.d/20-customization.part
-          permissions: 0o644
-          content: |-
-            [plugins."io.containerd.cri.v1.images"]
-              discard_unpacked_layers = false
-
-  # Disable search domain everywhere
-  - |-
-    machine:
-      network:
-        disableSearchDomain: true
-
-  # Configure kubelet
-  - |-
-    machine:
-      kubelet:
-        extraConfig:
-          serializeImagePulls: false
-        nodeIP:
-          validSubnets:
-            - 192.168.20.0/24
-
-  # Force nameserver
-  - |-
-    machine:
-      network:
-        nameservers:
-          - "1.1.1.1"
-          - "1.0.0.1"
-
-  - |-
-    machine:
-      features:
-        hostDNS:
-          resolveMemberNames: true
-          forwardKubeDNSToHost: false
-
-  # Custom sysctl settings
-  - |-
-    machine:
-      sysctls:
-        fs.inotify.max_user_watches: "1048576"
-        fs.inotify.max_user_instances: "8192"
-        net.core.rmem_max: "7500000"
-        net.core.wmem_max: "7500000"
-
-  # Add additional ssd
-  - |-
-    machine:
-      disks:
-        - device: /dev/sdb
-          partitions:
-            - mountpoint: /var/mnt/ssd
-
-  # Mount longhorn and local-hostpath in kubelet
-  - |-
-    machine:
-      kubelet:
-        extraMounts:
-          - destination: /var/lib/longhorn
-            type: bind
-            source: /var/lib/longhorn
-            options:
-              - bind
-              - rshared
-              - rw
-          - destination: /var/mnt/ssd/longhorn
-            type: bind
-            source: /var/mnt/ssd/longhorn
-            options:
-              - bind
-              - rshared
-              - rw
-          - destination: /var/mnt/ssd/democratic-csi/local
-            type: bind
-            source: /var/mnt/ssd/democratic-csi/local
-            options:
-              - bind
-              - rshared
-              - rw
-
+  - "@./patches/global/machine-files.yaml"
+  - "@./patches/global/machine-kubelet.yaml"
+  - "@./patches/global/machine-sysctls.yaml"
+  - "@./patches/global/machine-disks.yaml"
+  - "@./patches/global/machine-features.yaml"
 controlPlane:
   patches:
-    # Cluster configuration
-    # https://kubernetes.io/docs/tasks/extend-kubernetes/configure-aggregation-layer/
-    - |-
-      cluster:
-        allowSchedulingOnControlPlanes: true
-        apiServer:
-          extraArgs:
-            enable-aggregator-routing: true
-        controllerManager:
-          extraArgs:
-            bind-address: 0.0.0.0
-        coreDNS:
-          disabled: true
-        proxy:
-          disabled: true
-        scheduler:
-          extraArgs:
-            bind-address: 0.0.0.0
-
-    # ETCD configuration
-    - |-
-      cluster:
-        etcd:
-          extraArgs:
-            listen-metrics-urls: http://0.0.0.0:2381
-          advertisedSubnets:
-            - 192.168.20.0/24
-
-    # Disable default API server admission plugins.
-    - |-
-      - op: remove
-        path: /cluster/apiServer/admissionControl
-
-    # Enable K8s Talos API Access
-    - |-
-      machine:
-        features:
-          kubernetesTalosAPIAccess:
-            enabled: true
-            allowedRoles:
-              - os:admin
-            allowedKubernetesNamespaces:
-              - system-upgrade
-              - actions-runner-system
-
-    # Scheduler configuration
-    - |-
-      cluster:
-        scheduler:
-          config:
-            apiVersion: kubescheduler.config.k8s.io/v1
-            kind: KubeSchedulerConfiguration
-            profiles:
-              - schedulerName: default-scheduler
-                plugins:
-                  score:
-                    disabled:
-                      - name: ImageLocality
-                pluginConfig:
-                  - name: PodTopologySpread
-                    args:
-                      defaultingType: List
-                      defaultConstraints:
-                        - maxSkew: 1
-                          topologyKey: kubernetes.io/hostname
-                          whenUnsatisfiable: ScheduleAnyway
+    - "@./patches/controller/cluster.yaml"

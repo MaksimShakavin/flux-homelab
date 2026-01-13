@@ -1,34 +1,15 @@
 ---
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app radarr
-  namespace: default
+  name: radarr
 spec:
-  interval: 1h
   chartRef:
     kind: OCIRepository
-    name: app-template
-  install:
-    remediation:
-      retries: -1
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
-  dependsOn:
-    - name: longhorn
-      namespace: storage
-    - name: volsync
-      namespace: storage
+    name: radarr
+  interval: 1h
   values:
-    defaultPodOptions:
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
-        fsGroupChangePolicy: OnRootMismatch
     controllers:
       radarr:
         annotations:
@@ -37,7 +18,7 @@ spec:
           app:
             image:
               repository: ghcr.io/home-operations/radarr
-              tag: 6.1.0.10293@sha256:22bbf7e924dd929b756147d8110664c3e2da37c59516b249945ab1d63657be29
+              tag: 6.1.1.10317@sha256:dc191495299b0adf19f4347ffe35f773c56a04d71e38a1f06aa564547b6e799e
             env:
               TZ: "Europe/Warsaw"
               RADARR__APP__INSTANCENAME: Radarr
@@ -46,12 +27,12 @@ spec:
               RADARR__AUTH__REQUIRED: DisabledForLocalAddresses
               RADARR__LOG__DBENABLED: "False"
               RADARR__LOG__LEVEL: info
-              RADARR__SERVER__PORT: &port 8080
+              RADARR__SERVER__PORT: &port 80
               RADARR__UPDATE__BRANCH: develop
               # Database
               RADARR__POSTGRES__HOST: radarr-pgbouncer.default.svc
               RADARR__POSTGRES__PORT: "5432"
-              RADARR__POSTGRES__USER: *app
+              RADARR__POSTGRES__USER: radarr
               RADARR__POSTGRES__PASSWORD:
                 valueFrom:
                   secretKeyRef:
@@ -60,16 +41,38 @@ spec:
               RADARR__POSTGRES__MAINDB: radarr
             envFrom:
               - secretRef:
-                  name: radarr-secret
+                  name: "{{ .Release.Name }}-secret"
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /ping
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: {drop: ["ALL"]}
             resources:
               requests:
-                cpu: 500m
-                memory: 500Mi
+                cpu: 100m
               limits:
-                memory: 2000Mi
+                memory: 2Gi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
     service:
       app:
-        controller: radarr
         ports:
           http:
             port: *port
@@ -78,13 +81,8 @@ spec:
         hostnames:
           - "{{ .Release.Name }}.exelent.click"
         parentRefs:
-          - name: internal
-            namespace: kube-system
-            sectionName: https
-        rules:
-          - backendRefs:
-              - identifier: app
-                port: *port
+          - name: envoy-internal
+            namespace: network
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/icon: radarr.png
@@ -97,7 +95,7 @@ spec:
           gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_RADARR_TOKEN}}` }}"
     persistence:
       config:
-        existingClaim: *app
+        existingClaim:  "{{ .Release.Name }}"
         globalMounts:
           - path: /config
       downloads:
@@ -106,3 +104,5 @@ spec:
         path: "/volume1/kubernetes"
         globalMounts:
           - path: /data
+      tmp:
+        type: emptyDir

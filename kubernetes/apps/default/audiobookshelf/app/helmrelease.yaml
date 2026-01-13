@@ -3,33 +3,12 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app audiobookshelf
+  name: audiobookshelf
 spec:
+  chartRef:
+    kind: OCIRepository
+    name: audiobookshelf
   interval: 1h
-  chart:
-    spec:
-      chart: app-template
-      version: 3.7.3
-      sourceRef:
-        kind: HelmRepository
-        name: bjw-s
-        namespace: flux-system
-  install:
-    remediation:
-      # Retries is the number of retries that should be attempted on failures before bailing. Remediation, using an uninstall, is performed between each attempt.
-      retries: 3
-  upgrade:
-    # CleanupOnFail allows deletion of new resources created during the Helm rollback action when it fails
-    cleanupOnFail: true
-    remediation:
-      strategy: rollback
-      retries: 3
-  # Generally storage dependencies goes here
-  dependsOn:
-    - name: longhorn
-      namespace: storage
-    - name: volsync
-      namespace: storage
   values:
     controllers:
       audiobookshelf:
@@ -82,8 +61,13 @@ spec:
         ports:
           http:
             port: *port
-    ingress:
+    route:
       app:
+        hostnames:
+          - "{{ .Release.Name }}.exelent.click"
+        parentRefs:
+          - name: envoy-external
+            namespace: network
         annotations:
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
           gethomepage.dev/enabled: "true"
@@ -93,17 +77,9 @@ spec:
           gethomepage.dev/widget.type: audiobookshelf
           gethomepage.dev/widget.url: http://audiobookshelf.default:8080
           gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_AUDIOBOOKSHELF_TOKEN}}`}}"
-        className: external
-        hosts:
-          - host: "audiobooks.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
     persistence:
       config:
-        existingClaim: *app
+        existingClaim: "{{ .Release.Name }}"
       audiobooks:
         type: nfs
         server: "192.168.20.5"

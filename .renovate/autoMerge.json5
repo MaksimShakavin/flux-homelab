@@ -6,7 +6,7 @@
       matchDatasources: ["docker"],
       automerge: true,
       automergeType: "pr",
-      matchUpdateTypes: ["digest", "patch"],
+      matchUpdateTypes: ["digest"],
       matchPackageNames: ["/home-operations/"],
       ignoreTests: false,
     },
@@ -31,7 +31,10 @@
     {
       description: "Auto-merge trusted GitHub Actions",
       matchManagers: ["github-actions"],
-      matchPackageNames: ["/^actions\//",  "/^renovatebot\//"],
+      matchPackageNames: [
+        "/^actions\//",
+        "/^renovatebot\//",
+      ],
       automerge: true,
       automergeType: "branch",
       matchUpdateTypes: ["minor", "patch", "digest"],

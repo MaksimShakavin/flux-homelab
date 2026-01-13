@@ -5,20 +5,12 @@ kind: HelmRelease
 metadata:
   name: qbittorrent-tools-emonoda
 spec:
-  interval: 1h
   chartRef:
     kind: OCIRepository
-    name: app-template
-  install:
-    remediation:
-      retries: -1
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
+    name: qbittorrent-tools-emonoda
+  interval: 1h
   dependsOn:
     - name: qbittorrent
-      namespace: default
   values:
     controllers:
       main:

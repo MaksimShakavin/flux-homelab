@@ -1,42 +1,35 @@
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: cloudflare-tunnel
 spec:
-  interval: 1h
   chartRef:
     kind: OCIRepository
-    name: app-template
-  install:
-    remediation:
-      retries: -1
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
+    name: cloudflare-tunnel
+  interval: 1h
   values:
     controllers:
       cloudflare-tunnel:
+        replicas: 2
         strategy: RollingUpdate
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
           app:
             image:
-              repository: docker.io/cloudflare/cloudflared
+              repository: mirror.gcr.io/cloudflare/cloudflared
               tag: 2025.11.1@sha256:89ee50efb1e9cb2ae30281a8a404fed95eb8f02f0a972617526f8c5b417acae2
             env:
               NO_AUTOUPDATE: true
               TUNNEL_METRICS: 0.0.0.0:8080
-              TUNNEL_ORIGIN_ENABLE_HTTP2: true
-              TUNNEL_POST_QUANTUM: true
-              TUNNEL_TRANSPORT_PROTOCOL: quic
             envFrom:
               - secretRef:
-                  name: cloudflare-tunnel-secret
-            args: ["tunnel", "run"]
+                  name: "{{ .Release.Name }}-secret"
+            args:
+              - tunnel
+              - run
             probes:
               liveness: &probes
                 enabled: true
@@ -66,20 +59,30 @@ spec:
         runAsGroup: 1000
     service:
       app:
-        controller: cloudflare-tunnel
         ports:
           http:
             port: *port
     serviceMonitor:
       app:
-        serviceName: cloudflare-tunnel
         endpoints:
           - port: http
+    configMaps:
+      config:
+        data:
+          config.yaml: |-
+            ingress:
+              - hostname: "*.exelent.click"
+                originRequest:
+                  http2Origin: true
+                  keepAliveTimeout: 3600s
+                  originServerName: external.exelent.click
+                  tcpKeepAlive: 7200s
+                service: https://envoy-external.{{ .Release.Namespace }}.svc.cluster.local:443
+              - service: http_status:404
     persistence:
       config-file:
         type: configMap
-        name: cloudflare-tunnel-configmap
+        identifier: config
         globalMounts:
           - path: /etc/cloudflared/config.yaml
             subPath: config.yaml
-            readOnly: true

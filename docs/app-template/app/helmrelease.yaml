@@ -3,27 +3,12 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app APP_NAME
+  name: APP_NAME
 spec:
-  interval: 1h
   chartRef:
     kind: OCIRepository
-    name: app-template
-  install:
-    remediation:
-      # Retries is the number of retries that should be attempted on failures before bailing. Remediation, using an uninstall, is performed between each attempt.
-      retries: -1
-  upgrade:
-    # CleanupOnFail allows deletion of new resources created during the Helm rollback action when it fails
-    cleanupOnFail: true
-    remediation:
-      retries: 3
-  # Generally storage dependencies goes here
-  dependsOn:
-    - name: longhorn
-      namespace: storage
-    - name: volsync
-      namespace: storage
+    name: APP_NAME
+  interval: 1h
   values:
     controllers:
       APP_NAME:
@@ -81,9 +66,8 @@ spec:
       app:
         hostnames: [ "{{ .Release.Name }}.exelent.click" ]
         parentRefs:
-          - name: internal
-            namespace: kube-system
-            sectionName: https
+          - name: envoy-internal
+            namespace: network
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/icon: APP_NAME.png
@@ -93,7 +77,7 @@ spec:
           gethomepage.dev/weight: "7"
     persistence:
       server:
-        existingClaim: *app
+        existingClaim: "{{ .Release.Name }}"
         globalMounts:
           - path: /path/to/the/data
       saves:

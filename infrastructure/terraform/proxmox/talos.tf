@@ -6,7 +6,7 @@ locals {
   // if changing, don't forget to change it in other places. DRY is to hard
   mac_addresses = ["BC:24:11:B5:DD:1F", "BC:24:11:0C:FD:22", "BC:24:11:A8:19:33"]
   # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-  talos_version = "v1.10.1"
+  talos_version = "v1.12.1"
   talos_image_id = "583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e"
 }
 

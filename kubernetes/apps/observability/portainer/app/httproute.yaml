@@ -5,6 +5,8 @@ kind: HTTPRoute
 metadata:
   name: portainer
   annotations:
+    gatus.home-operations.com/endpoint: |-
+      conditions: ["[STATUS] == 404"]
     gethomepage.dev/enabled: "true"
     gethomepage.dev/icon: portainer.png
     gethomepage.dev/name: Portainer
@@ -16,11 +18,11 @@ metadata:
     gethomepage.dev/widget.env: "2"
     gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_PORTAINER_TOKEN}}"
 spec:
-  hostnames: ["portainer.exelent.click"]
+  hostnames:
+    - portainer.exelent.click
   parentRefs:
-    - name: internal
+    - name: envoy-internal
       namespace: kube-system
-      sectionName: https
   rules:
     - backendRefs:
         - name: portainer

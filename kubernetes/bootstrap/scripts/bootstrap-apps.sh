@@ -23,30 +23,60 @@ function wait_for_nodes() {
     done
 }
 
+# Namespaces to be applied before the SOPS secrets are installed
+function apply_namespaces() {
+    log debug "Applying namespaces"
+
+    local -r apps_dir="${ROOT_DIR}/kubernetes/apps"
+
+    if [[ ! -d "${apps_dir}" ]]; then
+        log error "Directory does not exist" "directory=${apps_dir}"
+    fi
+
+    for app in "${apps_dir}"/*/; do
+        namespace=$(basename "${app}")
+
+        # Check if the namespace resources are up-to-date
+        if kubectl get namespace "${namespace}" &>/dev/null; then
+            log info "Namespace resource is up-to-date" "resource=${namespace}"
+            continue
+        fi
+
+        # Apply the namespace resources
+        if kubectl create namespace "${namespace}" --dry-run=client --output=yaml \
+            | kubectl apply --server-side --filename - &>/dev/null;
+        then
+            log info "Namespace resource applied" "resource=${namespace}"
+        else
+            log error "Failed to apply namespace resource" "resource=${namespace}"
+        fi
+    done
+}
+
 # CRDs to be applied before the helmfile charts are installed
 function apply_crds() {
     log debug "Applying CRDs"
 
-    local -r crds=(
-        # renovate: datasource=github-releases depName=kubernetes-sigs/external-dns
-        https://raw.githubusercontent.com/kubernetes-sigs/external-dns/refs/tags/v0.20.0/config/crd/standard/dnsendpoints.externaldns.k8s.io.yaml
-        # renovate: datasource=github-releases depName=kubernetes-sigs/gateway-api
-        https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.1/experimental-install.yaml
-        # renovate: datasource=github-releases depName=prometheus-operator/prometheus-operator
-        https://github.com/prometheus-operator/prometheus-operator/releases/download/v0.88.0/stripped-down-crds.yaml
-    )
+    local -r helmfile_file="${ROOT_DIR}/kubernetes/bootstrap/helmfile.d/00-crds.yaml"
 
-    for crd in "${crds[@]}"; do
-        if kubectl diff --filename "${crd}" &>/dev/null; then
-            log info "CRDs are up-to-date" "crd=${crd}"
-            continue
-        fi
-        if kubectl apply --server-side --filename "${crd}" &>/dev/null; then
-            log info "CRDs applied" "crd=${crd}"
-        else
-            log error "Failed to apply CRDs" "crd=${crd}"
-        fi
-    done
+    if [[ ! -f "${helmfile_file}" ]]; then
+        log fatal "File does not exist" "file" "${helmfile_file}"
+    fi
+
+    if ! crds=$(helmfile --file "${helmfile_file}" template --quiet | yq eval-all --exit-status 'select(.kind == "CustomResourceDefinition")') || [[ -z "${crds}" ]]; then
+        log fatal "Failed to render CRDs from Helmfile" "file" "${helmfile_file}"
+    fi
+
+    if echo "${crds}" | kubectl diff --filename - &>/dev/null; then
+        log info "CRDs are up-to-date"
+        return
+    fi
+
+    if ! echo "${crds}" | kubectl apply --server-side --filename - &>/dev/null; then
+        log fatal "Failed to apply crds from Helmfile" "file" "${helmfile_file}"
+    fi
+
+    log info "CRDs applied successfully"
 }
 
 # Resources to be applied before the helmfile charts are installed
@@ -71,31 +101,33 @@ function apply_resources() {
     fi
 }
 
-# Apply Helm releases using helmfile
-function apply_helm_releases() {
-    log debug "Applying Helm releases with helmfile"
+# Sync Helm releases
+function sync_helm_releases() {
+    log debug "Syncing Helm releases"
 
-    local -r helmfile_file="${ROOT_DIR}/kubernetes/bootstrap/helmfile.yaml"
+    local -r helmfile_file="${ROOT_DIR}/kubernetes/bootstrap/helmfile.d/01-apps.yaml"
 
     if [[ ! -f "${helmfile_file}" ]]; then
         log error "File does not exist" "file=${helmfile_file}"
     fi
 
-    if ! helmfile --file "${helmfile_file}" apply --hide-notes --skip-diff-on-install --suppress-diff --suppress-secrets; then
-        log error "Failed to apply Helm releases"
+    if ! helmfile --file "${helmfile_file}" sync --hide-notes; then
+        log error "Failed to sync Helm releases"
     fi
 
-    log info "Helm releases applied successfully"
+    log info "Helm releases synced successfully"
 }
 
 function main() {
+    check_env KUBECONFIG TALOSCONFIG
     check_cli helmfile kubectl kustomize sops talhelper yq
 
     # Apply resources and Helm releases
     wait_for_nodes
+    apply_namespaces
     apply_crds
     apply_resources
-    apply_helm_releases
+    sync_helm_releases
 
     log info "Congrats! The cluster is bootstrapped and Flux is syncing the Git repository"
 }

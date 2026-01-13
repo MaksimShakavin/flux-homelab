@@ -16,7 +16,8 @@ metadata:
     gethomepage.dev/widget.url: http://authentik-server.security
     gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_AUTHENTIK_TOKEN}}"
 spec:
-  hostnames: ["sso.exelent.click"]
+  hostnames:
+    - sso.exelent.click
   parentRefs:
     - name: external
       namespace: kube-system

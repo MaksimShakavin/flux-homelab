@@ -8,14 +8,7 @@ spec:
   interval: 1h
   chartRef:
     kind: OCIRepository
-    name: app-template
-  install:
-    remediation:
-      retries: -1
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
+    name: immich
   values:
     controllers:
       server:
@@ -74,6 +67,9 @@ spec:
           secret.reloader.stakater.com/reload: *secret
           configmap.reloader.stakater.com/reload: *configmap
         pod:
+          resourceClaims:
+            - name: gpu
+              resourceClaimTemplateName: immich
           topologySpreadConstraints:
             - maxSkew: 1
               topologyKey: kubernetes.io/hostname
@@ -100,12 +96,12 @@ spec:
                     name: immich-pguser-immich
                     key: password
             resources:
+              claims:
+                - name: gpu
               requests:
-                gpu.intel.com/i915: 1
                 cpu: 100m
                 memory: 250Mi
               limits:
-                gpu.intel.com/i915: 1
                 memory: 2500Mi
       machine-learning:
         annotations:
@@ -154,7 +150,6 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
         supplementalGroups: [ 10000 ]
         seccompProfile: { type: RuntimeDefault }
-
     service:
       server:
         controller: server
@@ -175,11 +170,11 @@ spec:
             port: *mlport
     route:
       app:
-        hostnames: [ "photos.exelent.click" ]
+        hostnames:
+          - "photos.exelent.click"
         parentRefs:
-          - name: external
-            namespace: kube-system
-            sectionName: https
+          - name: envoy-external
+            namespace: network
         rules:
           - backendRefs:
               - identifier: server

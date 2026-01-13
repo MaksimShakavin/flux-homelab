@@ -5,10 +5,12 @@
     "docker:enableMajor",
     "helpers:pinGitHubActionDigests",
     "github>MaksimShakavin/flux-homelab//.renovate/autoMerge.json5",
+    "github>MaksimShakavin/flux-homelab//.renovate/changelogs.json5",
     "github>MaksimShakavin/flux-homelab//.renovate/customManagers.json5",
     "github>MaksimShakavin/flux-homelab//.renovate/grafanaDashboards.json5",
     "github>MaksimShakavin/flux-homelab//.renovate/groups.json5",
     "github>MaksimShakavin/flux-homelab//.renovate/labels.json5",
+    "github>MaksimShakavin/flux-homelab//.renovate/overrides.json5",
     "github>MaksimShakavin/flux-homelab//.renovate/conventionalCommits.json5",
     ":automergeBranch",
     ":disableRateLimiting",
@@ -22,16 +24,15 @@
     "prIgnoreNotification",
   ],
   ignorePaths: [
-    "**/*.sops.*",
     "**/resources/**",
   ],
   flux: {
-    managerFilePatterns: ["/(^|/)kubernetes/.+\\.ya?ml$/"]
+    managerFilePatterns: ["/\\.yaml(?:\\.j2)?$/"],
   },
   "helm-values": {
-    managerFilePatterns: ["/(^|/)kubernetes/.+\\.ya?ml$/"]
+    managerFilePatterns: ["/\\.yaml(?:\\.j2)?$/"],
   },
   kubernetes: {
-    managerFilePatterns: ["/(^|/)kubernetes/.+\\.ya?ml$/"]
-  }
+    managerFilePatterns: ["/\\.yaml(?:\\.j2)?$/"],
+  },
 }

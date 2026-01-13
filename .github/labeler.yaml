@@ -24,7 +24,7 @@ area/renovate:
           - ".renovaterc.json5"
 area/scripts:
   - changed-files:
-      - any-glob-to-any-file: "scripts/**/*"
+      - any-glob-to-any-file: "kubernetes/bootstrap/scripts/**/*"
 area/talos:
   - changed-files:
-      - any-glob-to-any-file: "talos/**/*"
+      - any-glob-to-any-file: "kubernetes/bootstrap/talos/**/*"

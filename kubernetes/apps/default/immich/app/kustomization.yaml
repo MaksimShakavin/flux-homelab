@@ -6,6 +6,8 @@ resources:
   - ./configmap.yaml
   - ./helmrelease.yaml
   - ./externalsecret.yaml
+  - ./ocirepository.yaml
+  - ./resourceclaimtemplate.yaml
 configMapGenerator:
   - name: immich-database-init-sql
     files:

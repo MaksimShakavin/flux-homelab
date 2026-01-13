@@ -3,14 +3,9 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app radarr
-  namespace: &namespace default
+  name: radarr
 spec:
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
   components:
-    - ../../../../components/gatus/internal
     - ../../../../components/volsync
     - ../../../../components/postgress
   interval: 1h
@@ -18,23 +13,21 @@ spec:
   dependsOn:
     - name: crunchy-postgres-operator
       namespace: database
-    - name: external-secrets-stores
-      namespace: external-secrets
+    - name: longhorn
+      namespace: storage
   healthCheckExprs:
     - apiVersion: postgres-operator.crunchydata.com/v1beta1
       kind: PostgresCluster
       failed: status.conditions.filter(e, e.type == 'ProxyAvailable').all(e, e.status == 'False')
       current: status.conditions.filter(e, e.type == 'ProxyAvailable').all(e, e.status == 'True')
   prune: true
-  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: *namespace
-  timeout: 5m
+  targetNamespace: default
   wait: false
   postBuild:
     substitute:
-      APP: *app
+      APP: radarr
       VOLSYNC_CAPACITY: 1Gi

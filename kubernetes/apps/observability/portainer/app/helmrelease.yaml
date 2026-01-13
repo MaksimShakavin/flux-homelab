@@ -1,14 +1,4 @@
 ---
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/helmrepository_v2.json
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
-metadata:
-  name: portainer-charts
-  namespace: observability
-spec:
-  interval: 1h
-  url: https://portainer.github.io/k8s/
----
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -26,11 +16,6 @@ spec:
         name: portainer-charts
         namespace: observability
       interval: 5m
-  dependsOn:
-    - name: longhorn
-      namespace: storage
-    - name: volsync
-      namespace: storage
   values:
     image:
       repository: portainer/portainer-ce
@@ -39,4 +24,4 @@ spec:
       type: ClusterIP
       httpPort: 9000
     persistence:
-      existingClaim: *app
+      existingClaim: "{{ .Release.Name }}"

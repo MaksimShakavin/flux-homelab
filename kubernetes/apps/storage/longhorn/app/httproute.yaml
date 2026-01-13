@@ -13,11 +13,11 @@ metadata:
     gethomepage.dev/weight: "205"
     gethomepage.dev/pod-selector: "app.kubernetes.io/instance=longhorn"
 spec:
-  hostnames: ["longhorn.exelent.click"]
+  hostnames:
+    - longhorn.exelent.click
   parentRefs:
-    - name: internal
-      namespace: kube-system
-      sectionName: https
+    - name: envoy-internal
+      namespace: network
   rules:
     - backendRefs:
         - name: longhorn-frontend

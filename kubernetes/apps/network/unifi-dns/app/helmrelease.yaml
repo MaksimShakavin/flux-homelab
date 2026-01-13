@@ -1,35 +1,14 @@
 ---
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/ocirepository_v1beta2.json
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: OCIRepository
-metadata:
-  name: unifi-dns
-spec:
-  interval: 5m
-  layerSelector:
-    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
-    operation: copy
-  ref:
-    tag: 1.19.0
-  url: oci://ghcr.io/home-operations/charts-mirror/external-dns
----
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: &app unifi-dns
 spec:
-  interval: 1h
   chartRef:
     kind: OCIRepository
     name: unifi-dns
-  install:
-    remediation:
-      retries: -1
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
+  interval: 1h
   values:
     fullnameOverride: *app
     provider:
@@ -37,7 +16,7 @@ spec:
       webhook:
         image:
           repository: ghcr.io/kashalls/external-dns-unifi-webhook
-          tag: v0.7.0@sha256:a5503c1c61e3a8f6d66a0172fca6fb9affbe1f527ae6360ccf5ff5f0bf181c6e
+          tag: v0.8.0@sha256:fb2f74fdd0fc9fa22b95b525ccca9958715c0963d317da23b5f858858443dabe
         env:
           - name: UNIFI_HOST
             value: https://192.168.20.1
@@ -60,10 +39,13 @@ spec:
           timeoutSeconds: 5
     triggerLoopOnEvent: true
     policy: sync
-    sources: ["gateway-httproute", "service"]
+    sources:
+      - gateway-httproute
+      - service
     txtOwnerId: main
     txtPrefix: k8s.main.
-    domainFilters: ["exelent.click"]
+    domainFilters:
+      - exelent.click
     serviceMonitor:
       enabled: true
     podAnnotations:

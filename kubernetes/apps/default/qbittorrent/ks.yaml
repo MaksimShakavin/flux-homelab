@@ -3,57 +3,43 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app qbittorrent
-  namespace: &namespace default
+  name: qbittorrent
 spec:
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
   components:
-    - ../../../../components/gatus/internal
     - ../../../../components/volsync
   dependsOn:
-    - name: external-secrets-stores
-      namespace: external-secrets
+    - name: longhorn
+      namespace: storage
   interval: 1h
   path: ./kubernetes/apps/default/qbittorrent/app
   prune: true
-  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
   wait: false
-  targetNamespace: *namespace
-  timeout: 5m
+  targetNamespace: default
   postBuild:
     substitute:
-      APP: *app
+      APP: qbittorrent
       VOLSYNC_CAPACITY: 2Gi
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/kustomization-kustomize-v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app qbittorrent-tools
-  namespace: &namespace default
+  name: qbittorrent-tools
 spec:
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
   dependsOn:
     - name: qbittorrent
       namespace: default
-    - name: external-secrets-stores
-      namespace: external-secrets
   interval: 1h
   path: ./kubernetes/apps/default/qbittorrent/tools
   prune: true
-  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
   wait: false
-  targetNamespace: *namespace
-  timeout: 5m
+  targetNamespace: default
+

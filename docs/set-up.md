@@ -26,7 +26,7 @@
 - siderolabs/qemu-guest-agent -- for managing VMs from the Proxmox UI
 - siderolsbs/i915 -- for GPU support
 
-2. Go to `/infrastructure/terraform/talos.tf` and update the ISO URL if needed.
+2. Go to `/infrastructure/terraform/proxmox/talos.tf` and update the ISO URL if needed.
 3. Check the Terraform changes with `terraform plan`.
 4. Run Terraform to create VMs with Talos nodes:
    ```sh
