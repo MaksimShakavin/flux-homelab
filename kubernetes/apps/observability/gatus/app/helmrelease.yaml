@@ -68,7 +68,7 @@ spec:
         statefulset:
           volumeClaimTemplates:
             - name: config
-              storageClass: ceph-block
+              storageClass: longhorn
               accessMode: ReadWriteOnce
               size: 5Gi
     defaultPodOptions:

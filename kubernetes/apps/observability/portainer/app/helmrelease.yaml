@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app portainer
+  name: portainer
   namespace: observability
 spec:
   interval: 5m
@@ -24,4 +24,4 @@ spec:
       type: ClusterIP
       httpPort: 9000
     persistence:
-      existingClaim: "{{ .Release.Name }}"
+      existingClaim: portainer
