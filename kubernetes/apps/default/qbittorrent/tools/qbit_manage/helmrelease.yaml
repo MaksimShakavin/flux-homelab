@@ -45,14 +45,11 @@ spec:
             env:
               QBT_RUN: "true"
               QBT_CONFIG: "/config/config.yaml"
-#            args:
-#              - --config-file
-#              - /app/config.yaml
             resources:
               requests:
                 cpu: 25m
               limits:
-                memory: 256M
+                memory: 512Mb
         pod:
           restartPolicy: OnFailure
     defaultPodOptions:
