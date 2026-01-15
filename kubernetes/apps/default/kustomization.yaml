@@ -12,19 +12,19 @@ resources:
   - ./homepage/ks.yaml
   - ./qbittorrent/ks.yaml
   - ./webtlo/ks.yaml
-  - ./prowlarr/ks.yaml
-  - ./radarr/ks.yaml
-  - ./sonarr/ks.yaml
+#  - ./prowlarr/ks.yaml
+#  - ./radarr/ks.yaml
+#  - ./sonarr/ks.yaml
   - ./overseerr/ks.yaml
-  - ./mealie/ks.yaml
-  - ./paperless/ks.yaml
+#  - ./mealie/ks.yaml
+#  - ./paperless/ks.yaml
   - ./plex/ks.yaml
   - ./tautulli/ks.yaml
   - ./notifiarr/ks.yaml
   - ./scrypted/ks.yaml
-  - ./lubelogger/ks.yaml
-  - ./immich/ks.yaml
-  - ./ghostfolio/ks.yaml
+#  - ./lubelogger/ks.yaml
+#  - ./immich/ks.yaml
+#  - ./ghostfolio/ks.yaml
   - ./octobot/ks.yaml
 #  - ./audiobookshelf/ks.yaml
 #  - ./satisfactory/ks.yaml
