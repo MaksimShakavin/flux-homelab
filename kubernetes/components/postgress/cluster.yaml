@@ -105,9 +105,6 @@ spec:
       repo:
         name: repo1
         s3: *minio
-      options:
-        - --type=time
-        - --target="2026-01-13 14:15:11-04"
   proxy:
     pgBouncer:
       port: 5432
