@@ -26,6 +26,7 @@ resources:
   - ./immich/ks.yaml
   - ./ghostfolio/ks.yaml
   - ./octobot/ks.yaml
+  - ./agregarr/ks.yaml
 #  - ./audiobookshelf/ks.yaml
 #  - ./satisfactory/ks.yaml
 #  - ./valheim/ks.yaml
