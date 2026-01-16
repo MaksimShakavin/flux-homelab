@@ -35,9 +35,19 @@ spec:
         - secretRef:
             name: *secret
     server:
+      startupProbe:
+        failureThreshold: 120     # до 20 минут
+        periodSeconds: 10
+        timeoutSeconds: 5         # чуть больше, чтобы не падать из-за коротких лагов
+        initialDelaySeconds: 5
+      livenessProbe:
+        failureThreshold: 30      # ~5 минут (30 * 10s)
+        periodSeconds: 10
+        timeoutSeconds: 5
+        initialDelaySeconds: 30
       autoscaling:
-        enabled: true
-        minReplicas: 2
+        enabled: false
+        minReplicas: 1
       metrics:
         enabled: true
         serviceMonitor:
@@ -65,8 +75,8 @@ spec:
         enabled: false
     worker:
       autoscaling:
-        enabled: true
-        minReplicas: 2
+        enabled: false
+        minReplicas: 1
     prometheus:
       rules:
         enabled: true
