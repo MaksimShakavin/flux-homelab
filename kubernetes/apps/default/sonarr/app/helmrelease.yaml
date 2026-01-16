@@ -91,7 +91,7 @@ spec:
           gethomepage.dev/description: TV Downloads
           gethomepage.dev/weight: "5"
           gethomepage.dev/widget.type: sonarr
-          gethomepage.dev/widget.url: http://sonarr.default.svc.cluster.local:8080
+          gethomepage.dev/widget.url: http://sonarr.default.svc.cluster.local:80
           gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_SONARR_TOKEN}}` }}"
     persistence:
       config:
