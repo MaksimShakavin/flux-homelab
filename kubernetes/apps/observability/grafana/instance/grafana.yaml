@@ -22,7 +22,6 @@ spec:
       # For variables see https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#env-provider
       enabled: "true"
       name: "Authentik SSO"
-      allow_sign_up: "false"
       client_id: ${AUTH_CLIENT_ID}
       client_secret: ${AUTH_CLIENT_SECRET}
       scopes: "openid email profile"
@@ -30,9 +29,9 @@ spec:
       login_attribute_path: preferred_username
       name_attribute_path: name
       groups_attribute_path: groups
-      auth_url: "https://sso.exelent.click/application/o/authorize"
-      token_url: "https://sso.exelent.click/application/o/token"
-      api_url: "https://sso.exelent.click/application/o/userinfo"
+      auth_url: "https://sso.exelent.click/application/o/authorize/"
+      token_url: "https://sso.exelent.click/application/o/token/"
+      api_url: "https://sso.exelent.click/application/o/userinfo/"
       role_attribute_path: "contains(groups[*], 'Infrastructure') && 'Admin' || 'Viewer'"
       use_pkce: "true"
       skip_org_role_sync: "false"
@@ -96,6 +95,18 @@ spec:
               persistentVolumeClaim:
                 claimName: grafana-pvc
   httpRoute:
+    metadata:
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/icon: grafana.png
+        gethomepage.dev/name: Grafana
+        gethomepage.dev/group: "Monitoring & Observability"
+        gethomepage.dev/description: Visual analytics & monitoring platform
+        gethomepage.dev/weight: "2"
+        gethomepage.dev/widget.type: grafana
+        gethomepage.dev/widget.url: http://grafana.observability.svc.cluster.local
+        gethomepage.dev/widget.username: "{{HOMEPAGE_VAR_GRAFANA_USER}}"
+        gethomepage.dev/widget.password: "{{HOMEPAGE_VAR_GRAFANA_PASSWORD}}"
     spec:
       hostnames:
         - grafana.exelent.click
