@@ -45,6 +45,8 @@ spec:
                 name: talos
                 readOnly: true
         serviceAccountName: *name
+        securityContext:
+          fsGroup: 123
         volumes:
           - name: talos
             secret:
