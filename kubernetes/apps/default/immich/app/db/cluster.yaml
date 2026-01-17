@@ -1,0 +1,134 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/postgres-operator.crunchydata.com/postgrescluster_v1beta1.json
+apiVersion: postgres-operator.crunchydata.com/v1beta1
+kind: PostgresCluster
+metadata:
+  name: &name immich
+spec:
+  image: ghcr.io/budimanjojo/cdpgvecto.rs:ubi9-16.8-2516
+  postgresVersion: 16
+  monitoring:
+    pgmonitor:
+      exporter:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64M
+          limits:
+            memory: 512M
+  patroni: # turn on sync writes to at least 1 other replica
+    dynamicConfiguration:
+      synchronous_mode: true
+      postgresql:
+        max_wal_size: 5GB
+        synchronous_commit: "on"
+        parameters:
+          shared_preload_libraries: "vectors.so"
+          search_path: '"$user", public, vectors"'
+          max_connections: 500
+  instances:
+    - name: postgres
+      metadata:
+        labels:
+          app.kubernetes.io/name: immich-crunchy-postgres
+      replicas: &replicas 3 # One per node
+      dataVolumeClaimSpec:
+        storageClassName: local-hostpath
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: "kubernetes.io/hostname"
+          whenUnsatisfiable: "DoNotSchedule"
+          labelSelector:
+            matchExpressions:
+              - key: postgres-operator.crunchydata.com/cluster
+                operator: In
+                values:
+                  - *name
+              - key: postgres-operator.crunchydata.com/instance-set
+                operator: In
+                values:
+                  - instance
+  users:
+    # Superuser
+    - name: "postgres"
+      databases: ["postgres"]
+      options: "SUPERUSER"
+      password:
+        type: AlphaNumeric
+    # Applications
+    - name: "immich"
+      databases: ["immich"]
+      password:
+        type: AlphaNumeric
+  backups:
+    pgbackrest:
+      configuration: &backupConfig
+        - secret:
+            name: "immich-crunchy-postgres"
+      global: &backupFlag
+        # Global
+        compress-type: "bz2"
+        compress-level: "9"
+        # Minio
+        repo1-block: "y"
+        repo1-bundle: "y"
+        repo1-path: /immich
+        repo1-retention-full: "30" # days
+        repo1-retention-full-type: "time"
+        repo1-s3-uri-style: path
+        repo1-storage-verify-tls: "n"
+      jobs:
+        ttlSecondsAfterFinished: 60
+      manual:
+        repoName: repo1
+        options:
+          - --type=full
+      metadata:
+        labels:
+          app.kubernetes.io/name: immich-crunchy-postgres-backup
+      repos:
+        - name: repo1
+          s3: &minio
+            bucket: "postgress"
+            endpoint: "minio-content.exelent.click"
+            region: "us-east-1"
+          schedules:
+            full: "0 3 * * 0" # every Sunday at 03:00
+            differential: "0 5 * * 1-6" # every Monday-Saturday at 05:00
+            incremental: "0 6-23 * * *" # every hour from 06:00 to 23:00 every day
+  dataSource:
+    pgbackrest:
+      stanza: db
+      configuration: *backupConfig
+      global: *backupFlag
+      repo:
+        name: repo1
+        s3: *minio
+      options:
+        - --type=time
+        - --target="2026-01-13 14:15:11-04"
+  proxy:
+    pgBouncer:
+      port: 5432
+      # replicas: 1
+      config:
+        global:
+          pool_mode: session
+          client_tls_sslmode: prefer
+          default_pool_size: "100"
+          max_client_conn: "500"
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              postgres-operator.crunchydata.com/cluster: *name
+              postgres-operator.crunchydata.com/role: immich-pgbouncer
+  databaseInitSQL:
+    name: immich-database-init-sql
+    key: init.sql

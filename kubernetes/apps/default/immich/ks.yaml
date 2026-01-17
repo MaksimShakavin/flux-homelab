@@ -5,8 +5,6 @@ kind: Kustomization
 metadata:
   name: immich
 spec:
-  components:
-    - ../../../../components/postgress
   dependsOn:
     - name: crunchy-postgres-operator
       namespace: database
@@ -21,35 +19,3 @@ spec:
     namespace: flux-system
   targetNamespace: default
   wait: false
-  postBuild:
-    substitute:
-      APP: immich
-  patches:
-    - patch: |
-        - op: add
-          path: /spec/patroni/dynamicConfiguration/postgresql/parameters
-          value:
-            shared_preload_libraries: "vectors.so"
-            search_path: '"$user", public, vectors"'
-      target:
-        kind: PostgresCluster
-    - patch: |
-        - op: replace
-          path: /spec/image
-          value: ghcr.io/budimanjojo/cdpgvecto.rs:ubi9-16.8-2516
-      target:
-        kind: PostgresCluster
-    - patch: |
-        - op: replace
-          path: /spec/postgresVersion
-          value: 16
-      target:
-        kind: PostgresCluster
-    - patch: |
-        - op: add
-          path: /spec/databaseInitSQL
-          value:
-            name: immich-database-init-sql
-            key: init.sql
-      target:
-        kind: PostgresCluster
