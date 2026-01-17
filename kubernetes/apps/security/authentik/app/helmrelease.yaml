@@ -5,23 +5,6 @@ kind: HelmRelease
 metadata:
   name: &app authentik
 spec:
-  timeout: 30m
-  install:
-    timeout: 30m
-    disableWait: true
-    disableWaitForJobs: true
-    remediation:
-      retries: 0
-  upgrade:
-    timeout: 30m
-    disableWait: true
-    disableWaitForJobs: true
-    remediation:
-      retries: 0
-  rollback:
-    timeout: 30m
-  uninstall:
-    timeout: 30m
   chartRef:
     kind: OCIRepository
     name: authentik
@@ -52,18 +35,8 @@ spec:
         - secretRef:
             name: *secret
     server:
-      startupProbe:
-        failureThreshold: 120     # до 20 минут
-        periodSeconds: 10
-        timeoutSeconds: 5         # чуть больше, чтобы не падать из-за коротких лагов
-        initialDelaySeconds: 5
-      livenessProbe:
-        failureThreshold: 30      # ~5 минут (30 * 10s)
-        periodSeconds: 10
-        timeoutSeconds: 5
-        initialDelaySeconds: 30
       autoscaling:
-        enabled: false
+        enabled: true
         minReplicas: 1
       metrics:
         enabled: true
@@ -92,7 +65,7 @@ spec:
         enabled: false
     worker:
       autoscaling:
-        enabled: false
+        enabled: true
         minReplicas: 1
     prometheus:
       rules:
