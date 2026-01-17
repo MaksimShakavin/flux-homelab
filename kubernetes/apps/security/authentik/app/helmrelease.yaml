@@ -5,6 +5,23 @@ kind: HelmRelease
 metadata:
   name: &app authentik
 spec:
+  timeout: 30m
+  install:
+    timeout: 30m
+    disableWait: true
+    disableWaitForJobs: true
+    remediation:
+      retries: 0
+  upgrade:
+    timeout: 30m
+    disableWait: true
+    disableWaitForJobs: true
+    remediation:
+      retries: 0
+  rollback:
+    timeout: 30m
+  uninstall:
+    timeout: 30m
   chartRef:
     kind: OCIRepository
     name: authentik
