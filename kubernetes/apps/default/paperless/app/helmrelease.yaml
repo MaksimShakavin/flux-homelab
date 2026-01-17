@@ -47,7 +47,7 @@ spec:
           tika:
             image:
               repository: apache/tika
-              tag: 3.2.3.0@sha256:3fafa194474c5f3a8cff25a0eefd07e7c0513b7f552074ad455e1af58a06bbea
+              tag: 3.2.3.0@sha256:c0154cb95587cde64be74f35ada1a2bd7892219f3f0ac3c9dc6cab34046b3573
           gotenburg:
             image:
               repository: gotenberg/gotenberg
