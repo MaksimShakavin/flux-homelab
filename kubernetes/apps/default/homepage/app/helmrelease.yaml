@@ -18,7 +18,7 @@ spec:
           app:
             image:
               repository: ghcr.io/gethomepage/homepage
-              tag: v1.8.0
+              tag: v1.9.0
             env:
               TZ: "Europe/Warsaw"
               HOMEPAGE_ALLOWED_HOSTS: "home.exelent.click,home.default,home.default.swc,home.default.swc.cluster,home.default.swc.cluster.local"
