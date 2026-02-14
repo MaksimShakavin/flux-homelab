@@ -28,7 +28,7 @@ spec:
           server:
             image:
               repository: ghcr.io/immich-app/immich-server
-              tag: v1.144.1
+              tag: v2.5.6
             env:
               IMMICH_WORKERS_INCLUDE: api
               DB_PASSWORD:
@@ -84,7 +84,7 @@ spec:
           microservices:
             image:
               repository: ghcr.io/immich-app/immich-server
-              tag: v1.144.1
+              tag: v2.5.6
             envFrom:
               - configMapRef:
                   name: *configmap
@@ -120,7 +120,7 @@ spec:
           machine-learning:
             image:
               repository: ghcr.io/immich-app/immich-machine-learning
-              tag: v1.144.1
+              tag: v2.5.6
             resources:
               requests:
                 cpu: 100m
