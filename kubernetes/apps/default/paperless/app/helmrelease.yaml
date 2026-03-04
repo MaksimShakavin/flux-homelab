@@ -18,7 +18,7 @@ spec:
           app:
             image:
               repository: ghcr.io/paperless-ngx/paperless-ngx
-              tag: 2.20.5@sha256:665f2f5cc5482ea2e44f90a7fa170908aaeb95d8d3c70e17f746de8fcb81f644
+              tag: 2.20.10@sha256:07a0b4ba01ce377c82a0636e16c0c3d931fde5b7e9304de6601986cc42d9b6e6
             env:
               PAPERLESS_TIME_ZONE: "Europe/Warsaw"
               PAPERLESS_URL: "https://paperless.exelent.click"
