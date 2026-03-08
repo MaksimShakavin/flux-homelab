@@ -18,7 +18,7 @@ spec:
           app:
             image:
               repository: ghcr.io/agregarr/agregarr
-              tag: v2.3.0@sha256:87ea4f00479e3ed9108edb2ed39596d68cf122f7fc09b5cff7c32da725857bd0
+              tag: v2.4.1@sha256:6022aef7ad580478bf100ee4b11f19ad689bb780d241e78e33a3ccc6b5feb569
             env:
               PORT: &port 80
               TZ: Europe/Warsaw
