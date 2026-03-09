@@ -111,6 +111,13 @@ spec:
         ports:
           http:
             port: *apiPort
+    route:
+      app:
+        hostnames:
+          - "onepassword-connect.exelent.click"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
     persistence:
       config:
         type: emptyDir
