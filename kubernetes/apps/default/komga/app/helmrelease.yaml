@@ -1,0 +1,79 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: komga
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: komga
+  interval: 1h
+  values:
+    controllers:
+      komga:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: gotson/komga
+              tag: "1.24.1@sha256:a84a0424e2f8235ba9373ed10b9b903e0feecdbb500a1b4aebac01f08e9e57db"
+            env:
+              TZ: "Europe/Warsaw"
+              SERVER_PORT: &port 80
+              KOMGA_CONFIGDIR: /config
+              KOMGA_OAUTH2ACCOUNTCREATION: "true"
+              KOMGA_OIDC_EMAIL_VERIFICATION: "false"
+            envFrom:
+              - secretRef:
+                  name: komga-secret
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: [ "ALL" ] }
+            resources:
+              requests:
+                cpu: 15m
+              limits:
+                memory: 2Gi
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames: [ "{{ .Release.Name }}.exelent.click" ]
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/icon: komga.svg
+          gethomepage.dev/name: komga
+          gethomepage.dev/group: "Home Apps"
+          gethomepage.dev/description: "Comics, mangas, BDs, magazines and eBooks"
+          gethomepage.dev/weight: "8"
+          gethomepage.dev/widget.type: komga
+          gethomepage.dev/widget.url: http://komga.default:80
+          gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_KOMGA_API_KEY}}`}}"
+          gethomepage.dev/widget.version: "2"
+    persistence:
+      server:
+        existingClaim: "{{ .Release.Name }}"
+        globalMounts:
+          - path: /config
+      application-config:
+        type: secret
+        name: komga-secret
+        defaultMode: 0400
+        globalMounts:
+          - subPath: application.yml
+            path: /config/application.yml
+      saves:
+        type: nfs
+        server: "192.168.20.5"
+        path: "/volume1/kubernetes/torrents/magazines"
+        globalMounts:
+          - path: /data

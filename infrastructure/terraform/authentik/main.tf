@@ -36,50 +36,56 @@ module "secret_minio" {
 
 module "secret_portainer" {
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
-  vault  = "Homelab"
+  vault  = "homelab"
   item   = "portainer"
 }
 
 module "secret_grafana" {
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
-  vault  = "Homelab"
+  vault  = "homelab"
   item   = "grafana"
 }
 
 module "secret_proxmox" {
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
-  vault  = "Homelab"
+  vault  = "homelab"
   item   = "proxmox"
 }
 
 module "secret_paperless" {
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
-  vault  = "Homelab"
+  vault  = "homelab"
   item   = "paperless"
 }
 
 module "secret_audiobookshelf" {
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
-  vault  = "Homelab"
+  vault  = "homelab"
   item   = "audiobookshelf"
 }
 
 module "secret_lubelogger" {
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
-  vault  = "Homelab"
+  vault  = "homelab"
   item   = "lubelogger"
 }
 
 module "secret_immich" {
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
-  vault  = "Homelab"
+  vault  = "homelab"
   item   = "immich"
 }
 
 module "secret_mealie" {
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
-  vault  = "Homelab"
+  vault  = "homelab"
   item   = "mealie"
+}
+
+module "secret_komga" {
+  source = "github.com/bjw-s/terraform-1password-item?ref=main"
+  vault  = "homelab"
+  item   = "komga"
 }
 
 provider "authentik" {

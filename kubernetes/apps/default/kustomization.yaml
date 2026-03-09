@@ -27,6 +27,7 @@ resources:
   - ./ghostfolio/ks.yaml
   - ./octobot/ks.yaml
   - ./agregarr/ks.yaml
+  - ./komga/ks.yaml
 #  - ./audiobookshelf/ks.yaml
 #  - ./satisfactory/ks.yaml
 #  - ./valheim/ks.yaml
