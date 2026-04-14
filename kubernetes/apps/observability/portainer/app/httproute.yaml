@@ -22,7 +22,7 @@ spec:
     - portainer.exelent.click
   parentRefs:
     - name: envoy-internal
-      namespace: kube-system
+      namespace: network
   rules:
     - backendRefs:
         - name: portainer
