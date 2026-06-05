@@ -77,3 +77,7 @@ spec:
         path: "/volume1/kubernetes/torrents/magazines"
         globalMounts:
           - path: /data
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
