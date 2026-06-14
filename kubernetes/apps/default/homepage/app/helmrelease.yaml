@@ -27,6 +27,8 @@ spec:
                   name: homepage-secret
         serviceAccount:
           identifier: homepage
+    defaultPodOptions:
+      automountServiceAccountToken: true
     service:
       app:
         ports:
@@ -56,5 +58,3 @@ spec:
             path: /app/config/settings.yaml
           - subPath: widgets.yaml
             path: /app/config/widgets.yaml
-    serviceAccount:
-      homepage: {}
