@@ -24,18 +24,22 @@ spec:
               PLEX_ADVERTISE_URL: "https://plex.exelent.click:443,http://192.168.20.65:32400,http://plex.default.svc.cluster.local:32400"
               PLEX_NO_AUTH_NETWORKS: 192.168.10.0/24
             probes:
-              liveness: &probes
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
                 enabled: true
                 custom: true
                 spec:
                   httpGet:
                     path: /identity
                     port: &port 32400
-                  initialDelaySeconds: 0
                   periodSeconds: 10
-                  timeoutSeconds: 1
-                  failureThreshold: 3
-              readiness: *probes
+                  timeoutSeconds: 5
+                  failureThreshold: 5
               startup:
                 enabled: true
                 spec:
@@ -52,14 +56,6 @@ spec:
                 cpu: 100m
               limits:
                 memory: 8Gi
-        pod:
-          nodeSelector:
-            intel.feature.node.kubernetes.io/gpu: "true"
-          securityContext:
-            runAsUser: 568
-            runAsGroup: 568
-            fsGroup: 568
-            supplementalGroups: [ 44, 107, 1000 ]
     defaultPodOptions:
       resourceClaims:
         - name: gpu
@@ -104,7 +100,7 @@ spec:
                 port: *port
         annotations:
           gatus.home-operations.com/endpoint: |-
-            conditions: ["[STATUS] == 401"]
+            path: /identity
           gethomepage.dev/enabled: "true"
           gethomepage.dev/group: "Media & Downloading"
           gethomepage.dev/name: Plex
