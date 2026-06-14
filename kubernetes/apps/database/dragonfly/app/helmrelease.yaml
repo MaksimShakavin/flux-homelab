@@ -57,6 +57,7 @@ spec:
         serviceAccount:
           identifier: dragonfly-operator
     defaultPodOptions:
+      automountServiceAccountToken: true
       securityContext:
         runAsNonRoot: true
         runAsUser: 65534
@@ -86,5 +87,3 @@ spec:
             path: /metrics
             interval: 1m
             scrapeTimeout: 10s
-    serviceAccount:
-      dragonfly-operator: {}
