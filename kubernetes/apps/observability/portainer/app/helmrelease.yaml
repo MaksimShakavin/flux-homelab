@@ -10,7 +10,7 @@ spec:
   chart:
     spec:
       chart: portainer
-      version: 239.3.1
+      version: 239.4.0
       sourceRef:
         kind: HelmRepository
         name: portainer-charts
