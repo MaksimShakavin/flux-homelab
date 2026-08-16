@@ -41,7 +41,7 @@ spec:
           main:
             image:
               repository: ghcr.io/stuffanthings/qbit_manage
-              tag: v4.10.0
+              tag: v4.12.0
             env:
               QBT_RUN: "true"
               QBT_CONFIG: "/config/config.yaml"
