@@ -22,3 +22,10 @@ patches:
         value:
           name: securo-database-init-sql
           key: init.sql
+  # Fresh cluster: drop the component's restore-from-backup dataSource so the
+  # operator bootstraps an empty DB instead of failing on a missing backup.
+  - target:
+      kind: PostgresCluster
+    patch: |
+      - op: remove
+        path: /spec/dataSource
