@@ -31,20 +31,20 @@ module "oauth2-paperless" {
 }
 
 module "oauth2-audiobookshelf" {
-  source             = "./oauth2_application"
-  name               = "Audiobookshelf"
-  icon_url           = "https://raw.githubusercontent.com/advplyr/audiobookshelf-web/master/static/Logo.png"
-  launch_url         = "https://audiobooks.exelent.click"
-  description        = "Media player"
-  newtab             = true
-  group              = "Selfhosted"
-  auth_groups        = [authentik_group.users.id]
-  authorization_flow = resource.authentik_flow.provider-authorization-implicit-consent.uuid
-  invalidation_flow  = data.authentik_flow.default-provider-invalidation-flow.id
-  client_id          = module.secret_audiobookshelf.fields["OIDC_CLIENT_ID"]
-  client_secret      = module.secret_audiobookshelf.fields["OIDC_CLIENT_SECRET"]
+  source                       = "./oauth2_application"
+  name                         = "Audiobookshelf"
+  icon_url                     = "https://raw.githubusercontent.com/advplyr/audiobookshelf-web/master/static/Logo.png"
+  launch_url                   = "https://audiobooks.exelent.click"
+  description                  = "Media player"
+  newtab                       = true
+  group                        = "Selfhosted"
+  auth_groups                  = [authentik_group.users.id]
+  authorization_flow           = resource.authentik_flow.provider-authorization-implicit-consent.uuid
+  invalidation_flow            = data.authentik_flow.default-provider-invalidation-flow.id
+  client_id                    = module.secret_audiobookshelf.fields["OIDC_CLIENT_ID"]
+  client_secret                = module.secret_audiobookshelf.fields["OIDC_CLIENT_SECRET"]
   additional_property_mappings = formatlist(authentik_property_mapping_provider_scope.audiobookshelf.id)
-  redirect_uris      = ["https://audiobooks.exelent.click/auth/openid/callback", "audiobookshelf://oauth"]
+  redirect_uris                = ["https://audiobooks.exelent.click/auth/openid/callback", "audiobookshelf://oauth"]
 }
 
 module "oauth2-mealie" {
@@ -125,4 +125,20 @@ module "oauth2-komga" {
   client_id          = module.secret_komga.fields["OIDC_CLIENT_ID"]
   client_secret      = module.secret_komga.fields["OIDC_CLIENT_SECRET"]
   redirect_uris      = ["https://komga.exelent.click/login/oauth2/code/authentik"]
+}
+
+module "oauth2-securo" {
+  source             = "./oauth2_application"
+  name               = "Securo"
+  icon_url           = "https://raw.githubusercontent.com/securo-finance/securo/main/favicons/android-icon-192x192.png"
+  launch_url         = "https://securo.exelent.click"
+  description        = "Personal finance"
+  newtab             = true
+  group              = "Selfhosted"
+  auth_groups        = [authentik_group.users.id]
+  authorization_flow = resource.authentik_flow.provider-authorization-implicit-consent.uuid
+  invalidation_flow  = data.authentik_flow.default-provider-invalidation-flow.id
+  client_id          = module.secret_securo.fields["OIDC_CLIENT_ID"]
+  client_secret      = module.secret_securo.fields["OIDC_CLIENT_SECRET"]
+  redirect_uris      = ["https://securo.exelent.click/api/auth/oidc/callback"]
 }

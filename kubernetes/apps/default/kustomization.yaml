@@ -28,6 +28,7 @@ resources:
   - ./octobot/ks.yaml
   - ./agregarr/ks.yaml
   - ./komga/ks.yaml
+  - ./securo/ks.yaml
 #  - ./audiobookshelf/ks.yaml
 #  - ./satisfactory/ks.yaml
 #  - ./valheim/ks.yaml

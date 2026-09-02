@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./externalsecret.yaml
+  - ./helmrelease.yaml
+  - ./ocirepository.yaml
+configMapGenerator:
+  - name: securo-database-init-sql
+    files:
+      - init.sql=database-init-cm.sql
+generatorOptions:
+  disableNameSuffixHash: true
+patches:
+  # Pre-create the pgvector extension as superuser on the postgress-component cluster.
+  - target:
+      kind: PostgresCluster
+    patch: |
+      - op: add
+        path: /spec/databaseInitSQL
+        value:
+          name: securo-database-init-sql
+          key: init.sql

@@ -1,0 +1,34 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: securo
+spec:
+  components:
+    - ../../../../components/volsync
+    - ../../../../components/postgress
+  dependsOn:
+    - name: crunchy-postgres-operator
+      namespace: database
+    - name: dragonfly-cluster
+      namespace: database
+  healthCheckExprs:
+    - apiVersion: postgres-operator.crunchydata.com/v1beta1
+      kind: PostgresCluster
+      failed: status.conditions.filter(e, e.type == 'ProxyAvailable').all(e, e.status == 'False')
+      current: status.conditions.filter(e, e.type == 'ProxyAvailable').all(e, e.status == 'True')
+  interval: 1h
+  path: ./kubernetes/apps/default/securo/app
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: default
+  wait: false
+  postBuild:
+    substitute:
+      APP: securo
+      VOLSYNC_CAPACITY: 5Gi

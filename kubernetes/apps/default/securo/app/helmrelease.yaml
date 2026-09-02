@@ -1,0 +1,193 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app securo
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: securo
+  values:
+    controllers:
+      backend:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          01-migrate:
+            image: &image
+              repository: ghcr.io/securo-finance/securo-backend
+              tag: "0.15.0"
+            command: ["alembic", "upgrade", "head"]
+            env: &env
+              PG_PASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: securo-pguser-securo
+                    key: password
+              DATABASE_URL: "postgresql+asyncpg://securo:$(PG_PASS)@securo-pgbouncer.default.svc:5432/securo"
+              REDIS_URL: &redis "redis://dragonfly.database.svc.cluster.local:6379/5"
+              CELERY_BROKER_URL: *redis
+              CELERY_RESULT_BACKEND: *redis
+              FRONTEND_URL: "https://securo.exelent.click"
+              STORAGE_LOCAL_PATH: /app/data/attachments
+              AGENTS_ENABLED: "false"
+              SIMPLEFIN_ENABLED: "false"
+              TESOURO_DIRETO_ENABLED: "false"
+              FX_SYNC_MODE: on_demand
+              ENABLE_BANKING_API_URL: "https://api.enablebanking.com"
+              ENABLE_BANKING_OAUTH_REDIRECT_URI: "https://securo.exelent.click/oauth/callback"
+              TZ: "Europe/Warsaw"
+            envFrom: &envFrom
+              - secretRef:
+                  name: securo-secret
+        containers:
+          app:
+            image: *image
+            command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+            env: *env
+            envFrom: *envFrom
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/health
+                    port: &backendPort 8000
+                  initialDelaySeconds: 15
+                  periodSeconds: 20
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext: &hardenedSec
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+      worker:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image: *image
+            command: ["celery", "-A", "app.worker", "worker", "--loglevel=info", "--concurrency=2"]
+            env: *env
+            envFrom: *envFrom
+            securityContext: *hardenedSec
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+      beat:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image: *image
+            command: ["celery", "-A", "app.worker", "beat", "--loglevel=info"]
+            env: *env
+            envFrom: *envFrom
+            securityContext: *hardenedSec
+            resources:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+      frontend:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/securo-finance/securo-frontend
+              tag: "0.15.0"
+            env:
+              BACKEND_URL: "http://securo-backend.default.svc:8000"
+              FRONTEND_URL: "https://securo.exelent.click"
+            probes:
+              liveness: &feProbes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: &frontendPort 8080
+                  initialDelaySeconds: 15
+                  periodSeconds: 20
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *feProbes
+            securityContext: *hardenedSec
+            resources:
+              requests:
+                cpu: 25m
+                memory: 64Mi
+              limits:
+                memory: 256Mi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      backend:
+        controller: backend
+        ports:
+          http:
+            port: *backendPort
+      frontend:
+        controller: frontend
+        ports:
+          http:
+            port: *frontendPort
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.exelent.click"
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+        rules:
+          # Longest-prefix precedence (Gateway API): /api wins over / .
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /api
+            backendRefs:
+              - identifier: backend
+                port: *backendPort
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+            backendRefs:
+              - identifier: frontend
+                port: *frontendPort
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/icon: securo.png
+          gethomepage.dev/name: Securo
+          gethomepage.dev/group: "Home Apps"
+          gethomepage.dev/description: "Personal Finance"
+          gethomepage.dev/weight: "9"
+    persistence:
+      attachments:
+        existingClaim: "{{ .Release.Name }}"
+        advancedMounts:
+          backend:
+            app:
+              - path: /app/data/attachments
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp

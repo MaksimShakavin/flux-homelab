@@ -1,10 +1,10 @@
 terraform {
   backend "s3" {
-    bucket                      = "terraform"
-    key                         = "authentik/state.tfstate"
-    region                      = "main"
+    bucket = "terraform"
+    key    = "authentik/state.tfstate"
+    region = "main"
     endpoints = {
-      s3                          = "http://192.168.20.5:9000"
+      s3 = "http://192.168.20.5:9000"
     }
     skip_credentials_validation = true
     skip_metadata_api_check     = true
@@ -86,6 +86,12 @@ module "secret_komga" {
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
   vault  = "homelab"
   item   = "komga"
+}
+
+module "secret_securo" {
+  source = "github.com/bjw-s/terraform-1password-item?ref=main"
+  vault  = "homelab"
+  item   = "securo"
 }
 
 provider "authentik" {
