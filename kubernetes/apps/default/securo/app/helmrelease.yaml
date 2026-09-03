@@ -20,25 +20,40 @@ spec:
               repository: ghcr.io/securo-finance/securo-backend
               tag: "0.15.0"
             command: ["alembic", "upgrade", "head"]
+            # List form (not a map) so ordering is preserved: PG_PASS must come
+            # before DATABASE_URL for Kubernetes $(VAR) expansion to resolve it.
             env: &env
-              PG_PASS:
+              - name: PG_PASS
                 valueFrom:
                   secretKeyRef:
                     name: securo-pguser-securo
                     key: password
-              DATABASE_URL: "postgresql+asyncpg://securo:$(PG_PASS)@securo-pgbouncer.default.svc:5432/securo"
-              REDIS_URL: &redis "redis://dragonfly.database.svc.cluster.local:6379/5"
-              CELERY_BROKER_URL: *redis
-              CELERY_RESULT_BACKEND: *redis
-              FRONTEND_URL: "https://securo.exelent.click"
-              STORAGE_LOCAL_PATH: /app/data/attachments
-              AGENTS_ENABLED: "false"
-              SIMPLEFIN_ENABLED: "false"
-              TESOURO_DIRETO_ENABLED: "false"
-              FX_SYNC_MODE: on_demand
-              ENABLE_BANKING_API_URL: "https://api.enablebanking.com"
-              ENABLE_BANKING_OAUTH_REDIRECT_URI: "https://securo.exelent.click/oauth/callback"
-              TZ: "Europe/Warsaw"
+              - name: DATABASE_URL
+                value: "postgresql+asyncpg://securo:$(PG_PASS)@securo-pgbouncer.default.svc:5432/securo"
+              - name: REDIS_URL
+                value: &redis "redis://dragonfly.database.svc.cluster.local:6379/5"
+              - name: CELERY_BROKER_URL
+                value: *redis
+              - name: CELERY_RESULT_BACKEND
+                value: *redis
+              - name: FRONTEND_URL
+                value: "https://securo.exelent.click"
+              - name: STORAGE_LOCAL_PATH
+                value: /app/data/attachments
+              - name: AGENTS_ENABLED
+                value: "false"
+              - name: SIMPLEFIN_ENABLED
+                value: "false"
+              - name: TESOURO_DIRETO_ENABLED
+                value: "false"
+              - name: FX_SYNC_MODE
+                value: on_demand
+              - name: ENABLE_BANKING_API_URL
+                value: "https://api.enablebanking.com"
+              - name: ENABLE_BANKING_OAUTH_REDIRECT_URI
+                value: "https://securo.exelent.click/oauth/callback"
+              - name: TZ
+                value: "Europe/Warsaw"
             envFrom: &envFrom
               - secretRef:
                   name: securo-secret
