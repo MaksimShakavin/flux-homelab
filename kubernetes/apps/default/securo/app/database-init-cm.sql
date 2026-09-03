@@ -10,5 +10,9 @@
 -- crunchy-postgres 5.8.x image, so no custom image is needed.
 -- (`pgcrypto`, used by migration 052, is a TRUSTED extension and is created by
 -- the app user itself, so it is intentionally not listed here.)
+-- PostgreSQL 15+ revokes CREATE on the public schema from non-owners, so the
+-- app user cannot create tables until granted. Give the securo user ownership.
 \c securo
 CREATE EXTENSION IF NOT EXISTS vector;
+GRANT ALL ON SCHEMA public TO securo;
+ALTER SCHEMA public OWNER TO securo;
