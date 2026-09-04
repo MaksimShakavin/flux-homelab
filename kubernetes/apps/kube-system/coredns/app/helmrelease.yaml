@@ -39,6 +39,13 @@ spec:
               fallthrough in-addr.arpa ip6.arpa
           - name: autopath
             parameters: "@kubernetes"
+          # IPv4-only cluster: answer external AAAA queries with NODATA so
+          # clients (e.g. Flux's kustomize-controller fetching remote CRDs) don't
+          # try unreachable IPv6 addresses. Cluster-local AAAA is handled above.
+          - name: template
+            parameters: IN AAAA
+            configBlock: |-
+              rcode NOERROR
           - name: forward
             parameters: . /etc/resolv.conf
           - name: cache
