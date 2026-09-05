@@ -39,7 +39,7 @@ spec:
           gethomepage.dev/name: Octobot
           gethomepage.dev/group: "Home Apps"
           gethomepage.dev/description: Crytpto Trading Bot
-          gethomepage.dev/weight: "7"
+          gethomepage.dev/weight: "90"
     persistence:
       server:
         existingClaim: "{{ .Release.Name }}"

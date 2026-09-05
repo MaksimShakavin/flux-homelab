@@ -185,7 +185,7 @@ spec:
           gethomepage.dev/name: Immich
           gethomepage.dev/group: "Home Apps"
           gethomepage.dev/description: Self-hosted google photos
-          gethomepage.dev/weight: "2"
+          gethomepage.dev/weight: "30"
           gethomepage.dev/widget.type: immich
           gethomepage.dev/widget.url: http://immich-server.default:2283
           gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_IMMICH_TOKEN}}`}}"

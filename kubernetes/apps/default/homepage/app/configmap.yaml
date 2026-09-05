@@ -33,7 +33,12 @@ data:
             href: https://sprut.exelent.click
             icon: https://spruthub.ru/favicon.ico
             description: Zigbee hub and Homekit integration
-            weight: 5
+            weight: 70
+        - Node-RED:
+            href: https://node-red.exelent.click
+            icon: node-red.png
+            description: Flow-based automation
+            weight: 80
     - Monitoring & Observability:
         - Cloudflared:
             href: https://dash.cloudflare.com
@@ -50,6 +55,7 @@ data:
             href: https://unifi.exelent.click
             icon: unifi-controller.png
             description: Home Network Management
+            weight: 10
             widget:
               type: unifi
               url: https://192.168.20.1
@@ -59,6 +65,7 @@ data:
             href: https://nas.exelent.click
             icon: synology.png
             description: Synology nas disk station
+            weight: 20
             widget:
               type: diskstation
               url: http://192.168.20.5:5000
@@ -74,10 +81,12 @@ data:
               username: "{{HOMEPAGE_VAR_PROXMOX_USERNAME}}"
               password: "{{HOMEPAGE_VAR_PROXMOX_PASSWORD}}"
               node: proxmox1
-        - Minio:
-            href: https://minio.exelent.click
-            icon: minio.png
+            weight: 30
+        - Garage:
+            href: https://garage.exelent.click/
+            icon: garage.png
             description: S3 compatible object storage
+            weight: 60
   settings.yaml: |
     title: Pohulanka home
     theme: dark

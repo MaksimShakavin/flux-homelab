@@ -56,7 +56,7 @@ spec:
             gethomepage.dev/name: Authentik
             gethomepage.dev/group: Infrastructure
             gethomepage.dev/app: authentik
-            gethomepage.dev/weight: "101"
+            gethomepage.dev/weight: "40"
             gethomepage.dev/description: OIDC User Management
             gethomepage.dev/widget.type: authentik
             gethomepage.dev/widget.url: http://authentik-server.security
