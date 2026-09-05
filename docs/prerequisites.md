@@ -147,6 +147,7 @@ resolve and terminate TLS correctly. Later steps (Ansible and Terraform) rely on
    - `garage-admin.exelent.click` -> `http localhost:3903` (Garage admin API)
    - `garage-s3.exelent.click` -> `http localhost:3900` (Garage S3 API; used for the Terraform state backend)
    - `garage-static.exelent.click` -> `http localhost:3902` (Garage web endpoint; serves the `static-content` bucket)
+   - `garage.exelent.click` -> `http localhost:3909` (Garage Web UI for bucket/key/object management)
 2. Go to Config Panel -> Login Portal and add Domain `nas.exelent.click`
 3. Click on Certificates and upload tls.key and tls.crt from Onepassword
 4. Click Settings and apply the certificate to added domains

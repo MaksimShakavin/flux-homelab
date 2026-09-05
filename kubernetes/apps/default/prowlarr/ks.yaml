@@ -6,7 +6,7 @@ metadata:
   name: prowlarr
 spec:
   components:
-    - ../../../../components/volsync
+    - ../../../../components/kopiur/backup
     - ../../../../components/postgress
   interval: 1h
   path: ./kubernetes/apps/default/prowlarr/app
@@ -20,4 +20,4 @@ spec:
   postBuild:
     substitute:
       APP: prowlarr
-      VOLSYNC_CAPACITY: 1Gi
+      KOPIUR_CAPACITY: 1Gi

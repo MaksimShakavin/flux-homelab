@@ -1,0 +1,27 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kopiur.home-operations.com/clusterrepository_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: ClusterRepository
+metadata:
+  name: expanse
+spec:
+  allowedNamespaces:
+    all: true
+  backend:
+    s3:
+      auth:
+        secretRef:
+          name: kopiur-repository-secret
+          namespace: storage
+      bucket: kopiur
+      endpoint: garage-s3.exelent.click
+      region: garage
+      tls:
+        disableTls: false
+  encryption:
+    passwordSecretRef:
+      name: kopiur-repository-secret
+      namespace: storage
+      key: KOPIA_PASSWORD
+  scheduleDefaults:
+    timezone: Europe/Warsaw

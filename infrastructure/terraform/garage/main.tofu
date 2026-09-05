@@ -26,6 +26,9 @@ terraform {
     http = {
       source = "hashicorp/http"
     }
+    onepassword = {
+      source = "1Password/onepassword"
+    }
   }
 }
 
@@ -45,6 +48,10 @@ provider "garage" {
   scheme = "https"
   token  = module.secret_garage.fields.admin_token
 }
+
+# Connect credentials are read from OP_CONNECT_HOST / OP_CONNECT_TOKEN in the
+# environment (already exported for Tofu runs).
+provider "onepassword" {}
 
 # The node ID is derived from node_key at container boot and is reported by the
 # admin API before any layout role is assigned, so we read it directly instead of

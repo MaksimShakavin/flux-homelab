@@ -151,6 +151,25 @@
                 - "{{ garage_dir }}/data:/data"
                 - "{{ garage_dir }}/meta:/metadata"
                 - "{{ garage_dir }}/garage.toml:/etc/garage.toml:ro"
+            # Web UI for bucket/key/object management (Garage ships no UI of its own).
+            garage-webui:
+              image: khairul169/garage-webui:1.1.0
+              restart: unless-stopped
+              depends_on:
+                - garage
+              networks:
+                garage: {}
+              ports:
+                - "3909:3909"
+              # It reads admin_token from garage.toml, but the toml's bind addrs are
+              # "[::]" which the UI would resolve to its own localhost — so point the
+              # admin/S3 URLs at the garage service over the shared bridge explicitly.
+              environment:
+                API_BASE_URL: "http://garage:3903"
+                S3_ENDPOINT_URL: "http://garage:3900"
+                S3_REGION: "garage"
+              volumes:
+                - "{{ garage_dir }}/garage.toml:/etc/garage.toml:ro"
           networks:
             garage:
               driver: bridge

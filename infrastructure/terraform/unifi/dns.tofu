@@ -60,3 +60,10 @@ resource "unifi_dns_record" "garage_static" {
   record_type = "CNAME"
   value       = unifi_dns_record.nas.name
 }
+
+resource "unifi_dns_record" "garage_webui" {
+  name        = "garage.exelent.click"
+  enabled     = true
+  record_type = "CNAME"
+  value       = unifi_dns_record.nas.name
+}
