@@ -24,6 +24,13 @@ spec:
         parentRefs:
           - name: envoy-internal
             namespace: network
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/icon: victorialogs.png
+          gethomepage.dev/name: Victoria Logs
+          gethomepage.dev/group: "Monitoring & Observability"
+          gethomepage.dev/description: Log storage & querying
+          gethomepage.dev/weight: "70"
         extraRules:
           - filters:
               - type: RequestRedirect

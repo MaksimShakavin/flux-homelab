@@ -214,7 +214,7 @@ spec:
                 port: *frontendPort
         annotations:
           gethomepage.dev/enabled: "true"
-          gethomepage.dev/icon: securo.png
+          gethomepage.dev/icon: sh-securo.png
           gethomepage.dev/name: Securo
           gethomepage.dev/group: "Home Apps"
           gethomepage.dev/description: "Personal Finance"

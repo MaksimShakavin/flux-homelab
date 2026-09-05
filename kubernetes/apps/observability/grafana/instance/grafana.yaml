@@ -102,7 +102,7 @@ spec:
         gethomepage.dev/name: Grafana
         gethomepage.dev/group: "Monitoring & Observability"
         gethomepage.dev/description: Visual analytics & monitoring platform
-        gethomepage.dev/weight: "2"
+        gethomepage.dev/weight: "40"
         gethomepage.dev/widget.type: grafana
         gethomepage.dev/widget.url: http://grafana-service.observability.svc.cluster.local:3000
         gethomepage.dev/widget.version: "2"

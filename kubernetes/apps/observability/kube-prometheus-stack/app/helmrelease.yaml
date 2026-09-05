@@ -20,6 +20,13 @@ spec:
           parentRefs:
             - name: envoy-internal
               namespace: network
+          annotations:
+            gethomepage.dev/enabled: "true"
+            gethomepage.dev/icon: alertmanager.png
+            gethomepage.dev/name: Alertmanager
+            gethomepage.dev/group: "Monitoring & Observability"
+            gethomepage.dev/description: Alert routing & silencing
+            gethomepage.dev/weight: "60"
       alertmanagerSpec:
         alertmanagerConfiguration:
           name: alertmanager
@@ -46,6 +53,13 @@ spec:
           parentRefs:
             - name: envoy-internal
               namespace: network
+          annotations:
+            gethomepage.dev/enabled: "true"
+            gethomepage.dev/icon: prometheus.png
+            gethomepage.dev/name: Prometheus
+            gethomepage.dev/group: "Monitoring & Observability"
+            gethomepage.dev/description: Metrics & alerting engine
+            gethomepage.dev/weight: "50"
       prometheusSpec:
         externalUrl: https://prometheus.exelent.click
         podMonitorSelectorNilUsesHelmValues: false

@@ -69,7 +69,7 @@ spec:
           gethomepage.dev/name: "{{ .Release.Name }}"
           gethomepage.dev/group: "Media & Downloading"
           gethomepage.dev/description: Guardian torrent management
-          gethomepage.dev/weight: "8"
+          gethomepage.dev/weight: "90"
     persistence:
       data:
         existingClaim: "{{ .Release.Name }}"

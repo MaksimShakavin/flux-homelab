@@ -12,7 +12,7 @@ metadata:
     gethomepage.dev/name: Portainer
     gethomepage.dev/group: "Monitoring & Observability"
     gethomepage.dev/description: Container management UI
-    gethomepage.dev/weight: "3"
+    gethomepage.dev/weight: "20"
     gethomepage.dev/widget.type: portainer
     gethomepage.dev/widget.url: http://portainer.observability.svc.cluster.local:9000
     gethomepage.dev/widget.env: "2"

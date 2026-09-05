@@ -39,6 +39,7 @@ data:
             href: https://dash.cloudflare.com
             icon: cloudflare-zero-trust.png
             description: Cloudflared Tunnel
+            weight: 30
             widget:
               type: cloudflared
               accountid: "{{HOMEPAGE_VAR_CLOUDFLARED_ACCOUNTID}}"

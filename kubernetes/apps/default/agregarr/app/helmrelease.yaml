@@ -63,6 +63,13 @@ spec:
         parentRefs:
           - name: envoy-internal
             namespace: network
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/icon: agregarr.png
+          gethomepage.dev/name: Agregarr
+          gethomepage.dev/group: "Media & Downloading"
+          gethomepage.dev/description: Media request aggregator
+          gethomepage.dev/weight: "80"
     persistence:
       config:
         existingClaim: "{{ .Release.Name }}"
