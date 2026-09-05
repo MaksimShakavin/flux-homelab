@@ -6,7 +6,6 @@ metadata:
   name: overseerr
 spec:
   components:
-    - ../../../../components/volsync
     - ../../../../components/kopiur/backup
   interval: 1h
   path: ./kubernetes/apps/default/overseerr/app
@@ -20,5 +19,4 @@ spec:
   postBuild:
     substitute:
       APP: overseerr
-      VOLSYNC_CAPACITY: 1Gi
       KOPIUR_CAPACITY: 1Gi

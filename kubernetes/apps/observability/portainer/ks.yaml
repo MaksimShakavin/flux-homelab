@@ -6,7 +6,6 @@ metadata:
   name: portainer
 spec:
   components:
-    - ../../../../components/volsync
     - ../../../../components/kopiur/backup
   interval: 1h
   path: ./kubernetes/apps/observability/portainer/app
@@ -20,5 +19,4 @@ spec:
   postBuild:
     substitute:
       APP: portainer
-      VOLSYNC_CAPACITY: 1Gi
       KOPIUR_CAPACITY: 1Gi

@@ -6,7 +6,6 @@ metadata:
   name: agregarr
 spec:
   components:
-    - ../../../../components/volsync
     - ../../../../components/kopiur/backup
   dependsOn:
     - name: longhorn
@@ -23,5 +22,4 @@ spec:
   postBuild:
     substitute:
       APP: agregarr
-      VOLSYNC_CAPACITY: 5Gi
       KOPIUR_CAPACITY: 5Gi

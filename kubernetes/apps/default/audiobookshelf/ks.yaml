@@ -6,7 +6,6 @@ metadata:
   name: audiobookshelf
 spec:
   components:
-    - ../../../../components/volsync
     - ../../../../components/kopiur/backup
   interval: 1h
   path: ./kubernetes/apps/default/audiobookshelf/app
@@ -20,6 +19,5 @@ spec:
   postBuild:
     substitute:
       APP: audiobookshelf
-      VOLSYNC_CAPACITY: 1Gi
       KOPIUR_CAPACITY: 1Gi
       GATUS_SUBDOMAIN: audiobooks
