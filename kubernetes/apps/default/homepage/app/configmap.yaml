@@ -83,7 +83,7 @@ data:
     color: slate
     headerStyle: boxedWidgets
     background:
-      image: https://minio-content.exelent.click/static-content/homepage_wallpaper.jpg
+      image: https://static-content.exelent.click/homepage_wallpaper.jpg
       opacity: 27 # 0-100
     cardBlur: sm
     layout:
@@ -112,7 +112,7 @@ data:
         url: http://longhorn-frontend.storage.svc.cluster.local
   widgets.yaml: |
     - logo:
-        icon: https://minio-content.exelent.click/static-content/homepage-logo.png
+        icon: https://static-content.exelent.click/homepage-logo.png
     - greeting:
         text_size: xl
         text: "My homepage"
