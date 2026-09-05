@@ -2,9 +2,9 @@ terraform {
   backend "s3" {
     bucket = "terraform"
     key    = "proxmox/state.tfstate"
-    region = "main"
+    region = "garage"
     endpoints = {
-      s3 = "http://192.168.20.5:9000"
+      s3 = "https://garage-s3.exelent.click"
     }
     skip_credentials_validation = true
     skip_metadata_api_check     = true
@@ -19,8 +19,8 @@ terraform {
       version = "0.112.0"
     }
     unifi = {
-      source  = "paultyng/unifi"
-      version = "0.41.0"
+      source  = "ubiquiti-community/unifi"
+      version = "0.55.0"
     }
   }
 }

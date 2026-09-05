@@ -2,9 +2,9 @@ terraform {
   backend "s3" {
     bucket = "terraform"
     key    = "authentik/state.tfstate"
-    region = "main"
+    region = "garage"
     endpoints = {
-      s3 = "http://192.168.20.5:9000"
+      s3 = "https://garage-s3.exelent.click"
     }
     skip_credentials_validation = true
     skip_metadata_api_check     = true

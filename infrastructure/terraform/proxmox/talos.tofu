@@ -1,5 +1,5 @@
 data "unifi_network" "Servers" {
-  name = "Servers Trusted"
+  name = "Servers-Trusted"
 }
 
 locals {
@@ -20,7 +20,7 @@ module "talos-controlplanes" {
   iso_path     = "https://factory.talos.dev/image/${local.talos_image_id}/${local.talos_version}/nocloud-amd64.iso"
   cpu_cores    = 4
   memory       = 29 * 1024
-  vlan_id      = data.unifi_network.Servers.vlan_id
+  vlan_id      = data.unifi_network.Servers.vlan
   mac_address  = local.mac_addresses[count.index]
   disks = [
     {

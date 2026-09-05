@@ -1,19 +1,25 @@
 terraform {
-  # comment out backend in case you are running it first time on a fresh minio. After you are done, run
-  # terraform init -migrate-state to migrate state to newly create minio bucket
-  # backend "s3" {
-  #   bucket                      = "terraform"
-  #   key                         = "unifi/state.tfstate"
-  #   region                      = "main"
-  #   endpoints = {
-  #     s3                          = "http://192.168.20.5:9000"
-  #   }
-  #   skip_credentials_validation = true
-  #   skip_metadata_api_check     = true
-  #   skip_region_validation      = true
-  #   force_path_style            = true
-  #   skip_requesting_account_id  = true
-  # }
+  # State lives in the Garage `terraform` bucket, reached at garage-s3.exelent.click
+  # — a CNAME this very module creates (see dns.tofu). On a fresh setup that name
+  # doesn't resolve yet, so bootstrap with local state and migrate once Garage +
+  # DNS exist:
+  #   tofu init -backend=false && tofu apply   # creates garage-* DNS records
+  #   tofu init -migrate-state                 # after garage bucket + DNS exist
+  # Backend creds come from AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY (the
+  # `terraform` bucket key, published to the garage-buckets 1Password item).
+  backend "s3" {
+    bucket = "terraform"
+    key    = "unifi/state.tfstate"
+    region = "garage"
+    endpoints = {
+      s3 = "https://garage-s3.exelent.click"
+    }
+    skip_credentials_validation = true
+    skip_metadata_api_check     = true
+    skip_region_validation      = true
+    force_path_style            = true
+    skip_requesting_account_id  = true
+  }
 
   required_providers {
     unifi = {

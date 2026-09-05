@@ -55,7 +55,6 @@ resource "proxmox_virtual_environment_vm" "node" {
   }
 
   cdrom {
-    enabled   = true
     file_id   = proxmox_virtual_environment_download_file.talos_img.id
     interface = "ide0"
   }

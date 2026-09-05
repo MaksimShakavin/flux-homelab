@@ -115,9 +115,23 @@ The 1Password vault should contain the following items:
 2. Set up BGP network .
   - Go to Settings -> Routing -> BGP
   - Create k8s entry with [config file content](../kubernetes/apps/kube-system/cilium)
-3. DNS records (the `nas.exelent.click` A record and all CNAMEs pointing at it) are
-   managed by Terraform in [`../infrastructure/terraform/unifi/dns.tofu`](../infrastructure/terraform/unifi/dns.tofu)
-   and applied with `cd infrastructure/terraform/unifi && tofu apply`.
+3. DNS records (the `nas.exelent.click` A record and all CNAMEs pointing at it,
+   including the `garage-*.exelent.click` names) are managed by Terraform in
+   [`../infrastructure/terraform/unifi/dns.tofu`](../infrastructure/terraform/unifi/dns.tofu).
+
+   The `unifi` module stores its own state in the Garage `terraform` bucket, reached
+   at `garage-s3.exelent.click` — a record this module itself creates. On a fresh
+   setup that name doesn't resolve yet, so bootstrap with local state and migrate
+   later (after Garage exists, in step 5):
+
+   ```bash
+   cd infrastructure/terraform/unifi
+   tofu init -backend=false   # first run only: skip the not-yet-reachable backend
+   tofu apply                 # creates nas A record + garage-* CNAMEs
+   ```
+
+   You return to migrate this state into Garage once the bucket exists — see the
+   end of the Garage section in step 5.
 
 ### 4. Get discord token
 
@@ -165,10 +179,52 @@ its `garage-*.exelent.click` hostnames.
    ```bash
    task ansible:synology-setup
    ```
-2. Create buckets, keys, and cluster layout (node ID is read from the admin API automatically):
+2. Create buckets, keys, and cluster layout (node ID is read from the admin API automatically).
+
+   The `garage` module creates the `terraform` bucket that every module — including
+   `garage` itself — uses as its state backend. To resolve this chicken-and-egg on a
+   fresh Garage, bootstrap with local state first, then migrate:
+
    ```bash
-   cd infrastructure/terraform/garage && tofu apply
+   cd infrastructure/terraform/garage
+
+   # First run only: skip the backend so state is local, then create the
+   # buckets, keys, and cluster layout.
+   tofu init -backend=false
+   tofu apply
+
+   # Bucket access keys are auto-published to the "garage-buckets" item in
+   # 1Password. Export the `terraform` bucket key so the S3 backend can auth,
+   # then migrate the local state into Garage.
+   export AWS_ACCESS_KEY_ID=<garage-buckets → terraform_AWS_ACCESS_KEY_ID>
+   export AWS_SECRET_ACCESS_KEY=<garage-buckets → terraform_AWS_SECRET_ACCESS_KEY>
+   tofu init -migrate-state
    ```
+
+   After migration, every subsequent run is just `tofu init && tofu apply` — the
+   backend block stays committed and no files need editing. The same
+   `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` (the `terraform` bucket key) are
+   required whenever running any Terraform module that stores state in Garage.
+
+3. Migrate the `unifi` state (bootstrapped locally back in step 3) into Garage now
+   that the bucket and `garage-s3.exelent.click` both exist:
+
+   ```bash
+   cd infrastructure/terraform/unifi
+   # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY still exported from above.
+   tofu init -migrate-state
+   ```
+
+4. Any remaining Terraform modules (`synology`, `minio`, `authentik`, `proxmox`)
+   store state in the same Garage `terraform` bucket. With the bucket and DNS in
+   place, they need no bootstrap dance — just `tofu init && tofu apply` (keys
+   exported as above).
+
+> **Bootstrap ordering recap** — the only two modules that need the
+> `-backend=false` → `apply` → `init -migrate-state` dance are `unifi` (creates the
+> `garage-*` DNS) and `garage` (creates the `terraform` bucket). Order:
+> `unifi apply` → NAS reverse proxy → `garage apply` → `garage migrate` →
+> `unifi migrate` → everything else.
 
 #### Configure NFS Connections
 

@@ -1,20 +1,24 @@
 terraform {
-  # Comment out the backend the first time you run this against a fresh Garage.
-  # After the "terraform" bucket + key exist, uncomment and run
-  # `tofu init -migrate-state` to move state into Garage.
-  # backend "s3" {
-  #   bucket = "terraform"
-  #   key    = "garage/state.tfstate"
-  #   region = "garage"
-  #   endpoints = {
-  #     s3 = "https://garage-s3.exelent.click"
-  #   }
-  #   skip_credentials_validation = true
-  #   skip_metadata_api_check     = true
-  #   skip_region_validation      = true
-  #   force_path_style            = true
-  #   skip_requesting_account_id  = true
-  # }
+  # Chicken-and-egg: this module CREATES the "terraform" bucket that stores this
+  # very state. On a fresh Garage, bootstrap with local state and skip the
+  # backend, then migrate once the bucket exists:
+  #   tofu init -backend=false && tofu apply   # creates bucket + keys
+  #   tofu init -migrate-state                 # moves state into Garage
+  # Backend creds come from AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY (the
+  # `terraform` bucket key, published to the garage-buckets 1Password item).
+  backend "s3" {
+    bucket = "terraform"
+    key    = "garage/state.tfstate"
+    region = "garage"
+    endpoints = {
+      s3 = "https://garage-s3.exelent.click"
+    }
+    skip_credentials_validation = true
+    skip_metadata_api_check     = true
+    skip_region_validation      = true
+    force_path_style            = true
+    skip_requesting_account_id  = true
+  }
 
   required_providers {
     # Forked to add website_access on garage_bucket; use dev_overrides in
