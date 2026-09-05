@@ -14,6 +14,10 @@ spec:
     name: ghostfolio-security-token
     template:
       engineVersion: v2
+      # Required for the Webhook generator to consume this secret.
+      metadata:
+        labels:
+          external-secrets.io/type: webhook
       data:
         token: "{{ .SECURITY_TOKEN }}"
   dataFrom:
