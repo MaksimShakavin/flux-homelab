@@ -30,6 +30,11 @@ releases:
     chart: oci://ghcr.io/home-operations/charts-mirror/keda
     version: 2.20.2
 
+  - name: kopiur
+    namespace: storage
+    chart: oci://ghcr.io/home-operations/charts/kopiur
+    version: 0.7.5
+
   - name: kube-prometheus-stack
     namespace: observability
     chart: oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack
