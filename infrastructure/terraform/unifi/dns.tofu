@@ -54,8 +54,8 @@ resource "unifi_dns_record" "garage_s3" {
   value       = unifi_dns_record.nas.name
 }
 
-resource "unifi_dns_record" "garage_static" {
-  name        = "garage-static.exelent.click"
+resource "unifi_dns_record" "static_content" {
+  name        = "static-content.exelent.click"
   enabled     = true
   record_type = "CNAME"
   value       = unifi_dns_record.nas.name

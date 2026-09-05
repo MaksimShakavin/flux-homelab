@@ -10,6 +10,11 @@ rpc_secret = "{{ garage_rpc_secret }}"
 s3_region = "garage"
 api_bind_addr = "[::]:3900"
 
+[s3_web]
+bind_addr = "[::]:3902"
+root_domain = ".exelent.click"
+index = "index.html"
+
 [admin]
 api_bind_addr = "[::]:3903"
 admin_token = "{{ garage_admin_token }}"

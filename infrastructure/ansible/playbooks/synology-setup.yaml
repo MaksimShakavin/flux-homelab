@@ -141,9 +141,10 @@
               command: ["/garage", "server"]
               networks:
                 garage: {}
-              # Only S3 (3900) and admin (3903) are published; RPC (3901) stays internal.
+              # S3 (3900), web (3902), and admin (3903) are published; RPC (3901) stays internal.
               ports:
                 - "3900:3900"
+                - "3902:3902"
                 - "3903:3903"
               environment:
                 RUST_LOG: garage=info
