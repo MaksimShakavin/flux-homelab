@@ -26,6 +26,7 @@
             pkgs.kustomize
             pkgs.moreutils
             pkgs.sops
+            pkgs.sshpass
             pkgs.stern
             pkgs.yq-go
             pkgs.envsubst

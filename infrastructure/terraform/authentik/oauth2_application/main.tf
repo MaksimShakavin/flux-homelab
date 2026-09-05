@@ -24,14 +24,14 @@ resource "random_password" "client_secret" {
 }
 
 resource "authentik_provider_oauth2" "oauth2-application" {
-  name                       = var.name
-  client_id                  = var.client_id
-  client_secret              = local.client_secret
-  authorization_flow         = var.authorization_flow
-  invalidation_flow          = var.invalidation_flow
-  signing_key                = data.authentik_certificate_key_pair.generated.id
-  client_type                = var.client_type
-  property_mappings          = concat(data.authentik_property_mapping_provider_scope.scopes.ids, var.additional_property_mappings)
+  name               = var.name
+  client_id          = var.client_id
+  client_secret      = local.client_secret
+  authorization_flow = var.authorization_flow
+  invalidation_flow  = var.invalidation_flow
+  signing_key        = data.authentik_certificate_key_pair.generated.id
+  client_type        = var.client_type
+  property_mappings  = concat(data.authentik_property_mapping_provider_scope.scopes.ids, var.additional_property_mappings)
   allowed_redirect_uris = [
     for url in var.redirect_uris :
     {

@@ -1,0 +1,198 @@
+---
+- name: Set up Synology containers (pre-cluster dependencies)
+  hosts:
+    - synology
+  # Docker on DSM is root-owned, so container tasks need sudo.
+  become: true
+  gather_facts: false
+  any_errors_fatal: true
+
+  vars:
+    garage_dir: /volume1/docker/garage
+    # DSM keeps the docker CLI out of Ansible's PATH (/usr/bin:/bin:/usr/sbin:/sbin).
+    docker_cli: /usr/local/bin/docker
+    # DSM ships Python 3.8, but ansible-core needs 3.9+ on the target. Bootstrap a
+    # self-contained standalone Python (no system deps) over raw SSH, use it for
+    # this run, then remove it. https://github.com/astral-sh/python-build-standalone
+    py_release: "20260901"
+    py_version: "3.11.16"
+    # /tmp is mounted noexec on DSM, so the interpreter lives on /volume1.
+    py_dir: /volume1/docker/.ansible-python
+    py_bin: /volume1/docker/.ansible-python/python/bin/python3
+
+  tasks:
+    # ansible_user can't come from a 1Password lookup in the inventory (that's
+    # resolved at parse time). These tasks are delegate_to: localhost, so they
+    # run before any SSH connection to the NAS and can set ansible_user first.
+    - name: Get Synology admin username from 1Password
+      onepassword.connect.field_info:
+        token: "{{ sops.OP_CONNECT_TOKEN }}"
+        hostname: "{{ sops.OP_CONNECT_HOST }}"
+        item: synology
+        field: username
+        vault: homelab
+      no_log: true
+      delegate_to: localhost
+      become: false
+      register: synology_username_field
+
+    - name: Set Synology admin user
+      ansible.builtin.set_fact:
+        ansible_user: "{{ synology_username_field.field.value }}"
+      no_log: true
+
+    - name: Get Synology sudo password from 1Password
+      onepassword.connect.field_info:
+        token: "{{ sops.OP_CONNECT_TOKEN }}"
+        hostname: "{{ sops.OP_CONNECT_HOST }}"
+        item: synology
+        field: password
+        vault: homelab
+      no_log: true
+      delegate_to: localhost
+      become: false
+      register: synology_password_field
+
+    - name: Set SSH and become password
+      ansible.builtin.set_fact:
+        ansible_password: "{{ synology_password_field.field.value }}"
+        ansible_become_password: "{{ synology_password_field.field.value }}"
+      no_log: true
+
+    - name: Get garage rpc_secret from 1Password
+      onepassword.connect.field_info:
+        token: "{{ sops.OP_CONNECT_TOKEN }}"
+        hostname: "{{ sops.OP_CONNECT_HOST }}"
+        item: garage
+        field: rpc_secret
+        vault: homelab
+      no_log: true
+      delegate_to: localhost
+      become: false
+      register: garage_rpc_secret_field
+
+    - name: Get garage admin_token from 1Password
+      onepassword.connect.field_info:
+        token: "{{ sops.OP_CONNECT_TOKEN }}"
+        hostname: "{{ sops.OP_CONNECT_HOST }}"
+        item: garage
+        field: admin_token
+        vault: homelab
+      no_log: true
+      delegate_to: localhost
+      become: false
+      register: garage_admin_token_field
+
+    - name: Set garage secret facts
+      ansible.builtin.set_fact:
+        garage_rpc_secret: "{{ garage_rpc_secret_field.field.value }}"
+        garage_admin_token: "{{ garage_admin_token_field.field.value }}"
+      no_log: true
+
+    # --- Bootstrap a target Python (raw = no target Python required) ---------
+    - name: Bootstrap standalone Python for Ansible
+      ansible.builtin.raw: |
+        set -e
+        # Already fully bootstrapped (interpreter + PyYAML present)? Nothing to do.
+        if "{{ py_bin }}" -c "import yaml" 2>/dev/null; then exit 0; fi
+        arch=$(uname -m)
+        url="https://github.com/astral-sh/python-build-standalone/releases/download/{{ py_release }}/cpython-{{ py_version }}+{{ py_release }}-${arch}-unknown-linux-gnu-install_only.tar.gz"
+        rm -rf "{{ py_dir }}"
+        mkdir -p "{{ py_dir }}"
+        curl -fsSL "$url" -o "{{ py_dir }}/python.tar.gz"
+        tar -xzf "{{ py_dir }}/python.tar.gz" -C "{{ py_dir }}"
+        rm -f "{{ py_dir }}/python.tar.gz"
+        # docker_compose_v2 needs PyYAML; the standalone build ships stdlib only.
+        "{{ py_bin }}" -m pip install --quiet PyYAML
+        "{{ py_bin }}" --version
+      changed_when: true
+
+    - name: Use the bootstrapped Python for subsequent tasks
+      ansible.builtin.set_fact:
+        ansible_python_interpreter: "{{ py_bin }}"
+
+    # --- Garage --------------------------------------------------------------
+    - name: Create garage data/meta directories
+      ansible.builtin.file:
+        path: "{{ garage_dir }}/{{ item }}"
+        state: directory
+      loop:
+        - data
+        - meta
+
+    - name: Template garage.toml
+      ansible.builtin.template:
+        src: garage.toml.j2
+        dest: "{{ garage_dir }}/garage.toml"
+        mode: "0600"
+      no_log: true
+
+    - name: Deploy garage container project
+      community.docker.docker_compose_v2:
+        docker_cli: "{{ docker_cli }}"
+        project_name: garage
+        definition:
+          services:
+            garage:
+              image: dxflrs/garage:v2.3.0
+              restart: unless-stopped
+              # The garage image has no ENTRYPOINT and the binary lives at /garage,
+              # so the command must include the full path.
+              command: ["/garage", "server"]
+              networks:
+                garage: {}
+              # Only S3 (3900) and admin (3903) are published; RPC (3901) stays internal.
+              ports:
+                - "3900:3900"
+                - "3903:3903"
+              environment:
+                RUST_LOG: garage=info
+              volumes:
+                - "{{ garage_dir }}/data:/data"
+                - "{{ garage_dir }}/meta:/metadata"
+                - "{{ garage_dir }}/garage.toml:/etc/garage.toml:ro"
+          networks:
+            garage:
+              driver: bridge
+        state: present
+
+    # --- Prometheus node-exporter -------------------------------------------
+    - name: Deploy node-exporter container project
+      community.docker.docker_compose_v2:
+        docker_cli: "{{ docker_cli }}"
+        project_name: node-exporter
+        definition:
+          services:
+            node-exporter:
+              image: quay.io/prometheus/node-exporter:v1.8.2
+              restart: unless-stopped
+              network_mode: host
+              pid: host
+              command: ["--path.rootfs=/host"]
+              # No rslave propagation: Synology's Docker root mount is not shared/slave,
+              # so requesting it fails the container with "not a shared or slave mount".
+              volumes:
+                - "/:/host:ro"
+        state: present
+
+    # --- Portainer agent -----------------------------------------------------
+    - name: Deploy portainer-agent container project
+      community.docker.docker_compose_v2:
+        docker_cli: "{{ docker_cli }}"
+        project_name: portainer-agent
+        definition:
+          services:
+            portainer-agent:
+              image: portainer/agent:2.45.0
+              restart: unless-stopped
+              ports:
+                - "9001:9001"
+              volumes:
+                - "/var/run/docker.sock:/var/run/docker.sock"
+                - "/volume1/@docker/volumes:/var/lib/docker/volumes"
+        state: present
+
+    # --- Tear down the bootstrapped Python -----------------------------------
+    - name: Remove the bootstrapped Python
+      ansible.builtin.raw: rm -rf "{{ py_dir }}"
+      changed_when: true

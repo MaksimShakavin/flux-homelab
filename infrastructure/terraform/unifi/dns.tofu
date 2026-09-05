@@ -39,3 +39,24 @@ resource "unifi_dns_record" "proxmox" {
   record_type = "CNAME"
   value       = unifi_dns_record.nas.name
 }
+
+resource "unifi_dns_record" "garage_admin" {
+  name        = "garage-admin.exelent.click"
+  enabled     = true
+  record_type = "CNAME"
+  value       = unifi_dns_record.nas.name
+}
+
+resource "unifi_dns_record" "garage_s3" {
+  name        = "garage-s3.exelent.click"
+  enabled     = true
+  record_type = "CNAME"
+  value       = unifi_dns_record.nas.name
+}
+
+resource "unifi_dns_record" "garage_static" {
+  name        = "garage-static.exelent.click"
+  enabled     = true
+  record_type = "CNAME"
+  value       = unifi_dns_record.nas.name
+}

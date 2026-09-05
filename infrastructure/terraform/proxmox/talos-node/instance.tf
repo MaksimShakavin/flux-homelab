@@ -61,8 +61,8 @@ resource "proxmox_virtual_environment_vm" "node" {
   }
 
   hostpci {
-    device  = "hostpci0"
-    id = "0000:00:02.0"
+    device = "hostpci0"
+    id     = "0000:00:02.0"
   }
 
   lifecycle {

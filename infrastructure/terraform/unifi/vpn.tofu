@@ -12,16 +12,16 @@ resource "unifi_dynamic_dns" "cloudflare" {
 }
 
 resource "unifi_vpn_server" "wireguard" {
-  name        = "WireGuard"
-  enabled     = true
-  subnet      = "192.168.200.1/24"
+  name    = "WireGuard"
+  enabled = true
+  subnet  = "192.168.200.1/24"
   dns = {
     enabled = true
     servers = ["192.168.200.1"]
   }
   wan = {
     interface = local.wan
-    ip = "any"
+    ip        = "any"
   }
   wireguard = {
     private_key = module.secret_unifi.fields.WIREGUARD_PRIVATE_KEY

@@ -47,9 +47,9 @@ variable "vlan_id" {
 
 variable "disks" {
   type = list(object({
-    datastore_id  = string
-    interface     = string
-    size          = string
+    datastore_id = string
+    interface    = string
+    size         = string
   }))
   default = []
 }

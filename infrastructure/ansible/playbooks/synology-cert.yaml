@@ -1,0 +1,172 @@
+---
+- name: Update Synology exelent.click TLS certificate from 1Password
+  hosts:
+    - synology
+  # Writing into the DSM cert store and reloading services needs root.
+  become: true
+  gather_facts: false
+  any_errors_fatal: true
+
+  vars:
+    op_vault: homelab
+    # The _archive folder id for the "exelent.click" cert (see INFO). This cert
+    # serves the ReverseProxy vhosts + the nas.exelent.click FQDN system service.
+    # It is NOT the DSM default cert (K8hIci), so we only touch this folder.
+    cert_dir: /usr/syno/etc/certificate/_archive/zA0KRW
+    # DSM ships Python 3.8, but ansible-core needs 3.9+ on the target. Bootstrap a
+    # self-contained standalone Python over raw SSH, use it, then remove it.
+    py_release: "20260901"
+    py_version: "3.11.16"
+    py_dir: /volume1/docker/.ansible-python
+    py_bin: /volume1/docker/.ansible-python/python/bin/python3
+
+  handlers:
+    # Only fires when a cert file actually changed. --gen-all regenerates the
+    # nginx cert config from _archive; --deploy-hup reloads nginx so the new
+    # cert is served.
+    - name: Regenerate certificate config
+      ansible.builtin.command: /usr/syno/bin/synow3tool --gen-all
+      changed_when: true
+      notify: Reload nginx
+
+    - name: Reload nginx
+      ansible.builtin.command: /usr/syno/bin/synow3tool --deploy-hup
+      changed_when: true
+
+  tasks:
+    # ansible_user can't come from a 1Password lookup in the inventory (resolved
+    # at parse time). These delegate_to: localhost tasks run before any SSH
+    # connection and set ansible_user/password first.
+    - name: Get Synology admin username from 1Password
+      onepassword.connect.field_info:
+        token: "{{ sops.OP_CONNECT_TOKEN }}"
+        hostname: "{{ sops.OP_CONNECT_HOST }}"
+        item: synology
+        field: username
+        vault: "{{ op_vault }}"
+      no_log: true
+      delegate_to: localhost
+      become: false
+      register: synology_username_field
+
+    - name: Set Synology admin user
+      ansible.builtin.set_fact:
+        ansible_user: "{{ synology_username_field.field.value }}"
+      no_log: true
+
+    - name: Get Synology sudo password from 1Password
+      onepassword.connect.field_info:
+        token: "{{ sops.OP_CONNECT_TOKEN }}"
+        hostname: "{{ sops.OP_CONNECT_HOST }}"
+        item: synology
+        field: password
+        vault: "{{ op_vault }}"
+      no_log: true
+      delegate_to: localhost
+      become: false
+      register: synology_password_field
+
+    - name: Set SSH and become password
+      ansible.builtin.set_fact:
+        ansible_password: "{{ synology_password_field.field.value }}"
+        ansible_become_password: "{{ synology_password_field.field.value }}"
+      no_log: true
+
+    - name: Get TLS certificate from 1Password
+      onepassword.connect.field_info:
+        token: "{{ sops.OP_CONNECT_TOKEN }}"
+        hostname: "{{ sops.OP_CONNECT_HOST }}"
+        item: exelent-click-tls-note
+        field: tls.crt
+        vault: "{{ op_vault }}"
+      no_log: true
+      delegate_to: localhost
+      become: false
+      register: tls_crt_field
+
+    - name: Get TLS private key from 1Password
+      onepassword.connect.field_info:
+        token: "{{ sops.OP_CONNECT_TOKEN }}"
+        hostname: "{{ sops.OP_CONNECT_HOST }}"
+        item: exelent-click-tls-note
+        field: tls.key
+        vault: "{{ op_vault }}"
+      no_log: true
+      delegate_to: localhost
+      become: false
+      register: tls_key_field
+
+    - name: Decode certificate and key (stored base64-encoded in 1Password)
+      ansible.builtin.set_fact:
+        tls_crt: "{{ tls_crt_field.field.value | b64decode }}"
+        tls_key: "{{ tls_key_field.field.value | b64decode }}"
+      no_log: true
+
+    - name: Sanity-check decoded PEM
+      ansible.builtin.assert:
+        that:
+          - "'BEGIN CERTIFICATE' in tls_crt"
+          - "'PRIVATE KEY' in tls_key"
+        fail_msg: "Decoded 1Password fields are not valid PEM — aborting before touching the cert store."
+      no_log: true
+
+    # --- Bootstrap a target Python (raw = no target Python required) ---------
+    - name: Bootstrap standalone Python for Ansible
+      ansible.builtin.raw: |
+        set -e
+        if [ -x "{{ py_bin }}" ]; then exit 0; fi
+        arch=$(uname -m)
+        url="https://github.com/astral-sh/python-build-standalone/releases/download/{{ py_release }}/cpython-{{ py_version }}+{{ py_release }}-${arch}-unknown-linux-gnu-install_only.tar.gz"
+        rm -rf "{{ py_dir }}"
+        mkdir -p "{{ py_dir }}"
+        curl -fsSL "$url" -o "{{ py_dir }}/python.tar.gz"
+        tar -xzf "{{ py_dir }}/python.tar.gz" -C "{{ py_dir }}"
+        rm -f "{{ py_dir }}/python.tar.gz"
+        "{{ py_bin }}" --version
+      changed_when: true
+
+    - name: Use the bootstrapped Python for subsequent tasks
+      ansible.builtin.set_fact:
+        ansible_python_interpreter: "{{ py_bin }}"
+
+    # --- Write the cert into the _archive folder -----------------------------
+    # tls.crt already contains the full chain (cert.pem and fullchain.pem are
+    # byte-identical on this box), so it is written to both. Modes/owner match
+    # the existing files: 0400 root:root.
+    - name: Write cert.pem
+      ansible.builtin.copy:
+        content: "{{ tls_crt }}"
+        dest: "{{ cert_dir }}/cert.pem"
+        owner: root
+        group: root
+        mode: "0400"
+        backup: true
+      no_log: true
+      notify: Regenerate certificate config
+
+    - name: Write fullchain.pem
+      ansible.builtin.copy:
+        content: "{{ tls_crt }}"
+        dest: "{{ cert_dir }}/fullchain.pem"
+        owner: root
+        group: root
+        mode: "0400"
+        backup: true
+      no_log: true
+      notify: Regenerate certificate config
+
+    - name: Write privkey.pem
+      ansible.builtin.copy:
+        content: "{{ tls_key }}"
+        dest: "{{ cert_dir }}/privkey.pem"
+        owner: root
+        group: root
+        mode: "0400"
+        backup: true
+      no_log: true
+      notify: Regenerate certificate config
+
+    # --- Tear down the bootstrapped Python -----------------------------------
+    - name: Remove the bootstrapped Python
+      ansible.builtin.raw: rm -rf "{{ py_dir }}"
+      changed_when: true

@@ -115,12 +115,9 @@ The 1Password vault should contain the following items:
 2. Set up BGP network .
   - Go to Settings -> Routing -> BGP
   - Create k8s entry with [config file content](../kubernetes/apps/kube-system/cilium)
-3. Add custom DNS names:
-   - `nas.exelent.click to the Nas IP
-   - CNAME `proxmox.exelent.click` to `nas.exelent.click`
-   - CNAME `minio.exelent.click` to `nas.exelent.click`
-   - CNAME `sprut.exelent.click` to `nas.exelent.click`
-   - CNAME `unifi.exelent.click` to `nas.exelent.click`
+3. DNS records (the `nas.exelent.click` A record and all CNAMEs pointing at it) are
+   managed by Terraform in [`../infrastructure/terraform/unifi/dns.tofu`](../infrastructure/terraform/unifi/dns.tofu)
+   and applied with `cd infrastructure/terraform/unifi && tofu apply`.
 
 ### 4. Get discord token
 
@@ -131,14 +128,46 @@ The 1Password vault should contain the following items:
 
 ### 5. NAS set up
 
-#### Install and Configure Minio on NAS
+#### Prepare the NAS
 
-1. **Install Synology Container Manager:**
-   1. Install the `Synology Container Manager` package from the Package Center.
-   2. Open the `Synology Container Manager` and run a Docker container using the `minio/minio` image. Ensure that port
-      `9000` is forwarded.
-2. **Create Minio Buckets:**
-   - Use [terraform module](../infrastructure/terraform/minio) to create necessary buckets and users
+1. Install the `Container Manager` package from Package Center.
+2. Enable SSH: `Control Panel → Terminal & SNMP → Enable SSH service` (admin account needs sudo).
+
+#### Configure Reverse proxy
+
+The reverse proxy and its certificate must be set up **first** so that the DNS names below
+resolve and terminate TLS correctly. Later steps (Ansible and Terraform) rely on these names.
+
+1. Go to Config Panel -> Login Portal -> Advanced -> Reverse proxy and add:
+   - `proxmox.exelent.click` -> `https 192.168.0.41:8006` with WebSocket
+   - `sprut.exelent.click` -> `http 192.168.20.3:7777` with WebSocket
+   - `minio.exelent.click` -> `http localhost:9090`
+   - `minio-content.exelent.click` -> `http localhost:9090`
+   - `unifi.exelent.click` -> `https 192.168.0.1:9090` with WebSocket
+   - `garage-admin.exelent.click` -> `http localhost:3903` (Garage admin API)
+   - `garage-s3.exelent.click` -> `http localhost:3900` (Garage S3 API; used for the Terraform state backend)
+   - `garage-static.exelent.click` -> `http localhost:3902` (Garage web endpoint; serves the `static-content` bucket)
+2. Go to Config Panel -> Login Portal and add Domain `nas.exelent.click`
+3. Click on Certificates and upload tls.key and tls.crt from Onepassword
+4. Click Settings and apply the certificate to added domains
+5. DNS entries for these domains are managed by Terraform in
+   [`../infrastructure/terraform/unifi/dns.tofu`](../infrastructure/terraform/unifi/dns.tofu)
+   (`nas.exelent.click` A record plus a CNAME per domain pointing at it).
+   Apply with `cd infrastructure/terraform/unifi && tofu apply`.
+
+#### Install and Configure Garage on NAS
+
+With the reverse proxy and DNS names in place, Ansible and Terraform can reach Garage over
+its `garage-*.exelent.click` hostnames.
+
+1. Deploy containers (garage, node-exporter, portainer-agent):
+   ```bash
+   task ansible:synology-setup
+   ```
+2. Create buckets, keys, and cluster layout (node ID is read from the admin API automatically):
+   ```bash
+   cd infrastructure/terraform/garage && tofu apply
+   ```
 
 #### Configure NFS Connections
 
@@ -147,22 +176,6 @@ The 1Password vault should contain the following items:
   2. Create a shared folder for the Kubernetes cluster.
   3. Go to the folder settings and select `NFS Permissions`.
   4. Add the IP addresses of all Kubernetes nodes. Select `Squash` as `No`.
-
-#### Configure Reverse proxy
-
-1. Go to Config Panel -> Login Portal -> Advanced -> Reverse proxy and add:
-   - `proxmox.exelent.click` -> `https 192.168.0.41:8006` with WebSocket
-   - `sprut.exelent.click` -> `http 192.168.20.3:7777` with WebSocket
-   - `minio.exelent.click` -> `http localhost:9090`
-   - `minio-content.exelent.click` -> `http localhost:9090`
-   - `unifi.exelent.click` -> `https 192.168.0.1:9090` with WebSocket
-2. Go to Config Panel -> Login Portal and add Domain `nas.exelent.click`
-3. Click on Certificates and upload tls.key and tls.crt from Onepassword
-4. Click Settings and apply the certificate to added domains
-5. Add DNS entries for each domain in Unifi dashboard. Currently is is not allowed to create CNAME manually,
-   so better to wait until cluster external-dns creates some entries and modify them. They will be
-   recreated on next run. Create `nas.exelent.click` -> `192.168.20.5` HOST enty. And CNAME entries should
-   point to `nas.exelent.click`.
 
 ### 6. Set up healthchecks.io
 

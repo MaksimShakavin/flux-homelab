@@ -65,8 +65,8 @@ variable "additional_property_mappings" {
 
 locals {
   client_secret = (
-  var.client_type == "confidential"
-  ? var.client_secret != null ? var.client_secret : random_password.client_secret.result
-  : null
+    var.client_type == "confidential"
+    ? var.client_secret != null ? var.client_secret : random_password.client_secret.result
+    : null
   )
 }

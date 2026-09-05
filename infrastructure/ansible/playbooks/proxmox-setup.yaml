@@ -13,7 +13,7 @@
         hostname: "{{ sops.OP_CONNECT_HOST }}"
         item: Proxmox root
         field: password
-        vault: 4ebapsbutjt6t66s3y22ne4l4u
+        vault: homelab
       no_log: true  # Turn off logs to avoid logging sensitive data
       delegate_to: localhost # this task is only run on localhost
       register: password

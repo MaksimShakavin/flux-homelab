@@ -5,14 +5,36 @@ version: "3"
 vars:
   ANSIBLE_INVENTORY_DIR: "{{.ANSIBLE_DIR}}/inventory"
   ANSIBLE_PLAYBOOK_DIR: "{{.ANSIBLE_DIR}}/playbooks"
+  ANSIBLE_REQUIREMENTS: "{{.ANSIBLE_DIR}}/collections/requirements.yml"
 
 tasks:
+  deps:
+    desc: Install Ansible collections from requirements.yml
+    cmds:
+      - ansible-galaxy collection install -r {{.ANSIBLE_REQUIREMENTS}}
+    sources:
+      - "{{.ANSIBLE_REQUIREMENTS}}"
+
   proxmox-setup:
     desc: Run Ansible setup playbook on the nodes
+    deps: [deps]
     cmds:
       - ansible-playbook -i {{.ANSIBLE_INVENTORY_DIR}}/hosts.yaml {{.ANSIBLE_PLAYBOOK_DIR}}/proxmox-setup.yaml -v
 
   proxmox-update:
     desc: Update proxmox packages
+    deps: [deps]
     cmds:
       - ansible-playbook -i {{.ANSIBLE_INVENTORY_DIR}}/hosts.yaml {{.ANSIBLE_PLAYBOOK_DIR}}/proxmox-apt-upgrade.yaml
+
+  synology-setup:
+    desc: Deploy pre-cluster containers (garage, node-exporter, portainer-agent) on Synology
+    deps: [deps]
+    cmds:
+      - ansible-playbook -i {{.ANSIBLE_INVENTORY_DIR}}/hosts.yaml {{.ANSIBLE_PLAYBOOK_DIR}}/synology-setup.yaml -v
+
+  synology-cert:
+    desc: Update the Synology exelent.click TLS certificate from 1Password
+    deps: [deps]
+    cmds:
+      - ansible-playbook -i {{.ANSIBLE_INVENTORY_DIR}}/hosts.yaml {{.ANSIBLE_PLAYBOOK_DIR}}/synology-cert.yaml -v

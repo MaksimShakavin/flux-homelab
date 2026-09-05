@@ -25,3 +25,6 @@ wiki
 /config.yaml
 # Direnv
 .direnv
+# Claude Code
+.claude/
+**/.claude/

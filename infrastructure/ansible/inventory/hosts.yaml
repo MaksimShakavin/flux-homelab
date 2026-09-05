@@ -13,3 +13,10 @@ all:
       vars:
         ansible_user: root
         sops: "{{ lookup('community.sops.sops', lookup('env', 'INFRA_SECRETS_FILE')) | ansible.builtin.from_yaml }}"
+    synology:
+      hosts:
+        nas:
+          ansible_host: nas.exelent.click
+      vars:
+        ansible_remote_tmp: /tmp/.ansible/tmp
+        sops: "{{ lookup('community.sops.sops', lookup('env', 'INFRA_SECRETS_FILE')) | ansible.builtin.from_yaml }}"

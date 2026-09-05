@@ -1,10 +1,10 @@
 terraform {
   backend "s3" {
-    bucket                      = "terraform"
-    key                         = "proxmox/state.tfstate"
-    region                      = "main"
+    bucket = "terraform"
+    key    = "proxmox/state.tfstate"
+    region = "main"
     endpoints = {
-      s3                          = "http://192.168.20.5:9000"
+      s3 = "http://192.168.20.5:9000"
     }
     skip_credentials_validation = true
     skip_metadata_api_check     = true
@@ -47,8 +47,8 @@ provider "proxmox" {
 }
 
 provider "unifi" {
-  username = module.secret_unifi.fields.TERRAFORM_USER
-  password = module.secret_unifi.fields.TERRAFORM_PASSWORD
-  api_url  = "https://192.168.0.1"
+  username       = module.secret_unifi.fields.TERRAFORM_USER
+  password       = module.secret_unifi.fields.TERRAFORM_PASSWORD
+  api_url        = "https://192.168.0.1"
   allow_insecure = true
 }
