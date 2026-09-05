@@ -35,8 +35,7 @@ spec:
   method: POST
   headers:
     Content-Type: application/json
-  body: |
-    {"accessToken": "{{ .securityToken }}"}
+  body: '{"accessToken": "{{ .securityToken.token }}"}'
   secrets:
     - name: securityToken
       secretRef:
