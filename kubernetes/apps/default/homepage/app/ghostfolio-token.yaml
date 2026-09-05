@@ -1,0 +1,62 @@
+---
+# Durable Ghostfolio security token (never expires) pulled from 1Password.
+# The Webhook generator below exchanges it for a short-lived Bearer.
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: ghostfolio-security-token
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: onepassword
+  target:
+    name: ghostfolio-security-token
+    template:
+      engineVersion: v2
+      data:
+        token: "{{ .SECURITY_TOKEN }}"
+  dataFrom:
+    - extract:
+        key: ghostfolio
+---
+# Exchanges the durable security token for a 6-month Bearer via Ghostfolio's
+# anonymous auth endpoint. Response is {"authToken": "<jwt>"} -> exported as `authToken`.
+apiVersion: generators.external-secrets.io/v1alpha1
+kind: Webhook
+metadata:
+  name: ghostfolio-token
+spec:
+  url: "http://ghostfolio.default.svc.cluster.local:3333/api/v1/auth/anonymous"
+  method: POST
+  headers:
+    Content-Type: application/json
+  body: |
+    {"accessToken": "{{ .securityToken }}"}
+  secrets:
+    - name: securityToken
+      secretRef:
+        name: ghostfolio-security-token
+        key: token
+---
+# Refreshes the Bearer well inside its 6-month validity and exposes it as the
+# HOMEPAGE_VAR the widget expects. Kept separate from homepage-secret so the
+# periodic re-mint only restarts Homepage on this schedule.
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: ghostfolio-homepage-token
+spec:
+  refreshInterval: 2160h # 90d, safely under the 6-month token lifetime
+  target:
+    name: homepage-ghostfolio-token
+    template:
+      engineVersion: v2
+      data:
+        HOMEPAGE_VAR_GHOSTFOLIO_TOKEN: "{{ .authToken }}"
+  dataFrom:
+    - sourceRef:
+        generatorRef:
+          apiVersion: generators.external-secrets.io/v1alpha1
+          kind: Webhook
+          name: ghostfolio-token

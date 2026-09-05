@@ -25,6 +25,8 @@ spec:
             envFrom:
               - secretRef:
                   name: homepage-secret
+              - secretRef:
+                  name: homepage-ghostfolio-token
         serviceAccount:
           identifier: homepage
     defaultPodOptions:
