@@ -38,6 +38,8 @@ spec:
       secretRef:
         name: ghostfolio-security-token
         key: token
+  # Response is {"authToken": "<jwt>"}; export it as-is so `.authToken` resolves.
+  result: {}
 ---
 # Refreshes the Bearer well inside its 6-month validity and exposes it as the
 # HOMEPAGE_VAR the widget expects. Kept separate from homepage-secret so the
