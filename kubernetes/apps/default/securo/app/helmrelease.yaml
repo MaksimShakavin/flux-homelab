@@ -60,7 +60,8 @@ spec:
         containers:
           app:
             image: *image
-            command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+            command:
+              ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
             env: *env
             envFrom: *envFrom
             probes:
@@ -92,7 +93,15 @@ spec:
         containers:
           app:
             image: *image
-            command: ["celery", "-A", "app.worker", "worker", "--loglevel=info", "--concurrency=2"]
+            command:
+              [
+                "celery",
+                "-A",
+                "app.worker",
+                "worker",
+                "--loglevel=info",
+                "--concurrency=2",
+              ]
             env: *env
             envFrom: *envFrom
             securityContext: *hardenedSec
@@ -110,7 +119,15 @@ spec:
             image: *image
             # Beat writes its schedule DB to CWD (/app, read-only); point it at
             # the writable /tmp emptyDir instead.
-            command: ["celery", "-A", "app.worker", "beat", "--loglevel=info", "--schedule=/tmp/celerybeat-schedule"]
+            command:
+              [
+                "celery",
+                "-A",
+                "app.worker",
+                "beat",
+                "--loglevel=info",
+                "--schedule=/tmp/celerybeat-schedule",
+              ]
             env: *env
             envFrom: *envFrom
             securityContext: *hardenedSec
@@ -142,7 +159,12 @@ spec:
                   timeoutSeconds: 1
                   failureThreshold: 3
               readiness: *feProbes
-            securityContext: *hardenedSec
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities: { drop: ["ALL"] }
+              runAsUser: 101
+              runAsGroup: 101
             resources:
               requests:
                 cpu: 25m
