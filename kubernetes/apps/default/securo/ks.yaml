@@ -7,6 +7,7 @@ metadata:
 spec:
   components:
     - ../../../../components/volsync
+    - ../../../../components/kopiur/backup
     - ../../../../components/postgress
   dependsOn:
     - name: crunchy-postgres-operator
@@ -32,3 +33,4 @@ spec:
     substitute:
       APP: securo
       VOLSYNC_CAPACITY: 5Gi
+      KOPIUR_CAPACITY: 5Gi

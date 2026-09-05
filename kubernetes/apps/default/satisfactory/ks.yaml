@@ -7,6 +7,7 @@ metadata:
 spec:
   components:
     - ../../../../components/volsync
+    - ../../../../components/kopiur/backup
   interval: 1h
   path: ./kubernetes/apps/default/satisfactory/app
   prune: true
@@ -20,5 +21,8 @@ spec:
     substitute:
       APP: satisfactory
       VOLSYNC_CAPACITY: 20Gi
+      KOPIUR_CAPACITY: 20Gi
       VOLSYNC_UID: "1000"
       VOLSYNC_GID: "1000"
+      KOPIUR_PUID: "1000"
+      KOPIUR_PGID: "1000"
