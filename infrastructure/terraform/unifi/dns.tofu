@@ -12,6 +12,13 @@ resource "unifi_dns_record" "sprut" {
   value       = unifi_dns_record.nas.name
 }
 
+resource "unifi_dns_record" "node_red" {
+  name        = "node-red.exelent.click"
+  enabled     = true
+  record_type = "CNAME"
+  value       = unifi_dns_record.nas.name
+}
+
 resource "unifi_dns_record" "unifi" {
   name        = "unifi.exelent.click"
   enabled     = true
