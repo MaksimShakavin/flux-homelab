@@ -85,6 +85,7 @@ spec:
             namespace: network
         annotations:
           gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://prowlarr.exelent.click"
           gethomepage.dev/icon: prowlarr.png
           gethomepage.dev/name: Prowlarr
           gethomepage.dev/group: "Media & Downloading"

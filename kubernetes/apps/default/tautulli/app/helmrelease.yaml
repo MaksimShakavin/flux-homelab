@@ -69,6 +69,7 @@ spec:
             namespace: network
         annotations:
           gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://tautulli.exelent.click"
           gethomepage.dev/group: "Media & Downloading"
           gethomepage.dev/name: Tautulli
           gethomepage.dev/icon: tautulli.svg

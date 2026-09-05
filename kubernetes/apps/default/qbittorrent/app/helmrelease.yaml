@@ -137,6 +137,7 @@ spec:
                 port: *port
         annotations:
           gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://qbittorrent.exelent.click"
           gethomepage.dev/group: "Media & Downloading"
           gethomepage.dev/name: qBittorrent
           gethomepage.dev/icon: qbittorrent.png

@@ -73,6 +73,7 @@ spec:
                 port: *port
         annotations:
           gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://paperless.exelent.click"
           gethomepage.dev/icon: paperless-ngx.png
           gethomepage.dev/name: Paperless
           gethomepage.dev/group: "Home Apps"

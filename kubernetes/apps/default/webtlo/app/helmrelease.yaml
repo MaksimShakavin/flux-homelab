@@ -65,6 +65,7 @@ spec:
             namespace: network
         annotations:
           gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://webtlo.exelent.click"
           gethomepage.dev/icon: mdi-harddisk
           gethomepage.dev/name: "{{ .Release.Name }}"
           gethomepage.dev/group: "Media & Downloading"

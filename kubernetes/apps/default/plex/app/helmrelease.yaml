@@ -102,6 +102,7 @@ spec:
           gatus.home-operations.com/endpoint: |-
             path: /identity
           gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://plex.exelent.click"
           gethomepage.dev/group: "Media & Downloading"
           gethomepage.dev/name: Plex
           gethomepage.dev/icon: plex.png

@@ -35,11 +35,12 @@ spec:
             namespace: network
         annotations:
           gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://octobot.exelent.click"
           gethomepage.dev/icon: https://www.octobot.cloud/favicon.ico
           gethomepage.dev/name: Octobot
           gethomepage.dev/group: "Home Apps"
           gethomepage.dev/description: Crytpto Trading Bot
-          gethomepage.dev/weight: "90"
+          gethomepage.dev/weight: "100"
     persistence:
       server:
         existingClaim: "{{ .Release.Name }}"

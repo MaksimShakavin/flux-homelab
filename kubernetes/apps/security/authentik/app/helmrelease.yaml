@@ -52,6 +52,7 @@ spec:
               namespace: network
           annotations:
             gethomepage.dev/enabled: "true"
+            gethomepage.dev/href: "https://sso.exelent.click"
             gethomepage.dev/icon: authentik.png
             gethomepage.dev/name: Authentik
             gethomepage.dev/group: Infrastructure

@@ -99,6 +99,7 @@ spec:
         annotations:
           gatus.home-operations.com/enabled: "false"
           gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://gatus.exelent.click"
           gethomepage.dev/group: "Monitoring & Observability"
           gethomepage.dev/name: Gatus
           gethomepage.dev/icon: gatus.png

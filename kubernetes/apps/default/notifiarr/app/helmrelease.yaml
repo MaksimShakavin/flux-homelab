@@ -46,6 +46,7 @@ spec:
             namespace: network
         annotations:
           gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://notifiarr.exelent.click"
           gethomepage.dev/icon: notifiarr.png
           gethomepage.dev/name: Notifiarr
           gethomepage.dev/group: "Monitoring & Observability"

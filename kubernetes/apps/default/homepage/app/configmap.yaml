@@ -31,14 +31,16 @@ data:
     - Home Apps:
         - Spruthub:
             href: https://sprut.exelent.click
+            siteMonitor: https://sprut.exelent.click/health
             icon: https://spruthub.ru/favicon.ico
             description: Zigbee hub and Homekit integration
-            weight: 70
+            weight: 80
         - Node-RED:
             href: https://node-red.exelent.click
+            siteMonitor: https://node-red.exelent.click
             icon: node-red.png
             description: Flow-based automation
-            weight: 80
+            weight: 90
     - Monitoring & Observability:
         - Cloudflared:
             href: https://dash.cloudflare.com
@@ -53,6 +55,7 @@ data:
     - Infrastructure:
         - Unifi:
             href: https://unifi.exelent.click
+            siteMonitor: https://unifi.exelent.click/status
             icon: unifi-controller.png
             description: Home Network Management
             weight: 10
@@ -63,6 +66,7 @@ data:
               password: "{{HOMEPAGE_VAR_UNIFI_PASSWORD}}"
         - Synology:
             href: https://nas.exelent.click
+            siteMonitor: https://nas.exelent.click
             icon: synology.png
             description: Synology nas disk station
             weight: 20
@@ -73,6 +77,7 @@ data:
               password: "{{HOMEPAGE_VAR_SYNOLOGY_PASSWORD}}"
         - Proxmox:
             href: https://proxmox.exelent.click
+            siteMonitor: https://proxmox.exelent.click
             icon: proxmox.png
             description: Virtual Environment
             widget:
@@ -84,6 +89,7 @@ data:
             weight: 30
         - Garage:
             href: https://garage.exelent.click/
+            siteMonitor: https://garage.exelent.click/health
             icon: garage.png
             description: S3 compatible object storage
             weight: 60

@@ -98,6 +98,7 @@ spec:
     metadata:
       annotations:
         gethomepage.dev/enabled: "true"
+        gethomepage.dev/href: "https://grafana.exelent.click"
         gethomepage.dev/pod-selector: app=grafana
         gethomepage.dev/icon: grafana.png
         gethomepage.dev/name: Grafana

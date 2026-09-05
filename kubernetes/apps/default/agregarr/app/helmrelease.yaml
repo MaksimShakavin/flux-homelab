@@ -65,6 +65,7 @@ spec:
             namespace: network
         annotations:
           gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://agregarr.exelent.click"
           gethomepage.dev/icon: agregarr.png
           gethomepage.dev/name: Agregarr
           gethomepage.dev/group: "Media & Downloading"

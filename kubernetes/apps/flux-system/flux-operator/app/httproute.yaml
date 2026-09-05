@@ -6,6 +6,7 @@ metadata:
   name: flux-operator
   annotations:
     gethomepage.dev/enabled: "true"
+    gethomepage.dev/href: "https://flux-operator.exelent.click"
     gethomepage.dev/icon: flux.png
     gethomepage.dev/name: Flux Operator
     gethomepage.dev/group: "Monitoring & Observability"

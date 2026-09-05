@@ -22,6 +22,7 @@ spec:
               namespace: network
           annotations:
             gethomepage.dev/enabled: "true"
+            gethomepage.dev/href: "https://alertmanager.exelent.click"
             gethomepage.dev/pod-selector: app.kubernetes.io/name=alertmanager
             gethomepage.dev/icon: alertmanager.png
             gethomepage.dev/name: Alertmanager
@@ -56,6 +57,7 @@ spec:
               namespace: network
           annotations:
             gethomepage.dev/enabled: "true"
+            gethomepage.dev/href: "https://prometheus.exelent.click"
             gethomepage.dev/pod-selector: app.kubernetes.io/name=prometheus
             gethomepage.dev/icon: prometheus.png
             gethomepage.dev/name: Prometheus

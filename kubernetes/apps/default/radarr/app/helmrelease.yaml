@@ -85,6 +85,7 @@ spec:
             namespace: network
         annotations:
           gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://radarr.exelent.click"
           gethomepage.dev/icon: radarr.png
           gethomepage.dev/name: Radarr
           gethomepage.dev/group: "Media & Downloading"

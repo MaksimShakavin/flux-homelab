@@ -70,6 +70,7 @@ spec:
                 port: *port
         annotations:
           gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://overseerr.exelent.click"
           gethomepage.dev/group: "Media & Downloading"
           gethomepage.dev/name: Overseerr
           gethomepage.dev/icon: overseerr.png

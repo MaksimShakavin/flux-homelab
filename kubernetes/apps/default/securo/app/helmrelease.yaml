@@ -214,6 +214,7 @@ spec:
                 port: *frontendPort
         annotations:
           gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://securo.exelent.click"
           gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/securo.png
           gethomepage.dev/name: Securo
           gethomepage.dev/group: "Home Apps"

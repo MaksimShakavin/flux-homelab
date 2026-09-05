@@ -76,11 +76,12 @@ spec:
             namespace: network
         annotations:
           gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://ghostfolio.exelent.click"
           gethomepage.dev/icon: ghostfolio.png
           gethomepage.dev/name: Ghostfolio
           gethomepage.dev/group: "Home Apps"
           gethomepage.dev/description: "Investment Management"
-          gethomepage.dev/weight: "20"
+          gethomepage.dev/weight: "40"
           gethomepage.dev/widget.type: ghostfolio
           gethomepage.dev/widget.url: http://ghostfolio.default:3333
           gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_GHOSTFOLIO_TOKEN}}`}}"

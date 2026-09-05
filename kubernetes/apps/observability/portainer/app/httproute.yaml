@@ -8,6 +8,7 @@ metadata:
     gatus.home-operations.com/endpoint: |-
       conditions: ["[STATUS] == 404"]
     gethomepage.dev/enabled: "true"
+    gethomepage.dev/href: "https://portainer.exelent.click"
     gethomepage.dev/icon: portainer.png
     gethomepage.dev/name: Portainer
     gethomepage.dev/group: "Monitoring & Observability"

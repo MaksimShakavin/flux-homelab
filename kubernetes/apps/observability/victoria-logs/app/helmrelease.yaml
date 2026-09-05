@@ -26,6 +26,7 @@ spec:
             namespace: network
         annotations:
           gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://victoria-logs.exelent.click"
           gethomepage.dev/pod-selector: app.kubernetes.io/name=victoria-logs-single
           gethomepage.dev/icon: victorialogs.png
           gethomepage.dev/name: Victoria Logs

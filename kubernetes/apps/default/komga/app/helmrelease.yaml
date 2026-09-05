@@ -57,11 +57,12 @@ spec:
             namespace: network
         annotations:
           gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://komga.exelent.click"
           gethomepage.dev/icon: komga.svg
           gethomepage.dev/name: komga
           gethomepage.dev/group: "Home Apps"
           gethomepage.dev/description: "Comics, mangas, BDs, magazines and eBooks"
-          gethomepage.dev/weight: "100"
+          gethomepage.dev/weight: "50"
           gethomepage.dev/widget.type: komga
           gethomepage.dev/widget.url: http://komga.default:80
           gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_KOMGA_API_KEY}}`}}"
