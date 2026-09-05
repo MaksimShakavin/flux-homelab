@@ -61,6 +61,7 @@ spec:
             gethomepage.dev/widget.type: authentik
             gethomepage.dev/widget.url: http://authentik-server.security
             gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_AUTHENTIK_TOKEN}}"
+            gethomepage.dev/widget.version: "2"
       ingress:
         enabled: false
     worker:
