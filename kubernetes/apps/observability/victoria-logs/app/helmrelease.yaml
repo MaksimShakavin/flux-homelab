@@ -26,6 +26,7 @@ spec:
             namespace: network
         annotations:
           gethomepage.dev/enabled: "true"
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=victoria-logs-single
           gethomepage.dev/icon: victorialogs.png
           gethomepage.dev/name: Victoria Logs
           gethomepage.dev/group: "Monitoring & Observability"

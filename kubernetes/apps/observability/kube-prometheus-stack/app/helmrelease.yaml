@@ -22,6 +22,7 @@ spec:
               namespace: network
           annotations:
             gethomepage.dev/enabled: "true"
+            gethomepage.dev/pod-selector: app.kubernetes.io/name=alertmanager
             gethomepage.dev/icon: alertmanager.png
             gethomepage.dev/name: Alertmanager
             gethomepage.dev/group: "Monitoring & Observability"
@@ -55,6 +56,7 @@ spec:
               namespace: network
           annotations:
             gethomepage.dev/enabled: "true"
+            gethomepage.dev/pod-selector: app.kubernetes.io/name=prometheus
             gethomepage.dev/icon: prometheus.png
             gethomepage.dev/name: Prometheus
             gethomepage.dev/group: "Monitoring & Observability"
