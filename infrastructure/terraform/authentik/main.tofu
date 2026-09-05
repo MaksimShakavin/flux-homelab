@@ -18,6 +18,9 @@ terraform {
       source  = "goauthentik/authentik"
       version = "2026.5.1"
     }
+    onepassword = {
+      source = "1Password/onepassword"
+    }
   }
 }
 
@@ -98,3 +101,7 @@ provider "authentik" {
   url   = "https://sso.exelent.click"
   token = module.secret_authentik.fields["AUTHENTIK_TOKEN"]
 }
+
+# Connect credentials are read from OP_CONNECT_HOST / OP_CONNECT_TOKEN in the
+# environment (already exported for Tofu runs).
+provider "onepassword" {}
