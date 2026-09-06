@@ -57,6 +57,12 @@ spec:
         image:
           registry: ghcr.io/democratic-csi/democratic-csi
           tag: v1.9.3
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 256Mi
         extraVolumeMounts:
           - name: local-hostpath
             mountPath: *storagePath
@@ -68,6 +74,13 @@ spec:
             value: /usr/local/sbin/iscsiadm
         iscsiDirHostPath: /usr/local/etc/iscsi
         iscsiDirHostPathType: ""
+      driverRegistrar:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 64Mi
       extraVolumes:
         - name: local-hostpath
           hostPath:
