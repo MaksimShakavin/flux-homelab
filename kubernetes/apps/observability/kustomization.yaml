@@ -17,4 +17,3 @@ resources:
   - ./unpoller/ks.yaml
   - ./kromgo/ks.yaml
   - ./victoria-logs/ks.yaml
-  - ./fluent-bit/ks.yaml
