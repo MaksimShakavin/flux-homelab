@@ -19,3 +19,4 @@ resources:
   - ./victoria-logs/ks.yaml
   - ./silence-operator/ks.yaml
   - ./smartctl-exporter/ks.yaml
+  - ./blackbox-exporter/ks.yaml
