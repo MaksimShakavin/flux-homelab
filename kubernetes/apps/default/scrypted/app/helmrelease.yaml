@@ -97,7 +97,7 @@ spec:
           - path: /.npm
       recordings:
         type: nfs
-        server: "192.168.20.5"
+        server: "nas.exelent.click"
         path: "/volume1/kubernetes/scrypted/recs"
         globalMounts:
           - path: /recs

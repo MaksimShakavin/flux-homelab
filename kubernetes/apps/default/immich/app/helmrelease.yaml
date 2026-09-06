@@ -204,7 +204,7 @@ spec:
               - path: /config
       library:
         type: nfs
-        server: "192.168.20.5"
+        server: "nas.exelent.click"
         path: "/volume1/kubernetes/immich"
         advancedMounts:
           server:

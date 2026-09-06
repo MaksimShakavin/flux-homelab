@@ -108,13 +108,13 @@ spec:
             readOnly: false
       saves:
         type: nfs
-        server: "192.168.20.5"
+        server: "nas.exelent.click"
         path: "/volume1/kubernetes/valheim/saves"
         globalMounts:
           - path: /home/steam/.config/unity3d/IronGate/Valheim
       backup:
         type: nfs
-        server: "192.168.20.5"
+        server: "nas.exelent.click"
         path: "/volume1/kubernetes/valheim/backup"
         globalMounts:
           - path: /home/steam/backups
