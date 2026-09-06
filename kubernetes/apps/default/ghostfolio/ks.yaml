@@ -10,8 +10,8 @@ spec:
   dependsOn:
     - name: crunchy-postgres-operator
       namespace: database
-    - name: dragonfly-cluster
-      namespace: database
+    - name: ghostfolio-dragonfly
+      namespace: default
   healthCheckExprs:
     - apiVersion: postgres-operator.crunchydata.com/v1beta1
       kind: PostgresCluster
