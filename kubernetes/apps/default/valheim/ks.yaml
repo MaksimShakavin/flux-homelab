@@ -5,6 +5,8 @@ kind: Kustomization
 metadata:
   name: valheim
 spec:
+  components:
+    - ../../../../components/kopiur/backup
   interval: 1h
   path: ./kubernetes/apps/default/valheim/app
   prune: true
@@ -17,4 +19,6 @@ spec:
   postBuild:
     substitute:
       APP: valheim
-      VOLSYNC_CAPACITY: 15Gi
+      KOPIUR_CAPACITY: 5Gi
+      KOPIUR_PUID: "111"
+      KOPIUR_PGID: "1000"

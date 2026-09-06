@@ -30,6 +30,4 @@ resources:
   - ./agregarr/ks.yaml
   - ./komga/ks.yaml
   - ./securo/ks.yaml
-#  - ./audiobookshelf/ks.yaml
-#  - ./satisfactory/ks.yaml
-#  - ./valheim/ks.yaml
+  - ./valheim/ks.yaml
