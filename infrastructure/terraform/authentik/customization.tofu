@@ -1,11 +1,10 @@
-resource "authentik_property_mapping_provider_scope" "audiobookshelf" {
-  name       = "OAuth Mapping: OpenID 'audiobookshelf'"
-  scope_name = "groups"
+resource "authentik_property_mapping_provider_scope" "mealie" {
+  name       = "OAuth Mapping: OpenID 'mealie' (email)"
+  scope_name = "email"
   expression = <<EOF
-groups = []
-existingGroups = [group.name for group in user.ak_groups.all()]
-if "Infrastructure" in existingGroups:
-  groups.append("admin")
-return { "groups": groups }
+return {
+  "email": user.email,
+  "email_verified": True,
+}
 EOF
 }

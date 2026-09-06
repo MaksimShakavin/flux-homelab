@@ -7,11 +7,12 @@ resource "authentik_stage_authenticator_totp" "authenticator-totp-setup" {
 }
 
 resource "authentik_stage_authenticator_webauthn" "authenticator-webauthn-setup" {
-  name                     = "authenticator-webauthn-setup"
-  friendly_name            = "Setup Webauthn"
-  resident_key_requirement = "preferred"
-  user_verification        = "preferred"
-  configure_flow           = authentik_flow.authenticator-webauthn-setup.uuid
+  name                      = "authenticator-webauthn-setup"
+  friendly_name             = "Setup Webauthn"
+  resident_key_requirement  = "preferred"
+  user_verification         = "preferred"
+  prevent_duplicate_devices = true
+  configure_flow            = authentik_flow.authenticator-webauthn-setup.uuid
 }
 
 ## Authorization stages

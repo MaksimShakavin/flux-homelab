@@ -11,12 +11,14 @@ data "authentik_certificate_key_pair" "generated" {
 }
 
 data "authentik_property_mapping_provider_scope" "scopes" {
-  managed_list = [
-    "goauthentik.io/providers/oauth2/scope-email",
-    "goauthentik.io/providers/oauth2/scope-openid",
-    "goauthentik.io/providers/oauth2/scope-profile",
-    "goauthentik.io/providers/oauth2/scope-offline_access"
-  ]
+  managed_list = concat(
+    var.include_default_email_scope ? ["goauthentik.io/providers/oauth2/scope-email"] : [],
+    [
+      "goauthentik.io/providers/oauth2/scope-openid",
+      "goauthentik.io/providers/oauth2/scope-profile",
+      "goauthentik.io/providers/oauth2/scope-offline_access"
+    ]
+  )
 }
 
 resource "random_password" "client_secret" {
@@ -35,8 +37,9 @@ resource "authentik_provider_oauth2" "oauth2-application" {
   allowed_redirect_uris = [
     for url in var.redirect_uris :
     {
-      matching_mode = "strict",
-      url           = url,
+      matching_mode     = "strict",
+      url               = url,
+      redirect_uri_type = "authorization",
     }
   ]
 }

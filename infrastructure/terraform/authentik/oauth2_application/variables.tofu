@@ -63,6 +63,11 @@ variable "additional_property_mappings" {
   default = []
 }
 
+variable "include_default_email_scope" {
+  type    = bool
+  default = true
+}
+
 locals {
   client_secret = (
     var.client_type == "confidential"

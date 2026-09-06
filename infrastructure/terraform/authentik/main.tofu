@@ -61,12 +61,6 @@ module "secret_paperless" {
   item   = "paperless"
 }
 
-module "secret_audiobookshelf" {
-  source = "github.com/bjw-s/terraform-1password-item?ref=main"
-  vault  = "homelab"
-  item   = "audiobookshelf"
-}
-
 module "secret_lubelogger" {
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
   vault  = "homelab"
