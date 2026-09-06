@@ -2,8 +2,4 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-# Intentionally empty. onedr0p's Silence CRs target hardware we don't have
-# (Ceph alerts, his NAS at expanse.internal). Add app-specific silences here as
-# needed — e.g. a KubeHpaMaxedOut silence once the zeroscaler component (Phase 3b)
-# is wired and scaling apps to 0 replicas.
 resources: []
