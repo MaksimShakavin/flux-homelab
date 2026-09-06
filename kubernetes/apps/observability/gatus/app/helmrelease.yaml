@@ -38,7 +38,8 @@ spec:
         gethomepage.dev/description: Status page
         gethomepage.dev/weight: "10"
         gethomepage.dev/widget.type: gatus
-        gethomepage.dev/widget.url: http://gatus.observability.svc.cluster.local
+        gethomepage.dev/widget.url: http://gatus-gatus-sidecar.observability.svc.cluster.local:8080
+        gethomepage.dev/pod-selector: app.kubernetes.io/name=gatus-sidecar
       hostnames:
         - "{{ .Release.Name }}.exelent.click"
         - status.exelent.click
