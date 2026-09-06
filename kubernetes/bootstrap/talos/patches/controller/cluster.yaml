@@ -5,9 +5,11 @@ cluster:
       $$patch: delete
     extraArgs:
       enable-aggregator-routing: true
+      feature-gates: HPAScaleToZero=true
   controllerManager:
     extraArgs:
       bind-address: 0.0.0.0
+      feature-gates: HPAScaleToZero=true
   coreDNS:
     disabled: true
   etcd:
