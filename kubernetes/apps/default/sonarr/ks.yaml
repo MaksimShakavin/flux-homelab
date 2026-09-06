@@ -8,6 +8,7 @@ spec:
   components:
     - ../../../../components/kopiur/backup
     - ../../../../components/postgress
+    - ../../../../components/zeroscaler
   interval: 1h
   path: ./kubernetes/apps/default/sonarr/app
   dependsOn:
