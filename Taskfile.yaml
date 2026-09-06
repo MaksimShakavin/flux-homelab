@@ -26,7 +26,6 @@ includes:
   bootstrap: .taskfiles/bootstrap
   kubernetes: .taskfiles/kubernetes
   talos: .taskfiles/talos
-  volsync: .taskfiles/volsync
   ansible: .taskfiles/ansible/Taskfile.yaml
   secrets: .taskfiles/secrets/Taskfile.yaml
 

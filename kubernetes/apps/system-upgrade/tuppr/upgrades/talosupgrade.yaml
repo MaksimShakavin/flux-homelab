@@ -11,11 +11,15 @@ spec:
   policy:
     rebootMode: powercycle
   healthChecks:
-    - apiVersion: volsync.backube/v1alpha1
-      kind: ReplicationSource
+    - apiVersion: kopiur.home-operations.com/v1alpha1
+      kind: Snapshot
       expr: |-
-        status.conditions.filter(c, c.type == "Synchronizing").all(c, c.status == "False")
-#    - apiVersion: ceph.rook.io/v1 /TODO add longhorn
-#      kind: CephCluster
-#      expr: |-
-#        status.ceph.health in ['HEALTH_OK']
+        status.phase != 'Running'
+    - apiVersion: kopiur.home-operations.com/v1alpha1
+      kind: Restore
+      expr: |-
+        !(status.phase in ['Resolving', 'Restoring'])
+    - apiVersion: longhorn.io/v1beta2
+      kind: Volume
+      expr: |-
+        !(status.robustness in ['degraded', 'faulted'])

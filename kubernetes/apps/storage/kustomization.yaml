@@ -11,6 +11,5 @@ components:
 resources:
   - ./namespace.yaml
   - ./longhorn/ks.yaml
-  - ./volsync/ks.yaml
   - ./kopiur/ks.yaml
   - ./local-path-provisioner/ks.yaml
