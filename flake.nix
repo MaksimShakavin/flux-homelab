@@ -2,7 +2,7 @@
   description = "Basic workstation dependencies";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    talhelper.url = "github:budimanjojo/talhelper";
+    talhelper.url = "github:budimanjojo/talhelper/v3.1.17";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
