@@ -36,4 +36,4 @@ spec:
     substitute:
       APP: securo
       APP_NAMESPACE: default
-      DRAGONFLY_PASSWORD_SECRET: securo-dragonfly-auth
+      DRAGONFLY_PASSWORD_SECRET: dragonfly-securo-auth

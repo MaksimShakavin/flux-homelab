@@ -3,7 +3,7 @@
 apiVersion: dragonflydb.io/v1alpha1
 kind: Dragonfly
 metadata:
-  name: ${APP}-dragonfly
+  name: dragonfly-${APP}
 spec:
   image: ghcr.io/dragonflydb/dragonfly:v1.40.2
   replicas: ${DRAGONFLY_REPLICAS:=1}
@@ -29,4 +29,4 @@ spec:
       nodeTaintsPolicy: Honor
       labelSelector:
         matchLabels:
-          app: ${APP}-dragonfly
+          app: dragonfly-${APP}

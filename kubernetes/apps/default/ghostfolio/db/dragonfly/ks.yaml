@@ -36,4 +36,4 @@ spec:
     substitute:
       APP: ghostfolio
       APP_NAMESPACE: default
-      DRAGONFLY_PASSWORD_SECRET: ghostfolio-dragonfly-auth
+      DRAGONFLY_PASSWORD_SECRET: dragonfly-ghostfolio-auth
