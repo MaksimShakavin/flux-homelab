@@ -69,7 +69,7 @@ spec:
   targets:
     staticConfig:
       static:
-        - http://sprut.exelent.click:7777
+        - https://sprut.exelent.click
   metricRelabelings:
     - targetLabel: service
       replacement: blackbox-exporter-lan
