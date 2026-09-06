@@ -30,4 +30,5 @@ resources:
   - ./agregarr/ks.yaml
   - ./komga/ks.yaml
   - ./securo/ks.yaml
+  - ./securo/db/dragonfly/ks.yaml
   - ./valheim/ks.yaml
