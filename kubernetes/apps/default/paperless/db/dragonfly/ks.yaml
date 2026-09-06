@@ -1,0 +1,39 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: paperless-dragonfly
+spec:
+  components:
+    - ../../../../../../components/dragonfly
+    - ../../../../../../components/dragonfly/authentication
+  dependsOn:
+    - name: dragonfly
+      namespace: database
+    - name: onepassword
+      namespace: external-secrets
+  healthCheckExprs:
+    - apiVersion: dragonflydb.io/v1alpha1
+      kind: Dragonfly
+      failed: status.phase != 'Ready'
+      current: status.phase == 'Ready'
+    - apiVersion: external-secrets.io/v1
+      kind: ExternalSecret
+      failed: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'False')
+      current: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
+  interval: 1h
+  path: ./kubernetes/apps/default/paperless/db/dragonfly/app
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: database
+  wait: true
+  postBuild:
+    substitute:
+      APP: paperless
+      APP_NAMESPACE: default
+      DRAGONFLY_PASSWORD_SECRET: dragonfly-paperless-auth

@@ -19,6 +19,7 @@ resources:
   - ./overseerr/ks.yaml
   - ./mealie/ks.yaml
   - ./paperless/ks.yaml
+  - ./paperless/db/dragonfly/ks.yaml
   - ./plex/ks.yaml
   - ./tautulli/ks.yaml
   - ./notifiarr/ks.yaml

@@ -23,7 +23,6 @@ spec:
               PAPERLESS_TIME_ZONE: "Europe/Warsaw"
               PAPERLESS_URL: "https://paperless.exelent.click"
               PAPERLESS_PORT: &port 8000
-              PAPERLESS_REDIS: redis://dragonfly.database.svc.cluster.local:6379
               PAPERLESS_TIKA_ENABLED: true
               PAPERLESS_TIKA_ENDPOINT: http://localhost:9998
               PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://localhost:3000
