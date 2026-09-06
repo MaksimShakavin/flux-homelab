@@ -15,7 +15,7 @@ spec:
           divisor: 1Mi
   args:
     - --maxmemory=$(MAX_MEMORY)Mi
-    - --proactor_threads=2
+    - --proactor_threads=${DRAGONFLY_THREADS:=1}
     - --cluster_mode=emulated
   resources:
     requests:
