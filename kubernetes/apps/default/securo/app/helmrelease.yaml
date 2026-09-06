@@ -142,7 +142,7 @@ spec:
           app:
             image:
               repository: ghcr.io/securo-finance/securo-frontend
-              tag: "0.15.0"
+              tag: "0.15.1"
             env:
               BACKEND_URL: "http://securo-backend.default.svc:8000"
               FRONTEND_URL: "https://securo.exelent.click"
