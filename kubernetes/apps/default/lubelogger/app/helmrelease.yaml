@@ -57,6 +57,10 @@ spec:
           - name: envoy-external
             namespace: network
         annotations:
+          # /favicon.ico is served without auth; root (/) 302-redirects to the
+          # SSO login and spams the auth middleware with "Cookie is invalid" logs.
+          gatus.home-operations.com/endpoint: |-
+            path: /favicon.ico
           gethomepage.dev/enabled: "true"
           gethomepage.dev/href: "https://lubelogger.exelent.click"
           gethomepage.dev/icon: lubelogger.png

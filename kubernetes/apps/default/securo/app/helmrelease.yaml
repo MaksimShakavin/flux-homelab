@@ -213,6 +213,8 @@ spec:
               - identifier: frontend
                 port: *frontendPort
         annotations:
+          gatus.home-operations.com/endpoint: |-
+            path: /api/health
           gethomepage.dev/enabled: "true"
           gethomepage.dev/href: "https://securo.exelent.click"
           gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/securo.png

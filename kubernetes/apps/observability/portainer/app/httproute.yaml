@@ -5,8 +5,6 @@ kind: HTTPRoute
 metadata:
   name: portainer
   annotations:
-    gatus.home-operations.com/endpoint: |-
-      conditions: ["[STATUS] == 404"]
     gethomepage.dev/enabled: "true"
     gethomepage.dev/href: "https://portainer.exelent.click"
     gethomepage.dev/icon: portainer.png
