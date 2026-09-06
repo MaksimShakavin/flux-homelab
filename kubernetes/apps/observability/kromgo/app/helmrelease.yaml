@@ -61,8 +61,10 @@ spec:
     route:
       app:
         annotations:
+          # kromgo v0.10.0 serves "/" as 200 (a blank landing page); older
+          # versions 404'd here, hence the previous condition.
           gatus.home-operations.com/endpoint: |-
-            conditions: ["[STATUS] == 404"]
+            conditions: ["[STATUS] == 200"]
         hostnames:
           - "{{ .Release.Name }}.exelent.click"
         parentRefs:
