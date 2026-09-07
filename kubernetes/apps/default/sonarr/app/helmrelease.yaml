@@ -30,13 +30,13 @@ spec:
               SONARR__UPDATE__BRANCH: develop
               TZ: Europe/Warsaw
               # Database
-              SONARR__POSTGRES__HOST: sonarr-pgbouncer.default.svc
+              SONARR__POSTGRES__HOST: postgres-sonarr-rw.database.svc
               SONARR__POSTGRES__PORT: "5432"
               SONARR__POSTGRES__USER: sonarr
               SONARR__POSTGRES__PASSWORD:
                 valueFrom:
                   secretKeyRef:
-                    name: sonarr-pguser-sonarr
+                    name: postgres-sonarr-app
                     key: password
               SONARR__POSTGRES__MAINDB: sonarr
             envFrom:
