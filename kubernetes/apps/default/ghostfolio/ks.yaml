@@ -6,10 +6,13 @@ metadata:
   name: ghostfolio
 spec:
   components:
+    - ../../../../components/postgres/credentials-mirror
     - ../../../../components/postgress
   dependsOn:
     - name: crunchy-postgres-operator
       namespace: database
+    - name: ghostfolio-postgres
+      namespace: default
     - name: ghostfolio-dragonfly
       namespace: default
   healthCheckExprs:
@@ -30,3 +33,4 @@ spec:
   postBuild:
     substitute:
       APP: ghostfolio
+      APP_NAMESPACE: default

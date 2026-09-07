@@ -35,6 +35,7 @@ resources:
   - ./immich/db/dragonfly/ks.yaml
   - ./ghostfolio/ks.yaml
   - ./ghostfolio/db/dragonfly/ks.yaml
+  - ./ghostfolio/db/postgres/ks.yaml
   - ./octobot/ks.yaml
   - ./agregarr/ks.yaml
   - ./komga/ks.yaml
