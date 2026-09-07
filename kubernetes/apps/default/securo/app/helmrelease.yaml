@@ -26,10 +26,10 @@ spec:
               - name: PG_PASS
                 valueFrom:
                   secretKeyRef:
-                    name: securo-pguser-securo
+                    name: postgres-securo-app
                     key: password
               - name: DATABASE_URL
-                value: "postgresql+asyncpg://securo:$(PG_PASS)@securo-pgbouncer.default.svc:5432/securo"
+                value: "postgresql+asyncpg://securo:$(PG_PASS)@postgres-securo-rw.database.svc:5432/securo"
               - name: FRONTEND_URL
                 value: "https://securo.exelent.click"
               - name: STORAGE_LOCAL_PATH
