@@ -7,10 +7,13 @@ metadata:
 spec:
   components:
     - ../../../../components/kopiur/backup
+    - ../../../../components/postgres/credentials-mirror
     - ../../../../components/postgress
   dependsOn:
     - name: crunchy-postgres-operator
       namespace: database
+    - name: securo-postgres
+      namespace: default
     - name: securo-dragonfly
       namespace: default
   healthCheckExprs:
@@ -31,4 +34,5 @@ spec:
   postBuild:
     substitute:
       APP: securo
+      APP_NAMESPACE: default
       KOPIUR_CAPACITY: 5Gi

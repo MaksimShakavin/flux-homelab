@@ -41,4 +41,5 @@ resources:
   - ./komga/ks.yaml
   - ./securo/ks.yaml
   - ./securo/db/dragonfly/ks.yaml
+  - ./securo/db/postgres/ks.yaml
 #  - ./valheim/ks.yaml
