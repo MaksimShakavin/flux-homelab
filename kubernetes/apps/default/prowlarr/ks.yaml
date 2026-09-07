@@ -8,6 +8,7 @@ spec:
   components:
     - ../../../../components/kopiur/backup
     - ../../../../components/postgress
+    - ../../../../components/postgres/credentials-mirror
   interval: 1h
   path: ./kubernetes/apps/default/prowlarr/app
   prune: true
@@ -20,4 +21,5 @@ spec:
   postBuild:
     substitute:
       APP: prowlarr
+      APP_NAMESPACE: default
       KOPIUR_CAPACITY: 1Gi
