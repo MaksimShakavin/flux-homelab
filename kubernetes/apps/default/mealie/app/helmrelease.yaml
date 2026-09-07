@@ -26,13 +26,13 @@ spec:
               LOG_LEVEL: "debug"
               # database
               DB_ENGINE: 'postgres'
-              POSTGRES_SERVER: mealie-pgbouncer.default.svc
+              POSTGRES_SERVER: postgres-mealie-rw.database.svc
               POSTGRES_PORT: "5432"
               POSTGRES_USER: mealie
               POSTGRES_PASSWORD:
                 valueFrom:
                   secretKeyRef:
-                    name: mealie-pguser-mealie
+                    name: postgres-mealie-app
                     key: password
               POSTGRES_DB: mealie
             envFrom:
