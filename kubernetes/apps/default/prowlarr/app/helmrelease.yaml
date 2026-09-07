@@ -30,13 +30,13 @@ spec:
               PROWLARR__SERVER__PORT: &port 8080
               PROWLARR__UPDATE__BRANCH: develop
               # Database
-              PROWLARR__POSTGRES__HOST: prowlarr-pgbouncer.default.svc
+              PROWLARR__POSTGRES__HOST: postgres-prowlarr-rw.database.svc
               PROWLARR__POSTGRES__PORT: "5432"
               PROWLARR__POSTGRES__USER: prowlarr
               PROWLARR__POSTGRES__PASSWORD:
                 valueFrom:
                   secretKeyRef:
-                    name: prowlarr-pguser-prowlarr
+                    name: postgres-prowlarr-app
                     key: password
               PROWLARR__POSTGRES__MAINDB: prowlarr
             envFrom:
