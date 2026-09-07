@@ -23,11 +23,5 @@ spec:
       name: kopiur-repository-secret
       namespace: storage
       key: KOPIA_PASSWORD
-  maintenance:
-    schedule:
-      quick:
-        cron: "* * * * *"
-      full:
-        cron: "0 3 * * *"
   scheduleDefaults:
     timezone: Europe/Warsaw
