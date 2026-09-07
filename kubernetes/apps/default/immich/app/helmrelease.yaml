@@ -13,8 +13,7 @@ spec:
     controllers:
       server:
         annotations:
-          secret.reloader.stakater.com/reload: &secret immich-secret
-          configmap.reloader.stakater.com/reload: &configmap immich-configmap
+          reloader.stakater.com/auto: "true"
         pod:
           topologySpreadConstraints:
             - maxSkew: 1
@@ -36,9 +35,14 @@ spec:
                   secretKeyRef:
                     name: immich-pguser-immich
                     key: password
+              REDIS_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: dragonfly-immich-auth
+                    key: password
             envFrom:
               - configMapRef:
-                  name: *configmap
+                  name: immich-configmap
             probes:
               liveness: &probes
                 enabled: true
@@ -64,8 +68,7 @@ spec:
       microservices:
         replicas: 1
         annotations:
-          secret.reloader.stakater.com/reload: *secret
-          configmap.reloader.stakater.com/reload: *configmap
+          reloader.stakater.com/auto: "true"
         pod:
           resourceClaims:
             - name: gpu
@@ -87,13 +90,18 @@ spec:
               tag: v1.144.1
             envFrom:
               - configMapRef:
-                  name: *configmap
+                  name: immich-configmap
             env:
               IMMICH_WORKERS_EXCLUDE: api
               DB_PASSWORD:
                 valueFrom:
                   secretKeyRef:
                     name: immich-pguser-immich
+                    key: password
+              REDIS_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: dragonfly-immich-auth
                     key: password
             resources:
               claims:
@@ -105,7 +113,7 @@ spec:
                 memory: 2500Mi
       machine-learning:
         annotations:
-          configmap.reloader.stakater.com/reload: *configmap
+          reloader.stakater.com/auto: "true"
         pod:
           enableServiceLinks: false
           topologySpreadConstraints:

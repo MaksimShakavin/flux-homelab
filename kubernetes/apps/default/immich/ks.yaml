@@ -8,8 +8,8 @@ spec:
   dependsOn:
     - name: crunchy-postgres-operator
       namespace: database
-    - name: dragonfly-cluster
-      namespace: database
+    - name: immich-dragonfly
+      namespace: default
   interval: 1h
   path: ./kubernetes/apps/default/immich/app
   prune: true

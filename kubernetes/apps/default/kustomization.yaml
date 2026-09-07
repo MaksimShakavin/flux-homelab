@@ -26,6 +26,7 @@ resources:
   - ./scrypted/ks.yaml
   - ./lubelogger/ks.yaml
   - ./immich/ks.yaml
+  - ./immich/db/dragonfly/ks.yaml
   - ./ghostfolio/ks.yaml
   - ./ghostfolio/db/dragonfly/ks.yaml
   - ./octobot/ks.yaml
