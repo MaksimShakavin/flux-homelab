@@ -17,7 +17,7 @@ Procedure: `scripts/cnpg-migrate-agent-prompt.md`. Runbook: `docs/cnpg-migration
 |---|---|---|----|----|----|----|-------|
 | — | prowlarr | default | ✅ | ✅ | ✅ | ✅ | Reference run (pre-existing) |
 | 1 | radarr | default | ✅ | ✅ | ✅ | ✅ | **Done.** Had crunchy dep+health block (runbook said none) — removed in S4 |
-| 2 | sonarr | default | ⬜ | ⬜ | ⬜ | ⬜ | zeroscaler; no crunchy dep block |
+| 2 | sonarr | default | ✅ | ✅ | ✅ | ✅ | **Done.** Had crunchy dep+health block (runbook said none) — removed in S4 |
 | 3 | mealie | default | ⬜ | ⬜ | ⬜ | ⬜ | crunchy dep+health; KOPIUR 3Gi |
 | 4 | paperless | default | ⬜ | ⬜ | ⬜ | ⬜ | crunchy dep+health; dragonfly + zeroscaler (keep) |
 | 5 | lubelogger | default | ⬜ | ⬜ | ⬜ | ⬜ | SecretStore/ES rewire; KOPIUR 2Gi, GATUS |
@@ -31,6 +31,22 @@ Legend: ⬜ pending · 🔄 in progress · ✅ done · ❌ failed/blocked · �
 ## Log
 
 _(newest first)_
+
+### sonarr — ✅ complete (2026-09-07)
+- S1: `postgres-sonarr` Ready 3/3, `postgres-sonarr-app` secret mirrored to default, app stayed on Crunchy.
+  Initial hiccup: 3rd replica stuck `Pending` — control-2 was at 99% memory *requests* (only ~15Mi free of
+  ~28.5Gi allocatable, though only 51% actually used) and CNPG's hard pod anti-affinity forced it onto that
+  node. Not a config error; user trimmed over-provisioned app requests → replica scheduled → Ready 3/3.
+- S2: `cnpg-migrate-data.sh sonarr default` → **VERIFY OK**, 39/39 tables identical. Same benign
+  `pg_stat_statements`/`pgaudit` "must be superuser" noise as radarr (Crunchy extensions sonarr doesn't use).
+- S3: pod Ready 1/1, 0 restarts, host env `postgres-sonarr-rw.database.svc`, logs show **Postgres 17.11** +
+  migrations ran; `/ping` → HTTP 200.
+- S4: on-demand backup `postgres-sonarr-cutover` → **completed `s3://cnpg/sonarr`**. Crunchy
+  `PostgresCluster/sonarr` + pgbouncer/pguser secrets/pods/pvc pruned; app healthy, `/ping` 200.
+- **Divergence:** runbook said sonarr has "no crunchy dep block" but its `ks.yaml` DID have a
+  `crunchy-postgres-operator` dependsOn + `PostgresCluster` ProxyAvailable healthCheck (same as radarr).
+  Removed both in S4. Note: sonarr had NO `longhorn` dependsOn (unlike radarr), so the entire `dependsOn`
+  block was removed. **Check mealie/paperless/ghostfolio for the same discrepancy.**
 
 ### radarr — ✅ complete (2026-09-07)
 - S1: `postgres-radarr` Ready 3/3, `postgres-radarr-app` secret mirrored to default, app stayed on Crunchy.
