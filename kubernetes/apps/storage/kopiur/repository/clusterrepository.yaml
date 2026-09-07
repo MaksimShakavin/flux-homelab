@@ -25,5 +25,8 @@ spec:
       key: KOPIA_PASSWORD
   maintenance:
     takeoverPolicy: Force
+    schedule:
+      quick:
+        cron: "* * * * *"
   scheduleDefaults:
     timezone: Europe/Warsaw
