@@ -7,7 +7,6 @@ metadata:
 spec:
   components:
     - ../../../../components/kopiur/backup
-    - ../../../../components/postgress
     - ../../../../components/postgres/credentials-mirror
   interval: 1h
   path: ./kubernetes/apps/default/prowlarr/app
