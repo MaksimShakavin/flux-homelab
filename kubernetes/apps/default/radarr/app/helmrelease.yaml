@@ -30,13 +30,13 @@ spec:
               RADARR__SERVER__PORT: &port 80
               RADARR__UPDATE__BRANCH: develop
               # Database
-              RADARR__POSTGRES__HOST: radarr-pgbouncer.default.svc
+              RADARR__POSTGRES__HOST: postgres-radarr-rw.database.svc
               RADARR__POSTGRES__PORT: "5432"
               RADARR__POSTGRES__USER: radarr
               RADARR__POSTGRES__PASSWORD:
                 valueFrom:
                   secretKeyRef:
-                    name: radarr-pguser-radarr
+                    name: postgres-radarr-app
                     key: password
               RADARR__POSTGRES__MAINDB: radarr
             envFrom:
