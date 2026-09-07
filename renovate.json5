@@ -1,16 +1,16 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: [
+    "github>home-operations/renovate-presets#8.1.0",
+    "github>home-operations/renovate-presets//apps/talosFactory.json5#8.1.0",
     "config:recommended",
     "docker:enableMajor",
     "helpers:pinGitHubActionDigests",
     "github>MaksimShakavin/flux-homelab//.renovate/autoMerge.json5",
     "github>MaksimShakavin/flux-homelab//.renovate/changelogs.json5",
-    "github>MaksimShakavin/flux-homelab//.renovate/customManagers.json5",
     "github>MaksimShakavin/flux-homelab//.renovate/grafanaDashboards.json5",
     "github>MaksimShakavin/flux-homelab//.renovate/groups.json5",
     "github>MaksimShakavin/flux-homelab//.renovate/labels.json5",
-    "github>MaksimShakavin/flux-homelab//.renovate/overrides.json5",
     "github>MaksimShakavin/flux-homelab//.renovate/conventionalCommits.json5",
     ":automergeBranch",
     ":disableRateLimiting",

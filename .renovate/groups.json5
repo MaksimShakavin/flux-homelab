@@ -32,16 +32,6 @@
       minimumGroupSize: 3,
     },
     {
-      description: "Intel Device Plugins Group",
-      groupName: "intel-device-plugins",
-      matchDatasources: ["docker"],
-      matchPackageNames: ["/intel-device-plugins-operator/", "/intel-device-plugins-gpu/"],
-      group: {
-        commitMessageTopic: "{{{groupName}}} group",
-      },
-      minimumGroupSize: 2,
-    },
-    {
       description: "Kubernetes Group",
       groupName: "kubernetes",
       matchDatasources: ["docker"],
@@ -58,14 +48,34 @@
       minimumGroupSize: 5,
     },
     {
-      description: ["Dragonfly Operator Group"],
+      description: "Dragonfly Operator Group",
       groupName: "Dragonfly Operator",
-      matchPackagePatterns: ["dragonfly(?:db)?.operator"],
+      matchPackageNames: ["/dragonfly(?:db)?.operator/"],
       matchDatasources: ["docker", "github-releases"],
       group: {
-        commitMessageTopic: "{{{groupName}}} group"
+        commitMessageTopic: "{{{groupName}}} group",
       },
-      separateMinorPatch: true
+      separateMinorPatch: true,
     },
-  ]
+    {
+      description: "Securo Group",
+      groupName: "securo",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["/securo-finance//"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+      minimumGroupSize: 2,
+    },
+    {
+      description: "Immich Group",
+      groupName: "immich",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["/immich-app//"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+      minimumGroupSize: 2,
+    },
+  ],
 }
