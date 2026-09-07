@@ -24,7 +24,6 @@ spec:
       namespace: storage
       key: KOPIA_PASSWORD
   maintenance:
-    takeoverPolicy: Force
     schedule:
       quick:
         cron: "* * * * *"
