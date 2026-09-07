@@ -16,7 +16,7 @@ Procedure: `scripts/cnpg-migrate-agent-prompt.md`. Runbook: `docs/cnpg-migration
 | Order | App | ns | S1 | S2 | S3 | S4 | Notes |
 |---|---|---|----|----|----|----|-------|
 | — | prowlarr | default | ✅ | ✅ | ✅ | ✅ | Reference run (pre-existing) |
-| 1 | radarr | default | ⬜ | ⬜ | ⬜ | ⬜ | zeroscaler; no crunchy dep block |
+| 1 | radarr | default | ✅ | ✅ | ✅ | ✅ | **Done.** Had crunchy dep+health block (runbook said none) — removed in S4 |
 | 2 | sonarr | default | ⬜ | ⬜ | ⬜ | ⬜ | zeroscaler; no crunchy dep block |
 | 3 | mealie | default | ⬜ | ⬜ | ⬜ | ⬜ | crunchy dep+health; KOPIUR 3Gi |
 | 4 | paperless | default | ⬜ | ⬜ | ⬜ | ⬜ | crunchy dep+health; dragonfly + zeroscaler (keep) |
@@ -32,8 +32,18 @@ Legend: ⬜ pending · 🔄 in progress · ✅ done · ❌ failed/blocked · �
 
 _(newest first)_
 
-### radarr — starting
-- Stage 1 in progress.
+### radarr — ✅ complete (2026-09-07)
+- S1: `postgres-radarr` Ready 3/3, `postgres-radarr-app` secret mirrored to default, app stayed on Crunchy.
+- S2: `cnpg-migrate-data.sh radarr default` → **VERIFY OK**, 42/42 tables identical. Noise: harmless
+  `pg_stat_statements`/`pgaudit` "must be superuser" errors (Crunchy extensions radarr doesn't use), not
+  the documented `_crunchypgbouncer` ones — same benign category.
+- S3: pod Ready 1/1, 0 restarts, logs show `Host=postgres-radarr-rw.database.svc` + **Postgres 17.11** +
+  migrations ran; `/ping` → HTTP 200.
+- S4: on-demand backup `postgres-radarr-cutover` → **completed `s3://cnpg/radarr`** (barman upload ~7min).
+  Crunchy `PostgresCluster/radarr` + pods/pvc/secrets pruned; app healthy.
+- **Divergence:** runbook table said radarr has "no crunchy dep/health block" but its `ks.yaml` DID have a
+  `crunchy-postgres-operator` dependsOn + `PostgresCluster` ProxyAvailable healthCheck. Removed both in S4
+  (kept the `longhorn` dependsOn). **Check sonarr for the same discrepancy.**
 
 ## After all 8 remaining apps
 - Remove `components/postgress` from the tree (grep-confirm no non-immich refs).
