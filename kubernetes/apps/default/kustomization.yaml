@@ -21,6 +21,7 @@ resources:
   - ./sonarr/db/postgres/ks.yaml
   - ./overseerr/ks.yaml
   - ./mealie/ks.yaml
+  - ./mealie/db/postgres/ks.yaml
   - ./paperless/ks.yaml
   - ./paperless/db/dragonfly/ks.yaml
   - ./plex/ks.yaml
