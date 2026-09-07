@@ -32,13 +32,13 @@ spec:
               # Database
               PAPERLESS_DBENGINE: postgresql
               PAPERLESS_DBPORT: "5432"
-              PAPERLESS_DBHOST: paperless-pgbouncer.default.svc
+              PAPERLESS_DBHOST: postgres-paperless-rw.database.svc
               PAPERLESS_DBUSER: paperless
               PAPERLESS_DBNAME: paperless
               PAPERLESS_DBPASS:
                 valueFrom:
                   secretKeyRef:
-                    name: paperless-pguser-paperless
+                    name: postgres-paperless-app
                     key: password
             envFrom:
               - secretRef:
