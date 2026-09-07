@@ -30,6 +30,7 @@ resources:
   - ./notifiarr/ks.yaml
   - ./scrypted/ks.yaml
   - ./lubelogger/ks.yaml
+  - ./lubelogger/db/postgres/ks.yaml
   - ./immich/ks.yaml
   - ./immich/db/dragonfly/ks.yaml
   - ./ghostfolio/ks.yaml

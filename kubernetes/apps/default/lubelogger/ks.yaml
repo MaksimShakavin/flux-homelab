@@ -7,10 +7,13 @@ metadata:
 spec:
   components:
     - ../../../../components/kopiur/backup
+    - ../../../../components/postgres/credentials-mirror
     - ../../../../components/postgress
   dependsOn:
     - name: crunchy-postgres-operator
       namespace: database
+    - name: lubelogger-postgres
+      namespace: default
   healthCheckExprs:
     - apiVersion: postgres-operator.crunchydata.com/v1beta1
       kind: PostgresCluster
@@ -28,6 +31,7 @@ spec:
   postBuild:
     substitute:
       APP: lubelogger
+      APP_NAMESPACE: default
       GATUS_PATH: /api
       GATUS_STATUS: "401"
       KOPIUR_CAPACITY: 2Gi
