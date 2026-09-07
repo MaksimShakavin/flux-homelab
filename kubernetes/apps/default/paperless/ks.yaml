@@ -7,11 +7,14 @@ metadata:
 spec:
   components:
     - ../../../../components/kopiur/backup
+    - ../../../../components/postgres/credentials-mirror
     - ../../../../components/postgress
     - ../../../../components/zeroscaler
   dependsOn:
     - name: crunchy-postgres-operator
       namespace: database
+    - name: paperless-postgres
+      namespace: default
     - name: paperless-dragonfly
       namespace: default
   healthCheckExprs:
@@ -31,4 +34,5 @@ spec:
   postBuild:
     substitute:
       APP: paperless
+      APP_NAMESPACE: default
       KOPIUR_CAPACITY: 1Gi

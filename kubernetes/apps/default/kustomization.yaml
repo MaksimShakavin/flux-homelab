@@ -24,6 +24,7 @@ resources:
   - ./mealie/db/postgres/ks.yaml
   - ./paperless/ks.yaml
   - ./paperless/db/dragonfly/ks.yaml
+  - ./paperless/db/postgres/ks.yaml
   - ./plex/ks.yaml
   - ./tautulli/ks.yaml
   - ./notifiarr/ks.yaml
