@@ -6,14 +6,11 @@ metadata:
   name: authentik
 spec:
   components:
-    - ../../../../components/postgress
     - ../../../../components/postgres/credentials-mirror
   interval: 1h
   path: ./kubernetes/apps/security/authentik/app
   prune: true
   dependsOn:
-    - name: crunchy-postgres-operator
-      namespace: database
     - name: authentik-postgres
       namespace: security
   sourceRef:
@@ -26,4 +23,3 @@ spec:
     substitute:
       APP: authentik
       APP_NAMESPACE: security
-      POOL_MODE: transaction
