@@ -28,6 +28,6 @@ spec:
       quick:
         cron: "* * * * *"
       full:
-        cron: "* * * * *"
+        cron: "0 3 * * *"
   scheduleDefaults:
     timezone: Europe/Warsaw
