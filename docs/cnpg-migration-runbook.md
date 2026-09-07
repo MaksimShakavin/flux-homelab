@@ -46,6 +46,13 @@ Files per app (Option A layout — mirror rides the app's existing Kustomization
    **KEEP** `../../../../components/postgress`, add `APP_NAMESPACE` to `substitute`.
 4. Register `./<app>/db/postgres/ks.yaml` in `kubernetes/apps/<ns>/kustomization.yaml`.
 
+> **App-ks ordering rule:** the app `ks.yaml` must `dependsOn` its db Kustomization(s) so the workload
+> only reconciles once its datastore(s) are Ready — `dependsOn: {name: <app>-postgres, namespace: <ns>}`
+> (plus `<app>-dragonfly` for apps that have one). Those db ks already carry `wait: true` +
+> `healthCheckExprs`, so the dep transitively means "wait until DB/cache healthy" — do **not** add DB
+> `healthCheckExprs` to the app ks (redundant). Add the `<app>-postgres` dep here in Stage 1 (it points at
+> a ks that exists once step 1 lands); it stays through Stage 4.
+
 Commit, push, `flux reconcile kustomization cluster-apps --with-source`. Wait for:
 - `kubectl get cluster.postgresql.cnpg.io -n database postgres-<app>` → Ready 3/3
 - `kubectl get secret -n <ns> postgres-<app>-app` present
@@ -85,7 +92,9 @@ Verify: pod Ready, logs show it connected (PG 17.11) & ran migrations, app healt
    (`backup` short-name resolves to Longhorn — always use `backups.postgresql.cnpg.io`.)
 2. Edit `<app>/ks.yaml`: REMOVE `../../../../components/postgress`, and remove the Crunchy
    `dependsOn: crunchy-postgres-operator`, the `PostgresCluster` `healthCheckExprs`, and any `POOL_MODE`
-   substitution. Commit, push, `flux reconcile kustomization <app> -n <ns>`.
+   substitution. **KEEP** the `<app>-postgres` (and `<app>-dragonfly`) `dependsOn` from Stage 1, and any
+   `longhorn` dep. If Crunchy was the app ks's only `dependsOn`, the block now holds just `<app>-postgres`.
+   Commit, push, `flux reconcile kustomization <app> -n <ns>`.
 3. Flux prunes the Crunchy `PostgresCluster` (CR + pods + secrets + PVCs gone in ~20s). Confirm app still healthy.
 
 ## Per-app specifics
