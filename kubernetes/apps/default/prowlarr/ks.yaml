@@ -10,6 +10,9 @@ spec:
     - ../../../../components/postgres/credentials-mirror
   interval: 1h
   path: ./kubernetes/apps/default/prowlarr/app
+  dependsOn:
+    - name: prowlarr-postgres
+      namespace: default
   prune: true
   sourceRef:
     kind: GitRepository

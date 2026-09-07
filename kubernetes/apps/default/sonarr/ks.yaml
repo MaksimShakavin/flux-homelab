@@ -11,6 +11,9 @@ spec:
     - ../../../../components/zeroscaler
   interval: 1h
   path: ./kubernetes/apps/default/sonarr/app
+  dependsOn:
+    - name: sonarr-postgres
+      namespace: default
   prune: true
   sourceRef:
     kind: GitRepository
