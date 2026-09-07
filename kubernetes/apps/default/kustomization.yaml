@@ -18,6 +18,7 @@ resources:
   - ./radarr/ks.yaml
   - ./radarr/db/postgres/ks.yaml
   - ./sonarr/ks.yaml
+  - ./sonarr/db/postgres/ks.yaml
   - ./overseerr/ks.yaml
   - ./mealie/ks.yaml
   - ./paperless/ks.yaml
