@@ -1,0 +1,53 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/postgresql.cnpg.io/cluster_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres-${APP}
+spec:
+  instances: ${POSTGRES_REPLICAS:=3}
+  imageName: ${POSTGRES_IMAGE:=ghcr.io/cloudnative-pg/postgresql:17.11}
+  primaryUpdateStrategy: unsupervised
+  enableSuperuserAccess: true
+  minSyncReplicas: 1
+  maxSyncReplicas: 1
+  resources:
+    requests:
+      memory: 256Mi
+  storage:
+    storageClass: local-hostpath
+    size: ${POSTGRES_SIZE:=5Gi}
+  affinity:
+    topologyKey: kubernetes.io/hostname
+    podAntiAffinityType: required
+  postgresql:
+    parameters:
+      max_connections: "500"
+      max_wal_size: "5GB"
+      synchronous_commit: "on"
+  bootstrap:
+    initdb:
+      database: ${APP}
+      owner: ${APP}
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://cnpg/${APP}
+      serverName: ${APP}
+      endpointURL: https://garage-s3.exelent.click
+      s3Credentials:
+        accessKeyId:
+          name: postgres-${APP}-backup
+          key: AWS_ACCESS_KEY_ID
+        secretAccessKey:
+          name: postgres-${APP}-backup
+          key: AWS_SECRET_ACCESS_KEY
+        region:
+          name: postgres-${APP}-backup
+          key: AWS_REGION
+      wal:
+        compression: bzip2
+      data:
+        compression: bzip2
+    retentionPolicy: ${POSTGRES_RETENTION:=30d}
+  monitoring:
+    enablePodMonitor: true

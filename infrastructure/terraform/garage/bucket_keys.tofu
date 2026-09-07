@@ -9,6 +9,7 @@ locals {
   bucket_credentials = {
     kopiur         = module.kopiur_bucket
     postgress      = module.postgress_bucket
+    cnpg           = module.cnpg_bucket
     terraform      = module.terraform_bucket
     static-content = module.static_content_bucket
     # add one line when a new bucket module is introduced
