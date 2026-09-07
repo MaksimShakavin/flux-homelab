@@ -7,6 +7,7 @@ metadata:
 spec:
   components:
     - ../../../../components/kopiur/backup
+    - ../../../../components/postgres/credentials-mirror
     - ../../../../components/postgress
     - ../../../../components/zeroscaler
   interval: 1h
@@ -31,4 +32,5 @@ spec:
   postBuild:
     substitute:
       APP: radarr
+      APP_NAMESPACE: default
       KOPIUR_CAPACITY: 1Gi

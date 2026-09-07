@@ -16,6 +16,7 @@ resources:
   - ./prowlarr/ks.yaml
   - ./prowlarr/db/postgres/ks.yaml
   - ./radarr/ks.yaml
+  - ./radarr/db/postgres/ks.yaml
   - ./sonarr/ks.yaml
   - ./overseerr/ks.yaml
   - ./mealie/ks.yaml
