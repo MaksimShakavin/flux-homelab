@@ -9,8 +9,8 @@ spec:
     - ../../../../components/kopiur/backup
     - ../../../../components/zeroscaler
   dependsOn:
-    - name: longhorn
-      namespace: storage
+    - name: qbittorrent
+      namespace: default
   interval: 1h
   path: ./kubernetes/apps/default/brrpolice/app
   prune: true
