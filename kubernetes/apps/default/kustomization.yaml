@@ -12,6 +12,8 @@ resources:
   - ./namespace.yaml
   - ./homepage/ks.yaml
   - ./qbittorrent/ks.yaml
+  - ./qui/ks.yaml
+  - ./brrpolice/ks.yaml
   - ./webtlo/ks.yaml
   - ./prowlarr/ks.yaml
   - ./radarr/ks.yaml
