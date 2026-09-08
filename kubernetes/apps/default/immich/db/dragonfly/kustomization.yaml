@@ -4,3 +4,12 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ./dragonfly-auth.externalsecret.yaml
+patches:
+  # immich uses BullMQ, whose Lua scripts access keys not declared in KEYS[].
+  # Dragonfly's cluster_mode=emulated rejects that ("undeclared key"); allow it.
+  - target:
+      kind: Dragonfly
+    patch: |
+      - op: add
+        path: /spec/args/-
+        value: --default_lua_flags=allow-undeclared-keys
