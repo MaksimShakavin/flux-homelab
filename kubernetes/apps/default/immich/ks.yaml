@@ -61,7 +61,6 @@ spec:
       APP: immich
       APP_NAMESPACE: default
       POSTGRES_IMAGE: ghcr.io/corentingiraud/cnpg-pgvector-vectorchord:16-migration
-      POSTGRES_PRELOAD: "vchord.so, vectors.so"
 ---
 # yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
