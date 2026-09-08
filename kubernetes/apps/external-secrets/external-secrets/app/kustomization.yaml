@@ -7,4 +7,3 @@ resources:
   - ./helmrelease.yaml
   - ./ocirepository.yaml
   - ./pdb.yaml
-  - ./externalsecret.yaml
