@@ -108,3 +108,9 @@ spec:
     persistence:
       config:
         existingClaim: "{{ .Release.Name }}"
+      downloads:
+        type: nfs
+        server: nas.exelent.click
+        path: /volume1/kubernetes
+        globalMounts:
+          - path: /data
