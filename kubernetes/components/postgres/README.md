@@ -22,7 +22,7 @@ Set these in the consuming Flux Kustomization's `postBuild.substitute`.
 | `APP` | _(required)_ | Consuming app — names the cluster, secrets, backup path, DB, and owner role. |
 | `APP_NAMESPACE` | _(required)_ | The app's namespace — where `credentials-mirror` writes the `-app` secret. |
 | `POSTGRES_REPLICAS` | `3` | Cluster instance count. |
-| `POSTGRES_IMAGE` | `ghcr.io/cloudnative-pg/postgresql:17.11` | Postgres image (stock CNPG bundles `vector` + `pgcrypto`). |
+| `POSTGRES_IMAGE` | `ghcr.io/cloudnative-pg/postgresql:18-standard-trixie` | Postgres image (the `standard` flavor bundles `pgvector`, `pgaudit`, failover slots, LLVM JIT). |
 | `POSTGRES_SIZE` | `5Gi` | Per-instance PVC size (`local-hostpath`). |
 | `POSTGRES_RETENTION` | `30d` | Barman retention policy. |
 

@@ -6,7 +6,7 @@ metadata:
   name: postgres-${APP}
 spec:
   instances: ${POSTGRES_REPLICAS:=3}
-  imageName: ${POSTGRES_IMAGE:=ghcr.io/cloudnative-pg/postgresql:17.11}
+  imageName: ${POSTGRES_IMAGE:=ghcr.io/cloudnative-pg/postgresql:18-standard-trixie}
   primaryUpdateStrategy: unsupervised
   enableSuperuserAccess: true
   minSyncReplicas: 1
