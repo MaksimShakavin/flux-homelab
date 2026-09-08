@@ -141,6 +141,8 @@ spec:
             image:
               repository: ghcr.io/immich-app/immich-machine-learning
               tag: v3.1.0
+            env:
+              MPLCONFIGDIR: /tmp/matplotlib
             resources:
               requests:
                 cpu: 100m
