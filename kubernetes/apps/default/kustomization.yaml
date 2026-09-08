@@ -16,6 +16,7 @@ resources:
   - ./brrpolice/ks.yaml
   - ./webtlo/ks.yaml
   - ./prowlarr/ks.yaml
+  - ./flaresolverr/ks.yaml
   - ./radarr/ks.yaml
   - ./sonarr/ks.yaml
   - ./overseerr/ks.yaml
