@@ -109,29 +109,101 @@ The 1Password vault should contain the following items:
 
 </details>
 
+### LEOX + WAN configuration
+
+Reference guide (for details and troubleshooting):
+https://stoufiler.github.io/isp/bypass-livebox/
+
+1. Create temporary network on UDM to access LEOX:
+   - Name: `CONF LEOX`
+   - Subnet: `192.168.100.0/29`
+   - Gateway: `192.168.100.2`
+   - DHCP range: `192.168.100.2 - 192.168.100.6`
+2. Assign this network:
+   - Set your computer port → `CONF LEOX`
+   - Set LEOX ONT port → `CONF LEOX`
+3. Connect to LEOX:
+   - Open browser: http://192.168.100.1
+   - Username: `leox`
+   - Password: `leolabs_7`
+   - Telnet: `telnet 192.168.100.1`
+4. (Optional) Upgrade firmware via:
+   http://192.168.100.1/upgrade.asp
+5. Connect GPON Cable and verify GPON state:
+   ```bash
+   gpon get onu-state
+   ```
+   Expected:
+   ```
+   Operation State(O5)
+   ```
+6. Detect OLT vendor:
+   ```bash
+   omcicli mib get 131 # If `ALCL` → use `OMCC_VER 128`
+   ```
+7. Apply LEOX configuration:
+    ```bash
+    flash set GPON_SN SMBS02A4527D
+    flash set PON_VENDOR_ID SMBS
+    flash set OMCC_VER 128
+
+    flash set HW_HWVER SGFunbox10201
+    flash set OMCI_SW_VER1 SAHEOPL020204
+    flash set OMCI_SW_VER2 SAHEOPL020106
+
+    flash set OMCI_TM_OPT 0
+    flash set OMCI_OLT_MODE 1
+
+    flash commit
+    reboot
+    ```
+8. Configure WAN on UDM:
+   - Connection Type: PPPoE
+   - VLAN ID: 35
+   - Username: from 1Password `orange.pl/neostrada_ppoe_login`
+   - Password: from `unifi/neostrada_ppoe_password`
+   - DHCP CoS: 6
+   - Mac address clone: B8:8C:2B:24:9C:48 (same as ISP router)
+9. After reboot:
+   - Move ONT to WAN port
+   - Wait for PPPoE session
+   - Verify connectivity and public IP address on UDM dashboard
+---
+
 ### 3. Set up UDM
 
-1. Set up the api token and add it to 1Password `unifi/UNIFI_API_KEY`
-2. Set up BGP network .
-  - Go to Settings -> Routing -> BGP
-  - Create k8s entry with [config file content](../kubernetes/apps/kube-system/cilium)
-3. DNS records (the `nas.exelent.click` A record and all CNAMEs pointing at it,
-   including the `garage-*.exelent.click` names) are managed by Terraform in
-   [`../infrastructure/terraform/unifi/dns.tofu`](../infrastructure/terraform/unifi/dns.tofu).
+1. Adopt all UniFi devices via controller.
+2. Ensure default network:
+   - Name: `Default`
+   - Subnet: `192.168.0.0/24`
+3. Set up the api token and add it to 1Password `unifi/UNIFI_API_KEY`
+4. Set up the following roles and add credentials to 1Password:
+   - `Protect` with full access to `Protect` section
+   - `View` with `View` access to all sections
+5. Set up the following users with credentials from 1Password:
 
-   The `unifi` module stores its own state in the Garage `terraform` bucket, reached
-   at `garage-s3.exelent.click` — a record this module itself creates. On a fresh
-   setup that name doesn't resolve yet, so bootstrap with local state and migrate
-   later (after Garage exists, in step 5):
+  | Username    | Role          | 1Password Username     | 1Password Password         |
+  |-------------|---------------|------------------------|----------------------------|
+  | `Terraform` | `Super admin` | `unifi/TERRAFORM_USER` | `unifi/TERRAFORM_PASSWORD` |
+  | `Homepage`  | `View`        | `unifi/HOMEPAGE_USER`  | `unifi/HOMEPAGE_PASSWORD`  |
+  | `Scrypted`  | `Protect`     | `unifi/SCRYPTED_USER`  | `unifi/SCRYPTED_PASSWORD`  |
 
+6. Set up Terraform user with credentials from 1Password `unifi/TERRAFORM_USER` and `unifi/TERRAFORM_PASSWORD`
+7. Import adopter devices to terraform state. Get IDs from ui network requests from devtools. You can match by mac address.
    ```bash
-   cd infrastructure/terraform/unifi
-   tofu init -backend=false   # first run only: skip the not-yet-reachable backend
-   tofu apply                 # creates nas A record + garage-* CNAMEs
+   terraform import unifi_device.us_24_pro <ID_1>
+   terraform import unifi_device.usw_lite_8_poe <ID_2>
    ```
-
-   You return to migrate this state into Garage once the bucket exists — see the
-   end of the Garage section in step 5.
+8. Change WAN in [terraform VPN and DDNS configuration](/infrastructure/terraform/unifi/vpn.tofu) to the actual one
+9. Apply Terraform:
+    ```bash
+    cd infrastructure/terraform/unifi
+    terraform init
+    terraform apply
+    ```
+10. After applying:
+    - In the UI change 'Alternative address for clients' to the one, specified in ddns config.
+    - Create VPN configuration for all the necessary clients
 
 ### 4. Get discord token
 
@@ -142,89 +214,14 @@ The 1Password vault should contain the following items:
 
 ### 5. NAS set up
 
-#### Prepare the NAS
+#### Install and Configure Minio on NAS
 
-1. Install the `Container Manager` package from Package Center.
-2. Enable SSH: `Control Panel → Terminal & SNMP → Enable SSH service` (admin account needs sudo).
-
-#### Configure Reverse proxy
-
-The reverse proxy and its certificate must be set up **first** so that the DNS names below
-resolve and terminate TLS correctly. Later steps (Ansible and Terraform) rely on these names.
-
-1. Go to Config Panel -> Login Portal -> Advanced -> Reverse proxy and add:
-   - `proxmox.exelent.click` -> `https 192.168.0.41:8006` with WebSocket
-   - `sprut.exelent.click` -> `http 192.168.20.3:7777` with WebSocket
-   - `minio.exelent.click` -> `http localhost:9090`
-   - `minio-content.exelent.click` -> `http localhost:9090`
-   - `unifi.exelent.click` -> `https 192.168.0.1:9090` with WebSocket
-   - `garage-admin.exelent.click` -> `http localhost:3903` (Garage admin API)
-   - `garage-s3.exelent.click` -> `http localhost:3900` (Garage S3 API; used for the Terraform state backend)
-   - `garage-static.exelent.click` -> `http localhost:3902` (Garage web endpoint; serves the `static-content` bucket)
-   - `garage.exelent.click` -> `http localhost:3909` (Garage Web UI for bucket/key/object management)
-2. Go to Config Panel -> Login Portal and add Domain `nas.exelent.click`
-3. Click on Certificates and upload tls.key and tls.crt from Onepassword
-4. Click Settings and apply the certificate to added domains
-5. DNS entries for these domains are managed by Terraform in
-   [`../infrastructure/terraform/unifi/dns.tofu`](../infrastructure/terraform/unifi/dns.tofu)
-   (`nas.exelent.click` A record plus a CNAME per domain pointing at it).
-   Apply with `cd infrastructure/terraform/unifi && tofu apply`.
-
-#### Install and Configure Garage on NAS
-
-With the reverse proxy and DNS names in place, Ansible and Terraform can reach Garage over
-its `garage-*.exelent.click` hostnames.
-
-1. Deploy containers (garage, node-exporter, portainer-agent):
-   ```bash
-   task ansible:synology-setup
-   ```
-2. Create buckets, keys, and cluster layout (node ID is read from the admin API automatically).
-
-   The `garage` module creates the `terraform` bucket that every module — including
-   `garage` itself — uses as its state backend. To resolve this chicken-and-egg on a
-   fresh Garage, bootstrap with local state first, then migrate:
-
-   ```bash
-   cd infrastructure/terraform/garage
-
-   # First run only: skip the backend so state is local, then create the
-   # buckets, keys, and cluster layout.
-   tofu init -backend=false
-   tofu apply
-
-   # Bucket access keys are auto-published to the "garage-buckets" item in
-   # 1Password. Export the `terraform` bucket key so the S3 backend can auth,
-   # then migrate the local state into Garage.
-   export AWS_ACCESS_KEY_ID=<garage-buckets → terraform_AWS_ACCESS_KEY_ID>
-   export AWS_SECRET_ACCESS_KEY=<garage-buckets → terraform_AWS_SECRET_ACCESS_KEY>
-   tofu init -migrate-state
-   ```
-
-   After migration, every subsequent run is just `tofu init && tofu apply` — the
-   backend block stays committed and no files need editing. The same
-   `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` (the `terraform` bucket key) are
-   required whenever running any Terraform module that stores state in Garage.
-
-3. Migrate the `unifi` state (bootstrapped locally back in step 3) into Garage now
-   that the bucket and `garage-s3.exelent.click` both exist:
-
-   ```bash
-   cd infrastructure/terraform/unifi
-   # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY still exported from above.
-   tofu init -migrate-state
-   ```
-
-4. Any remaining Terraform modules (`synology`, `minio`, `authentik`, `proxmox`)
-   store state in the same Garage `terraform` bucket. With the bucket and DNS in
-   place, they need no bootstrap dance — just `tofu init && tofu apply` (keys
-   exported as above).
-
-> **Bootstrap ordering recap** — the only two modules that need the
-> `-backend=false` → `apply` → `init -migrate-state` dance are `unifi` (creates the
-> `garage-*` DNS) and `garage` (creates the `terraform` bucket). Order:
-> `unifi apply` → NAS reverse proxy → `garage apply` → `garage migrate` →
-> `unifi migrate` → everything else.
+1. **Install Synology Container Manager:**
+   1. Install the `Synology Container Manager` package from the Package Center.
+   2. Open the `Synology Container Manager` and run a Docker container using the `minio/minio` image. Ensure that port
+      `9000` is forwarded.
+2. **Create Minio Buckets:**
+   - Use [terraform module](../infrastructure/terraform/minio) to create necessary buckets and users
 
 #### Configure NFS Connections
 
@@ -233,6 +230,17 @@ its `garage-*.exelent.click` hostnames.
   2. Create a shared folder for the Kubernetes cluster.
   3. Go to the folder settings and select `NFS Permissions`.
   4. Add the IP addresses of all Kubernetes nodes. Select `Squash` as `No`.
+
+#### Configure Reverse proxy
+
+1. Go to Config Panel -> Login Portal -> Advanced -> Reverse proxy and add:
+   - `proxmox.exelent.click` -> `https 192.168.0.41:8006` with WebSocket
+   - `sprut.exelent.click` -> `http 192.168.20.3:7777` with WebSocket
+   - `minio.exelent.click` -> `http localhost:9090`
+   - `minio-content.exelent.click` -> `http localhost:9090`
+   - `unifi.exelent.click` -> `https 192.168.0.1:9090` with WebSocket
+2. Click on Certificates and upload tls.key and tls.crt from Onepassword
+3. Click Settings and apply the certificate to added domains
 
 ### 6. Set up healthchecks.io
 
