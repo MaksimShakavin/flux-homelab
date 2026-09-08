@@ -4,11 +4,10 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources: []
 patches:
-  # immich needs pgvector + VectorChord. During the Crunchy->CNPG cutover the
-  # cluster also carries pgvecto.rs (vectors) so the old dump restores and
-  # immich v3 can reindex vectors->vchord on first boot. CNPG manages
-  # shared_preload_libraries via its own top-level list field (NOT a parameter)
-  # and merges these in. Drop vectors.so once the reindex + PG18 jump land.
+  # immich needs pgvector + VectorChord. Post-v3 the DB is pure-vchord: the
+  # pgvecto.rs (vectors) reindex is done, so the cluster runs on PG18 with
+  # vchord.so only. CNPG manages shared_preload_libraries via its own top-level
+  # list field (NOT a parameter) and merges these in.
   - target:
       kind: Cluster
     patch: |
@@ -16,15 +15,12 @@ patches:
         path: /spec/postgresql/shared_preload_libraries
         value:
           - vchord.so
-          - vectors.so
       - op: add
         path: /spec/bootstrap/initdb/postInitApplicationSQL
         value:
           - CREATE EXTENSION IF NOT EXISTS vector
           - CREATE EXTENSION IF NOT EXISTS vchord CASCADE
-          - CREATE EXTENSION IF NOT EXISTS vectors
           - CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE
-          - ALTER DATABASE immich SET search_path TO "$$user", public, vectors
+          - ALTER DATABASE immich SET search_path TO "$$user", public
           - GRANT ALL ON SCHEMA public TO immich
           - ALTER SCHEMA public OWNER TO immich
-          - ALTER SCHEMA vectors OWNER TO immich
