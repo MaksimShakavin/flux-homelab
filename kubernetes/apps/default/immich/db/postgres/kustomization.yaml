@@ -1,0 +1,26 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources: []
+patches:
+  # immich needs pgvector + VectorChord. During the Crunchy->CNPG cutover the
+  # cluster also carries pgvecto.rs (vectors) so the old dump restores and
+  # immich v3 can reindex vectors->vchord on first boot; both libs are
+  # preloaded via POSTGRES_PRELOAD. Dropped once the reindex + PG18 jump land.
+  - target:
+      kind: Cluster
+    patch: |
+      - op: add
+        path: /spec/postgresql/parameters/shared_preload_libraries
+        value: ${POSTGRES_PRELOAD}
+      - op: add
+        path: /spec/bootstrap/initdb/postInitApplicationSQL
+        value:
+          - CREATE EXTENSION IF NOT EXISTS vector
+          - CREATE EXTENSION IF NOT EXISTS vchord CASCADE
+          - CREATE EXTENSION IF NOT EXISTS vectors
+          - CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE
+          - ALTER DATABASE immich SET search_path TO "$$user", public, vectors
+          - GRANT ALL ON SCHEMA public TO immich
+          - ALTER SCHEMA public OWNER TO immich

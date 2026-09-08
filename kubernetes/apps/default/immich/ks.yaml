@@ -5,9 +5,13 @@ kind: Kustomization
 metadata:
   name: immich
 spec:
+  components:
+    - ../../../../components/postgres/credentials-mirror
   dependsOn:
     - name: crunchy-postgres-operator
       namespace: database
+    - name: immich-postgres
+      namespace: default
     - name: immich-dragonfly
       namespace: default
   interval: 1h
@@ -19,6 +23,45 @@ spec:
     namespace: flux-system
   targetNamespace: default
   wait: false
+  postBuild:
+    substitute:
+      APP: immich
+      APP_NAMESPACE: default
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: immich-postgres
+spec:
+  components:
+    - ../../../../../components/postgres
+  dependsOn:
+    - name: cloudnative-pg
+      namespace: database
+    - name: onepassword
+      namespace: external-secrets
+  healthCheckExprs:
+    - apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      failed: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'False')
+      current: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
+  interval: 1h
+  path: ./kubernetes/apps/default/immich/db/postgres
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: database
+  wait: true
+  postBuild:
+    substitute:
+      APP: immich
+      APP_NAMESPACE: default
+      POSTGRES_IMAGE: ghcr.io/corentingiraud/cnpg-pgvector-vectorchord:16-migration
+      POSTGRES_PRELOAD: "vchord.so, vectors.so"
 ---
 # yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
