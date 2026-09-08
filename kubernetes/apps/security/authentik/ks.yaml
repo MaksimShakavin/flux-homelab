@@ -56,3 +56,4 @@ spec:
     substitute:
       APP: authentik
       APP_NAMESPACE: security
+      POSTGRES_IMAGE: ghcr.io/cloudnative-pg/postgresql:18-standard-trixie
