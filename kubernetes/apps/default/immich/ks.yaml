@@ -8,8 +8,6 @@ spec:
   components:
     - ../../../../components/postgres/credentials-mirror
   dependsOn:
-    - name: crunchy-postgres-operator
-      namespace: database
     - name: immich-postgres
       namespace: default
     - name: immich-dragonfly

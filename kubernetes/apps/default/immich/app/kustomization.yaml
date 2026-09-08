@@ -8,13 +8,7 @@ resources:
   - ./externalsecret.yaml
   - ./ocirepository.yaml
   - ./resourceclaimtemplate.yaml
-  - ./db/cluster.yaml
-  - ./db/externalsecret.yaml
-  - ./db/podmonitor.yaml
 configMapGenerator:
-  - name: immich-database-init-sql
-    files:
-      - init.sql=db/database-init-cm.sql
   - name: immich-config-tpl
     files:
       - ./config/immich.config.json
