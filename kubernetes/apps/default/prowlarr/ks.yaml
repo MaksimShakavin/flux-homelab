@@ -58,3 +58,4 @@ spec:
     substitute:
       APP: prowlarr
       APP_NAMESPACE: default
+      POSTGRES_IMAGE: ghcr.io/cloudnative-pg/postgresql:18-standard-trixie
