@@ -10,5 +10,4 @@ components:
 resources:
   - ./namespace.yaml
   - ./dragonfly/ks.yaml
-  - ./crunchy-postgres/ks.yaml
   - ./cloudnative-pg/ks.yaml
