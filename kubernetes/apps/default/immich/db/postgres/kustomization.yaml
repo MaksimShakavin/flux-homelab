@@ -27,3 +27,4 @@ patches:
           - ALTER DATABASE immich SET search_path TO "$$user", public, vectors
           - GRANT ALL ON SCHEMA public TO immich
           - ALTER SCHEMA public OWNER TO immich
+          - ALTER SCHEMA vectors OWNER TO immich
