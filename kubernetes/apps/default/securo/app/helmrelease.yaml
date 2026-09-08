@@ -18,7 +18,7 @@ spec:
           01-migrate:
             image: &image
               repository: ghcr.io/securo-finance/securo-backend
-              tag: "0.15.0"
+              tag: "0.15.1"
             command: ["alembic", "upgrade", "head"]
             # List form (not a map) so ordering is preserved: PG_PASS must come
             # before DATABASE_URL for Kubernetes $(VAR) expansion to resolve it.
@@ -132,7 +132,7 @@ spec:
           app:
             image:
               repository: ghcr.io/securo-finance/securo-frontend
-              tag: "0.15.0"
+              tag: "0.15.1"
             env:
               BACKEND_URL: "http://securo-backend.default.svc:8000"
               FRONTEND_URL: "https://securo.exelent.click"
