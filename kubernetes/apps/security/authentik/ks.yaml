@@ -35,6 +35,8 @@ spec:
   dependsOn:
     - name: cloudnative-pg
       namespace: database
+    - name: cnpg-barman-plugin
+      namespace: database
     - name: onepassword
       namespace: external-secrets
   healthCheckExprs:

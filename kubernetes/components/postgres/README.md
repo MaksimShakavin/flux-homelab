@@ -8,10 +8,15 @@ retired CrunchyData PGO setup (`components/postgress`). Each consuming app gets 
 
 | File | Purpose |
 | --- | --- |
-| `cluster.yaml` | The CNPG `Cluster` CR — `postgres-${APP}` in `database`, `initdb` bootstrap, barman→Garage backup. |
-| `scheduledbackup.yaml` | Daily `ScheduledBackup` (`postgres-${APP}-daily`). |
+| `cluster.yaml` | The CNPG `Cluster` CR — `postgres-${APP}` in `database`, `initdb` bootstrap, barman-cloud plugin as WAL archiver. |
+| `objectstore.yaml` | `ObjectStore` CR (`postgres-${APP}`) — barman-cloud plugin backup config → Garage `s3://cnpg/${APP}`. |
+| `scheduledbackup.yaml` | Daily `ScheduledBackup` (`postgres-${APP}-daily`), `method: plugin`. |
 | `externalsecret.yaml` | Barman S3 creds `postgres-${APP}-backup` (pulled from the 1Password `garage-buckets` item). |
 | `credentials-mirror/` | Optional sub-component: mirrors the operator-generated `postgres-${APP}-app` secret into the app's namespace (see below). |
+
+Backups use the **barman-cloud plugin** (`ObjectStore` CRD + `.spec.plugins`), not the deprecated
+in-tree `.spec.backup.barmanObjectStore`. The plugin (`plugin-barman-cloud`) is installed alongside
+the operator in `database`; consuming apps must `dependsOn` the `cnpg-barman-plugin` Kustomization.
 
 ## Substitution variables
 
@@ -47,6 +52,8 @@ spec:
   dependsOn:
     - name: cloudnative-pg
       namespace: database
+    - name: cnpg-barman-plugin
+      namespace: database
     - name: onepassword
       namespace: external-secrets
   healthCheckExprs:
@@ -75,9 +82,11 @@ runs before Flux substitutes `${APP}`, so the name is still the literal `postgre
 
 ## Backups
 
-- Continuous WAL archiving + base backups via barman to **Garage** at `s3://cnpg/${APP}`
-  (`serverName: ${APP}`, endpoint `https://garage-s3.exelent.click`, `bzip2` compression).
-- Daily `ScheduledBackup` at **04:40** (`scheduledbackup.yaml`, cron `0 40 4 * * *`).
+- Continuous WAL archiving + base backups via the **barman-cloud plugin** to **Garage** at
+  `s3://cnpg/${APP}` (`serverName: ${APP}`, endpoint `https://garage-s3.exelent.click`, `bzip2`
+  compression). Config lives in the `ObjectStore` CR (`objectstore.yaml`); the `Cluster` references
+  it via `.spec.plugins` with `isWALArchiver: true`.
+- Daily `ScheduledBackup` at **04:40** (`scheduledbackup.yaml`, cron `0 40 4 * * *`, `method: plugin`).
 - `retentionPolicy: ${POSTGRES_RETENTION:=30d}`.
 - S3 creds come from `postgres-${APP}-backup` (an ExternalSecret reading the shared `garage-buckets`
   1Password item; all apps share one `cnpg` key and are isolated by `serverName`/`destinationPath`).
@@ -89,11 +98,14 @@ kubectl apply -f - <<EOF
 apiVersion: postgresql.cnpg.io/v1
 kind: Backup
 metadata: { name: postgres-${APP}-manual, namespace: database }
-spec: { method: barmanObjectStore, cluster: { name: postgres-${APP} } }
+spec:
+  method: plugin
+  pluginConfiguration: { name: barman-cloud.cloudnative-pg.io }
+  cluster: { name: postgres-${APP} }
 EOF
 # check: use the FQ resource — `backup` short-name resolves to Longhorn
 kubectl get backups.postgresql.cnpg.io -n database postgres-${APP}-manual \
-  -o jsonpath='{.status.phase} {.status.destinationPath}'
+  -o jsonpath='{.status.phase} {.status.backupName}'
 ```
 
 ## Connecting from an app

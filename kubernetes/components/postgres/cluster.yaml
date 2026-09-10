@@ -29,25 +29,11 @@ spec:
     initdb:
       database: ${APP}
       owner: ${APP}
-  backup:
-    barmanObjectStore:
-      destinationPath: s3://cnpg/${APP}
-      serverName: ${APP}
-      endpointURL: https://garage-s3.exelent.click
-      s3Credentials:
-        accessKeyId:
-          name: postgres-${APP}-backup
-          key: AWS_ACCESS_KEY_ID
-        secretAccessKey:
-          name: postgres-${APP}-backup
-          key: AWS_SECRET_ACCESS_KEY
-        region:
-          name: postgres-${APP}-backup
-          key: AWS_REGION
-      wal:
-        compression: bzip2
-      data:
-        compression: bzip2
-    retentionPolicy: ${POSTGRES_RETENTION:=30d}
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: postgres-${APP}
+        serverName: ${APP}
   monitoring:
     enablePodMonitor: true
