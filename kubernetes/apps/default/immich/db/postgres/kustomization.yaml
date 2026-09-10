@@ -5,9 +5,10 @@ kind: Kustomization
 resources: []
 patches:
   # immich needs pgvector + VectorChord. Post-v3 the DB is pure-vchord: the
-  # pgvecto.rs (vectors) reindex is done, so the cluster runs on PG18 with
-  # vchord.so only. CNPG manages shared_preload_libraries via its own top-level
-  # list field (NOT a parameter) and merges these in.
+  # pgvecto.rs (vectors) reindex is done, so the cluster runs on the standard
+  # CNPG PG18 image with vchord.so supplied declaratively via an image volume
+  # (vchord-scratch), not a custom postgres image. CNPG manages
+  # shared_preload_libraries via its own top-level list field (NOT a parameter).
   - target:
       kind: Cluster
     patch: |
@@ -15,6 +16,16 @@ patches:
         path: /spec/postgresql/shared_preload_libraries
         value:
           - vchord.so
+      - op: add
+        path: /spec/postgresql/extensions
+        value:
+          - name: vchord
+            image:
+              reference: ghcr.io/tensorchord/vchord-scratch:pg18-v1.1.1
+            dynamic_library_path:
+              - /usr/lib/postgresql/18/lib
+            extension_control_path:
+              - /usr/share/postgresql/18/
       - op: add
         path: /spec/bootstrap/initdb/postInitApplicationSQL
         value:
