@@ -6,7 +6,7 @@ metadata:
   name: cloudnative-pg
 spec:
   interval: 1h
-  path: /kubernetes/apps/database/cloudnative-pg
+  path: ./kubernetes/apps/database/cloudnative-pg/app
   prune: true
   sourceRef:
     kind: GitRepository
@@ -14,3 +14,27 @@ spec:
     namespace: flux-system
   targetNamespace: database
   wait: false
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: cnpg-barman-plugin
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/database/cloudnative-pg/plugin-barman-cloud
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: database
+  dependsOn:
+    - name: cloudnative-pg
+      namespace: database
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: plugin-barman-cloud
+      namespace: database
+  wait: true
