@@ -24,7 +24,7 @@ spec:
               TZ: "Europe/Warsaw"
               LOG_LEVEL: info
               PORT: &port 80
-              PROMETHEUS_ENABLED: true
+              PROMETHEUS_ENABLE: true
               PROMETHEUS_PORT: &metricsPort 8080
             probes:
               liveness: &probes
