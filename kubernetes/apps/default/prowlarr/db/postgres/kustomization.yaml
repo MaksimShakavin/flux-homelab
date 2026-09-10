@@ -2,4 +2,31 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-resources: []
+resources:
+  - ./objectstore.yaml
+patches:
+  # Pilot: migrate backups from the deprecated in-tree barmanObjectStore to the
+  # barman-cloud plugin. Drop .spec.backup and wire the plugin as WAL archiver.
+  - target:
+      kind: Cluster
+    patch: |
+      - op: remove
+        path: /spec/backup
+      - op: add
+        path: /spec/plugins
+        value:
+          - name: barman-cloud.cloudnative-pg.io
+            isWALArchiver: true
+            parameters:
+              barmanObjectName: postgres-${APP}
+              serverName: ${APP}
+  - target:
+      kind: ScheduledBackup
+    patch: |
+      - op: add
+        path: /spec/method
+        value: plugin
+      - op: add
+        path: /spec/pluginConfiguration
+        value:
+          name: barman-cloud.cloudnative-pg.io
