@@ -50,8 +50,8 @@ spec:
   components:
     - ../../../../../../components/postgres
   dependsOn:
-    - name: cloudnative-pg
-      namespace: database
+    # cnpg-barman-plugin depends on (and waits for) cloudnative-pg, so this
+    # transitively guarantees the operator is ready — no separate dep needed.
     - name: cnpg-barman-plugin
       namespace: database
     - name: onepassword
