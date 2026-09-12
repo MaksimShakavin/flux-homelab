@@ -26,12 +26,21 @@ spec:
       serviceMonitor:
         enable: true
       input:
+        tail:
+          # Reassemble container log lines that containerd split into partial
+          # (logtag P) chunks; without this, long lines (e.g. base64 certs) arrive
+          # fragmented and parse into garbage.
+          multilineParser: cri
         systemd:
           enable: false
       filter:
         kubernetes:
           enable: true
           mergeLog: true
+          # Drop the raw `log` once mergeLog parses a JSON line, so the logfmt
+          # parser never runs on already-parsed JSON (which mangles it into
+          # key=true tokens). Non-JSON lines fail the merge and keep `log`.
+          keepLog: false
           labels: true
           annotations: false
         systemd:

@@ -10,7 +10,7 @@ spec:
   http:
     host: victoria-logs-server.observability.svc.cluster.local
     port: 9428
-    uri: /insert/jsonline?_stream_fields=kubernetes.pod_name,kubernetes.namespace_name,kubernetes.container_name&_msg_field=msg,log&_time_field=date
+    uri: /insert/jsonline?_stream_fields=kubernetes.pod_name,kubernetes.namespace_name,kubernetes.container_name&_msg_field=msg,message,log_message,log&_time_field=date
     format: json_lines
     jsonDateFormat: iso8601
     compress: gzip
