@@ -1,0 +1,21 @@
+---
+# csi-grpc-proxy has no logging config and logs two lines per gRPC call (kubelet
+# NodeGetCapabilities/NodeGetVolumeStats polling) — level-less, high-volume noise.
+# Drop ONLY those two routine request shapes so real output (errors, panics, upstream
+# failures — none start with "request (" / "request headers ") still reaches VictoriaLogs.
+# Cluster-scoped but lives with the app; shared label wires it into the central Fluent Bit.
+# zz- prefix: must sort after the chart's "kubernetes" filter to read container_name.
+# Lua code MUST be one line (operator flattens newlines). Return -1 = drop the record.
+apiVersion: fluentbit.fluent.io/v1alpha2
+kind: ClusterFilter
+metadata:
+  name: zz-csi-proxy-drop-noise
+  labels:
+    fluentbit.fluent.io/enabled: "true"
+spec:
+  match: kube.*
+  filters:
+    - lua:
+        call: drop_csi_proxy_noise
+        protectedMode: true
+        code: 'function drop_csi_proxy_noise(tag,ts,record) local k=record["kubernetes"] if k==nil or k["container_name"]~="csi-proxy" then return 0,ts,record end local line=record["log"] if line~=nil and (string.match(line,"^request %(") or string.match(line,"^request headers ")) then return -1,ts,record end return 0,ts,record end'
