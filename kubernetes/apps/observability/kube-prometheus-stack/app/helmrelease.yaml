@@ -11,6 +11,13 @@ spec:
   interval: 1h
   values:
     cleanPrometheusOperatorObjectNames: true
+    prometheusOperator:
+      livenessProbe:
+        timeoutSeconds: 5
+        failureThreshold: 5
+      readinessProbe:
+        timeoutSeconds: 5
+        failureThreshold: 5
     alertmanager:
       route:
         main:
