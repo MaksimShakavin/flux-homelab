@@ -29,23 +29,13 @@ spec:
               PGID: 1000
               UMASK: 002
               TZ: "Europe/Warsaw"
+              # Pins the client identity; otherwise it defaults to the node's
+              # product_uuid and changes on reschedule, so the website flags the
+              # old client offline ("has not sent an update").
+              DN_HOST_ID: "4045cfc1-5088-4974-ac8a-3f06e5859b4c"
             envFrom:
               - secretRef:
                   name: notifiarr-secret
-    configMaps:
-      # Pins the host id; without it Notifiarr mints a new UUID each restart and
-      # the website flags the previous client as offline ("has not sent an update").
-      machine-id:
-        data:
-          machine-id: |
-            4045cfc150884974ac8a3f06e5859b4c
-    persistence:
-      machine-id:
-        type: configMap
-        identifier: machine-id
-        globalMounts:
-          - path: /etc/machine-id
-            subPath: machine-id
     service:
       app:
         ports:
