@@ -1,0 +1,49 @@
+---
+apiVersion: fluentbit.fluent.io/v1alpha2
+kind: ClusterFilter
+metadata:
+  # zz- prefix so this sorts (and runs) after logfmt-parse; it is authoritative
+  # for the formats it recognises and must win over any stray logfmt match.
+  name: zz-level-map
+  labels:
+    fluentbit.fluent.io/enabled: "true"
+spec:
+  match: kube.*
+  filters:
+    - lua:
+        call: set_level
+        protectedMode: true
+        # Derive level (+clean msg) for the two big level-less formats that carry
+        # no level= key: klog (Ixxxx/Wxxxx/Exxxx, from k8s/CSI/control-plane) and
+        # zap (tab-delimited, from envoy-gateway et al). Only touches lines it
+        # recognises; JSON apps already had `log` stripped on merge, so `log==nil`
+        # skips them and their existing level/msg are left intact.
+        code: |
+          local klog = {I="info", W="warning", E="error", F="fatal"}
+          local zap = {debug="debug", info="info", warn="warning",
+                       warning="warning", error="error", dpanic="error",
+                       panic="error", fatal="fatal"}
+          function set_level(tag, ts, record)
+            local line = record["log"]
+            if line == nil then return 0, ts, record end
+            -- klog: "I0912 21:14:04.686  1 file.go:132] message"
+            local sev = string.match(line, "^([IWEF])%d%d%d%d ")
+            if sev ~= nil then
+              record["level"] = klog[sev]
+              local msg = string.match(line, "^[IWEF]%d%d%d%d .-%] (.*)$")
+              if msg ~= nil then record["msg"] = msg end
+              return 1, ts, record
+            end
+            -- zap: "<ts>\t<level>\t<logger>\t<caller>\t<msg>\t..."
+            local lvl = string.match(line, "^%d%d%d%d%-%d%d%-%d%dT[^\9]*\9([a-z]+)\9")
+            if lvl ~= nil and zap[lvl] ~= nil then
+              record["level"] = zap[lvl]
+              local n = 0
+              for f in string.gmatch(line, "[^\9]+") do
+                n = n + 1
+                if n == 5 then record["msg"] = f; break end
+              end
+              return 1, ts, record
+            end
+            return 0, ts, record
+          end

@@ -5,4 +5,5 @@ kind: Kustomization
 resources:
   - ./clusterparser-logfmt.yaml
   - ./clusterfilter-logfmt.yaml
+  - ./clusterfilter-level-map.yaml
   - ./clusteroutput-victorialogs.yaml
