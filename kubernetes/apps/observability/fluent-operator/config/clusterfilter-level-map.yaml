@@ -2,20 +2,16 @@
 apiVersion: fluentbit.fluent.io/v1alpha2
 kind: ClusterFilter
 metadata:
-  # zz- prefix so this sorts (and runs) after logfmt-parse; it is authoritative
-  # for the formats it recognises and must win over any stray logfmt match.
+  # zz- prefix: runs after logfmt-parse so it's authoritative over stray matches.
   name: zz-level-map
   labels:
     fluentbit.fluent.io/enabled: "true"
 spec:
   match: kube.*
   filters:
-    # Derive level (+clean msg) for the two big level-less formats that carry no
-    # level= key: klog (Ixxxx/Wxxxx/Exxxx, from k8s/CSI/control-plane) and zap
-    # (tab-delimited, from envoy-gateway et al). Only touches lines it recognises;
-    # JSON apps already had `log` stripped on merge, so `log==nil` skips them.
-    # The lua code MUST stay on one line: the operator flattens multi-line code
-    # by turning each newline into "; ", which corrupts tables/blocks.
+    # Level + clean msg for the level-less formats: klog (Ixxxx/Wxxxx/Exxxx, k8s/CSI)
+    # and zap (tab-delimited). Only touches recognised lines; merged JSON has log==nil
+    # so it's skipped. Lua code MUST be one line (operator flattens newlines to "; ").
     - lua:
         call: set_level
         protectedMode: true

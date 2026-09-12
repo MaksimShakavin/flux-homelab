@@ -2,8 +2,7 @@
 apiVersion: fluentbit.fluent.io/v1alpha2
 kind: ClusterFilter
 metadata:
-  # Name sorts after the chart's "containerd"/"kubernetes" filters so logfmt
-  # runs last (verify order in the rendered ClusterFluentBitConfig).
+  # name sorts after the chart's "kubernetes" filter, so this runs after JSON merge.
   name: logfmt-parse
   labels:
     fluentbit.fluent.io/enabled: "true"
@@ -12,10 +11,8 @@ spec:
   filters:
     - parser:
         keyName: log
-        # First-match wins: logfmt-fields pulls level+msg from logrus lines; the
-        # logfmt-level regex is the fallback that still yields a level when a line
-        # has no quoted msg. Neither creates arbitrary fields, so plaintext logs
-        # (no level=) pass through untouched instead of exploding into columns.
+        # first-match wins: logfmt-fields pulls level+msg, logfmt-level is level-only
+        # fallback. Bounded regex (no arbitrary fields) so plaintext can't explode columns.
         parser: logfmt-fields,logfmt-level
         reserveData: true
         preserveKey: true
