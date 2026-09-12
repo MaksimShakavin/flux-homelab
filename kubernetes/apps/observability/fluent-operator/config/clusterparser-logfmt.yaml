@@ -7,3 +7,16 @@ metadata:
     fluentbit.fluent.io/enabled: "true"
 spec:
   logfmt: {}
+---
+# Fallback: Fluent Bit's logfmt parser fails on lines with escaped inner quotes
+# or empty key= values (common in longhorn's webhook/error logs). This regex
+# pulls just the level so those lines still get a real level instead of OTHER.
+apiVersion: fluentbit.fluent.io/v1alpha2
+kind: ClusterParser
+metadata:
+  name: logfmt-level
+  labels:
+    fluentbit.fluent.io/enabled: "true"
+spec:
+  regex:
+    regex: 'level=(?<level>[a-zA-Z]+)'
