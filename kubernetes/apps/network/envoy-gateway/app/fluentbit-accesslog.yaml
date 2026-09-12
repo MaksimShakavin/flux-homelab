@@ -3,7 +3,7 @@
 # _msg field" placeholder. Synthesize an access-log msg + level from the HTTP status.
 # Cluster-scoped, so it lives with the app but the shared label wires it into the
 # central Fluent Bit. zz- prefix: must sort after the chart's "kubernetes" filter so
-# the JSON is merged first. Lua code MUST be one line (operator flattens newlines).
+# the JSON is merged first.
 apiVersion: fluentbit.fluent.io/v1alpha2
 kind: ClusterFilter
 metadata:
@@ -16,5 +16,25 @@ spec:
     - lua:
         call: set_envoy
         protectedMode: true
-        # guard on envoy's response_code/response_flags/method trio; skip other records
-        code: 'function set_envoy(tag,ts,record) local code=record["response_code"] local flags=record["response_flags"] local method=record["method"] if code==nil or flags==nil or method==nil then return 0,ts,record end local auth=record[":authority"] or "" local path=record["x-envoy-origin-path"] or "" local proto=record["protocol"] or "" local dur=record["duration"] local msg=method.." "..auth..path if proto~="" then msg=msg.." "..proto end msg=msg.." "..code.." "..flags if dur~=nil and dur~="" then msg=msg.." "..dur.."ms" end record["msg"]=msg local n=tonumber(code) local lvl="info" if n~=nil then if n>=500 then lvl="error" elseif n>=400 then lvl="warning" end end record["level"]=lvl return 1,ts,record end'
+        code: |
+          function set_envoy(tag, ts, record)
+            --[[ guard on envoy's response_code/response_flags/method trio; skip other records ]]
+            local code = record["response_code"]
+            local flags = record["response_flags"]
+            local method = record["method"]
+            if code == nil or flags == nil or method == nil then return 0, ts, record end
+            local auth = record[":authority"] or ""
+            local path = record["x-envoy-origin-path"] or ""
+            local proto = record["protocol"] or ""
+            local dur = record["duration"]
+            local msg = method .. " " .. auth .. path
+            if proto ~= "" then msg = msg .. " " .. proto end
+            msg = msg .. " " .. code .. " " .. flags
+            if dur ~= nil and dur ~= "" then msg = msg .. " " .. dur .. "ms" end
+            record["msg"] = msg
+            local n = tonumber(code)
+            local lvl = "info"
+            if n ~= nil then if n >= 500 then lvl = "error" elseif n >= 400 then lvl = "warning" end end
+            record["level"] = lvl
+            return 1, ts, record
+          end
