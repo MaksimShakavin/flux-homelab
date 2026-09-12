@@ -12,9 +12,10 @@ spec:
   filters:
     - parser:
         keyName: log
-        # First-match wins: logfmt extracts full fields on clean lines; the
-        # logfmt-level regex is the fallback that still yields a level when
-        # logfmt can't parse the line.
-        parser: logfmt,logfmt-level
+        # First-match wins: logfmt-fields pulls level+msg from logrus lines; the
+        # logfmt-level regex is the fallback that still yields a level when a line
+        # has no quoted msg. Neither creates arbitrary fields, so plaintext logs
+        # (no level=) pass through untouched instead of exploding into columns.
+        parser: logfmt-fields,logfmt-level
         reserveData: true
         preserveKey: true

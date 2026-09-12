@@ -1,16 +1,20 @@
 ---
+# Extracts level + msg from logrus/logfmt lines (e.g. longhorn-manager).
+# Named groups ONLY: unlike Fluent Bit's native logfmt parser, this never turns
+# bare words into key=true fields, so plaintext logs can't explode VictoriaLogs'
+# column namespace. msg (quoted, escape-aware) becomes _msg via _msg_field.
 apiVersion: fluentbit.fluent.io/v1alpha2
 kind: ClusterParser
 metadata:
-  name: logfmt
+  name: logfmt-fields
   labels:
     fluentbit.fluent.io/enabled: "true"
 spec:
-  logfmt: {}
+  regex:
+    regex: 'level=(?<level>[a-zA-Z]+)\s+msg="(?<msg>(?:[^"\\]|\\.)*)"'
 ---
-# Fallback: Fluent Bit's logfmt parser fails on lines with escaped inner quotes
-# or empty key= values (common in longhorn's webhook/error logs). This regex
-# pulls just the level so those lines still get a real level instead of OTHER.
+# Fallback: lines with a level= but no adjacent quoted msg (access/klog-ish
+# logrus lines) still get a real level instead of OTHER; the message stays in log.
 apiVersion: fluentbit.fluent.io/v1alpha2
 kind: ClusterParser
 metadata:
