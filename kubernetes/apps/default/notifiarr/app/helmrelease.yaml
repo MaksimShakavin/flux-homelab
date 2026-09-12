@@ -29,10 +29,9 @@ spec:
               PGID: 1000
               UMASK: 002
               TZ: "Europe/Warsaw"
-              # Pins the client identity; otherwise it defaults to the node's
-              # product_uuid and changes on reschedule, so the website flags the
-              # old client offline ("has not sent an update").
-              DN_HOST_ID: "4045cfc1-5088-4974-ac8a-3f06e5859b4c"
+              # Host id notifiarr.com already registered (a since-replaced node's
+              # product_uuid); must match or the site can't reach the client.
+              DN_HOST_ID: "b0becb6a-34b2-9dbd-3376-d7d837a65a00"
             envFrom:
               - secretRef:
                   name: notifiarr-secret
