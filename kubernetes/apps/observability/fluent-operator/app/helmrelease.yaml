@@ -16,7 +16,7 @@ spec:
       enable: true
     fluentbit:
       enable: true
-      logLevel: warn
+      logLevel: warning
       serviceMonitor:
         enable: true
       input:
