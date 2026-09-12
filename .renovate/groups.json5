@@ -77,5 +77,18 @@
       },
       minimumGroupSize: 2,
     },
+    {
+      // Talos version lives in 3 places tracked as 2 deps: talconfig.yaml
+      // (custom.talos-factory / siderolabs/talos) and tuppr talosupgrade.yaml
+      // + talos.tofu (docker / ghcr.io/siderolabs/installer). Group so every
+      // Talos bump lands in one coordinated PR.
+      description: "Talos Group",
+      groupName: "Talos",
+      matchDatasources: ["docker", "custom.talos-factory"],
+      matchPackageNames: ["ghcr.io/siderolabs/installer", "siderolabs/talos"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+    },
   ],
 }

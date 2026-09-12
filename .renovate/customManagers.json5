@@ -1,0 +1,15 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  customManagers: [
+    {
+      // HCL `key = "value"` (OpenTofu/Terraform). The base preset's generic
+      // `# renovate:` manager only handles `key: value` / `KEY=value`, so the
+      // space around `=` in HCL is missed without this. Picks up talos.tofu.
+      customType: "regex",
+      managerFilePatterns: ["/\\.tofu$/", "/\\.tf$/"],
+      matchStrings: [
+        "#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(?:\\s+versioning=(?<versioning>\\S+))?\\s+\\w+\\s*=\\s*[\"'](?<currentValue>[^\"']+)[\"']",
+      ],
+    },
+  ],
+}
