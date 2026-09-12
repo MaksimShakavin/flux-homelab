@@ -9,10 +9,11 @@ metadata:
 spec:
   match: kube.*
   filters:
-    # Level + clean msg for the level-less formats: klog (Ixxxx/Wxxxx/Exxxx, k8s/CSI)
-    # and zap (tab-delimited). Only touches recognised lines; merged JSON has log==nil
-    # so it's skipped. Lua code MUST be one line (operator flattens newlines to "; ").
+    # Level + clean msg for the level-less formats: klog (Ixxxx/Wxxxx/Exxxx, k8s/CSI),
+    # zap (tab-delimited, lowercase level) and Rust tracing (ISO ts + UPPERCASE level,
+    # e.g. kopiur). Only touches recognised lines; merged JSON has log==nil so it's
+    # skipped. Lua code MUST be one line (operator flattens newlines to "; ").
     - lua:
         call: set_level
         protectedMode: true
-        code: 'local klog={I="info",W="warning",E="error",F="fatal"} local zap={debug="debug",info="info",warn="warning",warning="warning",error="error",dpanic="error",panic="error",fatal="fatal"} function set_level(tag,ts,record) local line=record["log"] if line==nil then return 0,ts,record end local sev=string.match(line,"^([IWEF])%d%d%d%d ") if sev~=nil then record["level"]=klog[sev] local msg=string.match(line,"^[IWEF]%d%d%d%d .-%] (.*)$") if msg~=nil then record["msg"]=msg end return 1,ts,record end local lvl=string.match(line,"^%d%d%d%d%-%d%d%-%d%dT[^\9]*\9([a-z]+)\9") if lvl~=nil and zap[lvl]~=nil then record["level"]=zap[lvl] local n=0 for f in string.gmatch(line,"[^\9]+") do n=n+1 if n==5 then record["msg"]=f break end end return 1,ts,record end return 0,ts,record end'
+        code: 'local klog={I="info",W="warning",E="error",F="fatal"} local zap={debug="debug",info="info",warn="warning",warning="warning",error="error",dpanic="error",panic="error",fatal="fatal"} local trc={TRACE="trace",DEBUG="debug",INFO="info",WARN="warning",WARNING="warning",ERROR="error",FATAL="fatal"} function set_level(tag,ts,record) local line=record["log"] if line==nil then return 0,ts,record end local sev=string.match(line,"^([IWEF])%d%d%d%d ") if sev~=nil then record["level"]=klog[sev] local msg=string.match(line,"^[IWEF]%d%d%d%d .-%] (.*)$") if msg~=nil then record["msg"]=msg end return 1,ts,record end local lvl=string.match(line,"^%d%d%d%d%-%d%d%-%d%dT[^\9]*\9([a-z]+)\9") if lvl~=nil and zap[lvl]~=nil then record["level"]=zap[lvl] local n=0 for f in string.gmatch(line,"[^\9]+") do n=n+1 if n==5 then record["msg"]=f break end end return 1,ts,record end local tl=string.match(line,"^%d%d%d%d%-%d%d%-%d%dT%S+%s+(%u+)%s") if tl~=nil and trc[tl]~=nil then record["level"]=trc[tl] local tm=string.match(line,"^%d%d%d%d%-%d%d%-%d%dT%S+%s+%u+%s+(.*)$") if tm~=nil then record["msg"]=tm end return 1,ts,record end return 0,ts,record end'
