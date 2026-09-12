@@ -1,0 +1,24 @@
+---
+# App-specific log parsing for envoy's JSON access logs, merged into the central
+# fluent-operator Fluent Bit via the shared enabled label (ClusterFilter is
+# cluster-scoped, so it lives here with the app rather than in the collector).
+# envoy-gateway emits access logs as JSON with no msg/level, so VictoriaLogs
+# stored the literal "missing _msg field" placeholder. Synthesize an access-log
+# msg and derive level from the HTTP status. Guarded on the envoy-specific
+# response_code/response_flags/method trio so no other record is touched.
+# zz- prefix so it sorts AFTER the chart's "kubernetes" filter (the JSON must be
+# merged into the record first). The lua code MUST stay on one line (the operator
+# flattens newlines to "; ").
+apiVersion: fluentbit.fluent.io/v1alpha2
+kind: ClusterFilter
+metadata:
+  name: zz-envoy-access
+  labels:
+    fluentbit.fluent.io/enabled: "true"
+spec:
+  match: kube.*
+  filters:
+    - lua:
+        call: set_envoy
+        protectedMode: true
+        code: 'function set_envoy(tag,ts,record) local code=record["response_code"] local flags=record["response_flags"] local method=record["method"] if code==nil or flags==nil or method==nil then return 0,ts,record end local auth=record[":authority"] or "" local path=record["x-envoy-origin-path"] or "" local proto=record["protocol"] or "" local dur=record["duration"] local msg=method.." "..auth..path if proto~="" then msg=msg.." "..proto end msg=msg.." "..code.." "..flags if dur~=nil and dur~="" then msg=msg.." "..dur.."ms" end record["msg"]=msg local n=tonumber(code) local lvl="info" if n~=nil then if n>=500 then lvl="error" elseif n>=400 then lvl="warning" end end record["level"]=lvl return 1,ts,record end'

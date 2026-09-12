@@ -6,5 +6,4 @@ resources:
   - ./clusterparser-logfmt.yaml
   - ./clusterfilter-logfmt.yaml
   - ./clusterfilter-level-map.yaml
-  - ./clusterfilter-envoy-access.yaml
   - ./clusteroutput-victorialogs.yaml
