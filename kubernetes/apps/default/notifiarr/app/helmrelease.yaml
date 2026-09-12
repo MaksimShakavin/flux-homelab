@@ -32,6 +32,20 @@ spec:
             envFrom:
               - secretRef:
                   name: notifiarr-secret
+    configMaps:
+      # Pins the host id; without it Notifiarr mints a new UUID each restart and
+      # the website flags the previous client as offline ("has not sent an update").
+      machine-id:
+        data:
+          machine-id: |
+            4045cfc150884974ac8a3f06e5859b4c
+    persistence:
+      machine-id:
+        type: configMap
+        identifier: machine-id
+        globalMounts:
+          - path: /etc/machine-id
+            subPath: machine-id
     service:
       app:
         ports:
