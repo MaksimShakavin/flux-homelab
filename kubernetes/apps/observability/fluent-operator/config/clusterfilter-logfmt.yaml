@@ -1,0 +1,17 @@
+---
+apiVersion: fluentbit.fluent.io/v1alpha2
+kind: ClusterFilter
+metadata:
+  # Name sorts after the chart's "containerd"/"kubernetes" filters so logfmt
+  # runs last (verify order in the rendered ClusterFluentBitConfig).
+  name: logfmt-parse
+  labels:
+    fluentbit.fluent.io/enabled: "true"
+spec:
+  match: kube.*
+  filters:
+    - parser:
+        keyName: log
+        parser: logfmt
+        reserveData: true
+        preserveKey: true

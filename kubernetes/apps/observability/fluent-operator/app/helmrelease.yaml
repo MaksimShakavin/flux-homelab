@@ -1,0 +1,34 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: fluent-operator
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: fluent-operator
+  values:
+    containerRuntime: containerd
+    Kubernetes: true
+    operator:
+      enable: true
+    fluentbit:
+      enable: true
+      logLevel: warn
+      serviceMonitor:
+        enable: true
+      input:
+        systemd:
+          enable: false
+      filter:
+        kubernetes:
+          enable: true
+          mergeLog: true
+          labels: true
+          annotations: false
+        systemd:
+          enable: false
+    fluentd:
+      enable: false
