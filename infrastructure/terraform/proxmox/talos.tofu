@@ -7,7 +7,7 @@ locals {
   mac_addresses = ["BC:24:11:B5:DD:1F", "BC:24:11:0C:FD:22", "BC:24:11:A8:19:33"]
   # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
   talos_version  = "v1.13.10"
-  talos_image_id = "583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e"
+  talos_image_id = "b52c537678fcbaa6b894bf1e90894767c17230a605546bef6ce247cd815bc2a4"
 }
 
 module "talos-controlplanes" {
