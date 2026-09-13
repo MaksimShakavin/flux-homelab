@@ -16,7 +16,7 @@ spec:
       main:
         type: cronjob
         cronjob:
-          # run it after qbit-helper
+          # run it after qbit-torrent-files-cleaner
           schedule: "10 * * * *"
           timeZone: "Europe/Warsaw"
           concurrencyPolicy: Forbid
@@ -25,8 +25,8 @@ spec:
         containers:
           main:
             image:
-              repository: ghcr.io/mglants/emonoda
-              tag: 2.1.37
+              repository: ghcr.io/maksimshakavin/emonoda
+              tag: rolling@sha256:325f38e419a8ef6daac00b1b0c83ab435fdc4058bdd20ea22c902b99e093c0e6
             command:
               - emupdate
             args:

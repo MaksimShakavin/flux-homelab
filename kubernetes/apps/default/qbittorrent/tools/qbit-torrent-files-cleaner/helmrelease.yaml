@@ -3,11 +3,11 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: qbittorrent-tools-helper
+  name: qbittorrent-tools-files-cleaner
 spec:
   chartRef:
     kind: OCIRepository
-    name: qbittorrent-tools-helper
+    name: qbittorrent-tools-files-cleaner
   interval: 1h
   dependsOn:
     - name: qbittorrent
@@ -25,8 +25,10 @@ spec:
         containers:
           main:
             image:
-              repository: ghcr.io/maksimshakavin/qbit-helper
-              tag: main@sha256:336055b71b6b6afd6b9d0a47c07d921043050f6d139a29fbc050a1fb8eac2e56
+              repository: ghcr.io/maksimshakavin/qbit-torrent-files-cleaner
+              tag: 0.2.0@sha256:4363aa7a11655ee517326fd27be8064d16d53075156c472087b6fe7b8fb8f367
+            command:
+              - qbit-torrent-files-cleaner
             args:
               - --config
               - &config /config/config.yaml
@@ -41,7 +43,7 @@ spec:
     persistence:
       config-file:
         type: secret
-        name: qbit-helper-secret
+        name: qbit-torrent-files-cleaner-secret
         globalMounts:
           - path: *config
             subPath: config.yaml

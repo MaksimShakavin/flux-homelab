@@ -5,4 +5,4 @@ kind: Kustomization
 resources:
   - ./emonoda
   - ./qbit_manage
-  - ./qbit-helper
+  - ./qbit-torrent-files-cleaner
