@@ -1,8 +1,8 @@
 ---
 # csi-grpc-proxy has no logging config and logs two lines per gRPC call (kubelet
 # NodeGetCapabilities/NodeGetVolumeStats polling) — level-less, high-volume noise.
-# Drop ONLY those two routine request shapes so real output (errors, panics, upstream
-# failures — none start with "request (" / "request headers ") still reaches VictoriaLogs.
+# Drop ONLY those two routine request shapes (after the Go date prefix) so real output
+# (errors, panics, upstream failures) still reaches VictoriaLogs.
 # Cluster-scoped but lives with the app; shared label wires it into the central Fluent Bit.
 # zz- prefix: must sort after the chart's "kubernetes" filter to read container_name.
 # Return -1 = drop the record.
@@ -24,6 +24,8 @@ spec:
             if k == nil or k["container_name"] ~= "csi-proxy" then return 0, ts, record end
             local line = record["log"]
             if line == nil then return 0, ts, record end
-            if string.match(line, "^request %(") or string.match(line, "^request headers ") then return -1, ts, record end
+            --[[ lines carry a Go date prefix ("2026/09/13 18:03:18 "); strip it, then drop only the two routine gRPC request shapes so errors survive ]]
+            local rest = string.match(line, "^%d%d%d%d/%d%d/%d%d %d%d:%d%d:%d%d (.*)$") or line
+            if string.match(rest, "^request %(") or string.match(rest, "^request headers ") then return -1, ts, record end
             return 0, ts, record
           end
