@@ -1,0 +1,43 @@
+---
+# securo's components log with real levels but land under the shared container name "app"
+# (backend=uvicorn, worker/beat=celery), so parsing lives here scoped to securo — not the
+# central cross-app level-map. Cluster-scoped CR; the shared label wires it into the central
+# Fluent Bit. zz- prefix: must sort after the chart's "kubernetes" filter to read the label.
+apiVersion: fluentbit.fluent.io/v1alpha2
+kind: ClusterFilter
+metadata:
+  name: zz-securo-loglevel
+  labels:
+    fluentbit.fluent.io/enabled: "true"
+spec:
+  match: kube.*
+  filters:
+    - lua:
+        call: set_securo_level
+        protectedMode: true
+        code: |
+          local py = { DEBUG = "debug", INFO = "info", WARNING = "warning", ERROR = "error", CRITICAL = "fatal" }
+          function set_securo_level(tag, ts, record)
+            --[[ only touch securo pods; container name "app" is shared across unrelated apps ]]
+            local k = record["kubernetes"]
+            if k == nil or k["labels"] == nil or k["labels"]["app.kubernetes.io/name"] ~= "securo" then return 0, ts, record end
+            local line = record["log"]
+            if line == nil then return 0, ts, record end
+            --[[ celery (worker/beat): [YYYY-MM-DD HH:MM:SS,mmm: LEVEL/Process] message ]]
+            local cl = string.match(line, "^%[%d%d%d%d%-%d%d%-%d%d %d%d:%d%d:%d%d,%d+: (%u+)/")
+            if cl ~= nil and py[cl] ~= nil then
+              record["level"] = py[cl]
+              local cm = string.match(line, "^%[.-%] (.*)$")
+              if cm ~= nil then record["msg"] = cm end
+              return 1, ts, record
+            end
+            --[[ uvicorn (backend): LEVEL:<padding> message; gated on known level word so nginx access lines skip ]]
+            local ul = string.match(line, "^(%u+):%s")
+            if ul ~= nil and py[ul] ~= nil then
+              record["level"] = py[ul]
+              local um = string.match(line, "^%u+:%s+(.*)$")
+              if um ~= nil then record["msg"] = um end
+              return 1, ts, record
+            end
+            return 0, ts, record
+          end
