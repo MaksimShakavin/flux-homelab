@@ -20,7 +20,6 @@ spec:
         code: |
           local klog = { I = "info", W = "warning", E = "error", F = "fatal" }
           local zap = { debug = "debug", info = "info", warn = "warning", warning = "warning", error = "error", dpanic = "error", panic = "error", fatal = "fatal" }
-          local tracing = { TRACE = "trace", DEBUG = "debug", INFO = "info", WARN = "warning", WARNING = "warning", ERROR = "error", FATAL = "fatal" }
           local fb = { trace = "trace", debug = "debug", info = "info", warn = "warning", error = "error" }
           function set_level(tag, ts, record)
             --[[ merged JSON has log==nil; only recognised plaintext lines are touched ]]
@@ -52,14 +51,6 @@ spec:
               local fm = string.match(line, "^%[[^%]]*%] %[%s*%a+%] %[[^%]]*%] (.*)$")
               if fm == nil then fm = string.match(line, "^%[[^%]]*%] %[%s*%a+%] (.*)$") end
               if fm ~= nil then record["msg"] = fm end
-              return 1, ts, record
-            end
-            --[[ rust tracing (kopiur): ISO ts, spaces, UPPERCASE level, space, message ]]
-            local tl = string.match(line, "^%d%d%d%d%-%d%d%-%d%dT%S+%s+(%u+)%s")
-            if tl ~= nil and tracing[tl] ~= nil then
-              record["level"] = tracing[tl]
-              local tm = string.match(line, "^%d%d%d%d%-%d%d%-%d%dT%S+%s+%u+%s+(.*)$")
-              if tm ~= nil then record["msg"] = tm end
               return 1, ts, record
             end
             return 0, ts, record

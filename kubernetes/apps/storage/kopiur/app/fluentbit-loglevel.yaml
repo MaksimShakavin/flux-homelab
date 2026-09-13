@@ -1,0 +1,34 @@
+---
+# kopiur (controller + webhook + transient mover pods) logs in Rust `tracing` default format
+# (<ISO8601>␠␠UPPERCASE-LEVEL␠message). kopiur is the only app emitting this format, so its parsing
+# lives here with the app rather than the central cross-app level-map. Cluster-scoped CR; the shared
+# label wires it into the central Fluent Bit. zz- prefix: must sort after the chart's "kubernetes"
+# filter. Format-matched (not label-gated) so the transient mover pods are covered too.
+apiVersion: fluentbit.fluent.io/v1alpha2
+kind: ClusterFilter
+metadata:
+  name: zz-kopiur-loglevel
+  labels:
+    fluentbit.fluent.io/enabled: "true"
+spec:
+  match: kube.*
+  filters:
+    - lua:
+        call: set_kopiur_level
+        protectedMode: true
+        code: |
+          local tracing = { TRACE = "trace", DEBUG = "debug", INFO = "info", WARN = "warning", WARNING = "warning", ERROR = "error", FATAL = "fatal" }
+          function set_kopiur_level(tag, ts, record)
+            --[[ merged JSON has log==nil; only plaintext rust-tracing lines are touched ]]
+            local line = record["log"]
+            if line == nil then return 0, ts, record end
+            --[[ rust tracing: ISO ts, spaces, UPPERCASE level, space, message ]]
+            local tl = string.match(line, "^%d%d%d%d%-%d%d%-%d%dT%S+%s+(%u+)%s")
+            if tl ~= nil and tracing[tl] ~= nil then
+              record["level"] = tracing[tl]
+              local tm = string.match(line, "^%d%d%d%d%-%d%d%-%d%dT%S+%s+%u+%s+(.*)$")
+              if tm ~= nil then record["msg"] = tm end
+              return 1, ts, record
+            end
+            return 0, ts, record
+          end
