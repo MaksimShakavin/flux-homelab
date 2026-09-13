@@ -5,6 +5,7 @@ kind: Kustomization
 resources:
   - ./envoy.yaml
   - ./fluentbit-accesslog.yaml
+  - ./fluentbit-serverlog.yaml
   - ./grafanadashboard.yaml
   - ./helmrelease.yaml
   - ./observability.yaml

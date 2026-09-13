@@ -1,0 +1,35 @@
+---
+# envoy's own server logs (not the JSON access logs) are plaintext:
+# [ts][thread][level][logger] [source/file.cc:NN] message — extract level + clean msg.
+# Cluster-scoped so it lives with the app but the shared label wires it into the central
+# Fluent Bit. zz- prefix: must sort after the chart's "kubernetes" filter. Gated on the
+# envoy container so the bracketed format can't catch unrelated pods.
+apiVersion: fluentbit.fluent.io/v1alpha2
+kind: ClusterFilter
+metadata:
+  name: zz-envoy-serverlog
+  labels:
+    fluentbit.fluent.io/enabled: "true"
+spec:
+  match: kube.*
+  filters:
+    - lua:
+        call: set_envoy_server
+        protectedMode: true
+        code: |
+          local ev = { trace = "trace", debug = "debug", info = "info", warning = "warning", error = "error", critical = "fatal" }
+          function set_envoy_server(tag, ts, record)
+            --[[ only touch the envoy container; access-log JSON has log==nil and is skipped ]]
+            local k = record["kubernetes"]
+            if k == nil or k["container_name"] ~= "envoy" then return 0, ts, record end
+            local line = record["log"]
+            if line == nil then return 0, ts, record end
+            --[[ [ts][thread][level][logger] [source:line] message ]]
+            local lv = string.match(line, "^%[[%d%-: %.]+%]%[%d+%]%[(%a+)%]")
+            if lv == nil or ev[lv] == nil then return 0, ts, record end
+            record["level"] = ev[lv]
+            local m = string.match(line, "^%[[^%]]*%]%[[^%]]*%]%[[^%]]*%]%[[^%]]*%] %[[^%]]*%] (.*)$")
+            if m == nil then m = string.match(line, "^%[[^%]]*%]%[[^%]]*%]%[[^%]]*%]%[[^%]]*%] (.*)$") end
+            if m ~= nil then record["msg"] = m end
+            return 1, ts, record
+          end
