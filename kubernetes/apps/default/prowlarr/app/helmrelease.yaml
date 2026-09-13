@@ -28,6 +28,7 @@ spec:
               PROWLARR__LOG__DBENABLED: "False"
               PROWLARR__LOG__LEVEL: info
               PROWLARR__SERVER__PORT: &port 8080
+              PROWLARR__SERVER__ALLOWEDHOSTS: "prowlarr.exelent.click,prowlarr,prowlarr.default.svc.cluster.local"
               PROWLARR__UPDATE__BRANCH: develop
               # Database
               PROWLARR__POSTGRES__HOST: postgres-prowlarr-rw.database.svc
@@ -50,6 +51,9 @@ spec:
                   httpGet:
                     path: /ping
                     port: *port
+                    httpHeaders:
+                      - name: Host
+                        value: localhost
                   initialDelaySeconds: 0
                   periodSeconds: 10
                   timeoutSeconds: 1

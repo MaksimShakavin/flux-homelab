@@ -27,6 +27,7 @@ spec:
               SONARR__LOG__DBENABLED: "False"
               SONARR__LOG__LEVEL: info
               SONARR__SERVER__PORT: &port 80
+              SONARR__SERVER__ALLOWEDHOSTS: "sonarr.exelent.click,sonarr,sonarr.default.svc.cluster.local"
               SONARR__UPDATE__BRANCH: develop
               TZ: Europe/Warsaw
               # Database
@@ -50,6 +51,9 @@ spec:
                   httpGet:
                     path: /ping
                     port: *port
+                    httpHeaders:
+                      - name: Host
+                        value: localhost
                   initialDelaySeconds: 0
                   periodSeconds: 10
                   timeoutSeconds: 1

@@ -28,6 +28,7 @@ spec:
               RADARR__LOG__DBENABLED: "False"
               RADARR__LOG__LEVEL: info
               RADARR__SERVER__PORT: &port 80
+              RADARR__SERVER__ALLOWEDHOSTS: "radarr.exelent.click,radarr,radarr.default.svc.cluster.local"
               RADARR__UPDATE__BRANCH: develop
               # Database
               RADARR__POSTGRES__HOST: postgres-radarr-rw.database.svc
@@ -50,6 +51,9 @@ spec:
                   httpGet:
                     path: /ping
                     port: *port
+                    httpHeaders:
+                      - name: Host
+                        value: localhost
                   initialDelaySeconds: 0
                   periodSeconds: 10
                   timeoutSeconds: 1
