@@ -134,7 +134,7 @@
         definition:
           services:
             garage:
-              image: dxflrs/garage:v2.3.0
+              image: dxflrs/garage:v2.4.1
               restart: unless-stopped
               # The garage image has no ENTRYPOINT and the binary lives at /garage,
               # so the command must include the full path.
