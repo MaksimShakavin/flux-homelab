@@ -19,7 +19,6 @@ resources:
   - ./flaresolverr/ks.yaml
   - ./radarr/ks.yaml
   - ./sonarr/ks.yaml
-  - ./overseerr/ks.yaml
   - ./seerr/ks.yaml
   - ./mealie/ks.yaml
   - ./paperless/ks.yaml
