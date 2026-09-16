@@ -3,15 +3,5 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources: []
-patches:
-  # pgvector must exist before the app's alembic migration runs.
-  # postInitApplicationSQL runs as superuser in the app database.
-  - target:
-      kind: Cluster
-    patch: |
-      - op: add
-        path: /spec/bootstrap/initdb/postInitApplicationSQL
-        value:
-          - CREATE EXTENSION IF NOT EXISTS vector
-          - GRANT ALL ON SCHEMA public TO securo
-          - ALTER SCHEMA public OWNER TO securo
+# Init-only pgvector/grant SQL dropped with the move to recovery-by-default;
+# on a from-scratch rebuild add it under the initdb override (see component README).
