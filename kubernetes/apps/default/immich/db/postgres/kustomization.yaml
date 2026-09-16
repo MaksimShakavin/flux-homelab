@@ -26,5 +26,16 @@ patches:
               - /usr/lib/postgresql/18/lib
             extension_control_path:
               - /usr/share/postgresql/18/
-      # Init-only extension/grant SQL dropped with the move to recovery-by-default;
-      # on a from-scratch rebuild add it under the initdb override (see component README).
+      # Only needed for the INITIAL bootstrap (fresh initdb, no backup to restore from).
+      # Recovery restores these extensions/grants with the data, so they're not applied on
+      # a DR rebuild. If re-initing from scratch, uncomment under the initdb override (see
+      # component README):
+      # - op: add
+      #   path: /spec/bootstrap/initdb/postInitApplicationSQL
+      #   value:
+      #     - CREATE EXTENSION IF NOT EXISTS vector
+      #     - CREATE EXTENSION IF NOT EXISTS vchord CASCADE
+      #     - CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE
+      #     - ALTER DATABASE immich SET search_path TO "$$user", public
+      #     - GRANT ALL ON SCHEMA public TO immich
+      #     - ALTER SCHEMA public OWNER TO immich

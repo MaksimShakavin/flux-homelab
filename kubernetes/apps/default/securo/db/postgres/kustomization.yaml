@@ -3,5 +3,18 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources: []
-# Init-only pgvector/grant SQL dropped with the move to recovery-by-default;
-# on a from-scratch rebuild add it under the initdb override (see component README).
+# Only needed for the INITIAL bootstrap (fresh initdb, no backup to restore from).
+# pgvector must exist before the app's alembic migration runs; postInitApplicationSQL runs
+# as superuser in the app database. Recovery restores these with the data, so they're not
+# applied on a DR rebuild. If re-initing from scratch, uncomment under the initdb override
+# (see component README):
+# patches:
+#   - target:
+#       kind: Cluster
+#     patch: |
+#       - op: add
+#         path: /spec/bootstrap/initdb/postInitApplicationSQL
+#         value:
+#           - CREATE EXTENSION IF NOT EXISTS vector
+#           - GRANT ALL ON SCHEMA public TO securo
+#           - ALTER SCHEMA public OWNER TO securo
