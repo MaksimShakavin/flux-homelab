@@ -17,7 +17,8 @@ spec:
       main:
         type: cronjob
         cronjob:
-          schedule: "0 * * * *"
+          # recheck is heavy (~1.2h worst case); run every 2h so it fits in its window
+          schedule: "0 */2 * * *"
           timeZone: "Europe/Warsaw"
           concurrencyPolicy: Forbid
           successfulJobsHistory: 1

@@ -7,17 +7,40 @@ catches those re-created torrents and re-uploads them to qBittorrent, keeping th
 season pack up to date automatically. qbit-torrent-files-cleaner is the housekeeping half of that
 flow (see below).
 
-Three hourly CronJobs cooperate around one directory, qBittorrent's finished-torrent
-export dir: `/data/torrents/.torrents/completed` (shared via the NFS `/data` mount).
+Two CronJobs cooperate around qBittorrent's finished-torrent export dir:
+`/data/torrents/.torrents/completed` (shared via the NFS `/data` mount). Both run in
+`Europe/Warsaw` with `concurrencyPolicy: Forbid`:
 
-They run hourly, staggered 5 minutes apart so each finishes before the next starts,
-in `Europe/Warsaw` with `concurrencyPolicy: Forbid`:
+| Runs                | Cron          | App                | Role                                              |
+| ------------------- | ------------- | ------------------ | ------------------------------------------------- |
+| Every 2h, on :00    | `0 */2 * * *` | qbit_manage        | Recheck + tagging. Does not touch the export dir. |
+| Every hour, on :30  | `30 * * * *`  | rutracker-pipeline | The three-step rutracker sequence below.          |
 
-| Runs               | Cron         | App                        | Role                                                        |
-| ------------------ | ------------ | -------------------------- | ---------------------------------------------------------- |
-| Every hour, on :00 | `0 * * * *`  | qbit_manage                | Recheck + tagging. Does not touch the export dir.          |
-| Every hour, on :05 | `5 * * * *`  | qbit-torrent-files-cleaner | Prunes exported `.torrent` files no longer in the client.  |
-| Every hour, on :10 | `10 * * * *` | emonoda                    | `emupdate` refreshes the remaining (live) `.torrent` files. |
+`qbit_manage`'s recheck is heavy (up to ~1.2h on a large cycle), so it runs every 2h
+rather than hourly to fit inside its window.
+
+## The rutracker pipeline
+
+`rutracker-pipeline` is a single CronJob that runs three steps **in a fixed order with
+fail-fast**, using Kubernetes init containers — each step must succeed before the next
+starts:
+
+| Step | Container     | App / task                                       | Role                                                                    |
+| ---- | ------------- | ------------------------------------------------ | ----------------------------------------------------------------------- |
+| 1    | initContainer | emonoda `emupdate`                               | Refreshes the live `.torrent` files from re-created rutracker packs.    |
+| 2    | initContainer | qbit-torrent-files-cleaner `handle_unregistered` | Blocklists tracker-deleted torrents; \*arr redownloads a replacement.   |
+| 3    | main          | qbit-torrent-files-cleaner `monitor_completed`   | Prunes exported `.torrent` files no longer in the client.               |
+
+The order is deliberate and **guarded**: if emonoda fails, neither of the other two runs;
+if handle_unregistered fails, monitor_completed doesn't run. emonoda refreshes the live
+set first; handle_unregistered then removes a dead torrent, whose exported `.torrent`
+becomes an orphan that monitor_completed prunes in the same run. (A later step failing
+re-runs the earlier — idempotent — steps from the top; `backoffLimit` keeps retries small.)
+
+Steps 2 and 3 are two tasks of the
+[same tool](https://github.com/MaksimShakavin/qbit-torrent-files-cleaner). Because the
+whole sequence runs in one pod, emonoda mounts qBittorrent's ReadWriteOnce config PVC and
+the job uses `podAffinity` to co-locate on qBittorrent's node.
 
 ## Why qbit-torrent-files-cleaner is needed
 
@@ -42,4 +65,5 @@ torrent.
 ## Manifests
 
 - `app/` — qBittorrent (defines `FinishedTorrentExportDir`)
-- `tools/qbit_manage/`, `tools/qbit-torrent-files-cleaner/`, `tools/emonoda/` — the three CronJobs
+- `tools/qbit_manage/` — the recheck/tagging CronJob
+- `tools/rutracker-pipeline/` — the combined emonoda → handle_unregistered → monitor_completed CronJob

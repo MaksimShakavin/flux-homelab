@@ -3,7 +3,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: qbittorrent-tools-emonoda
+  name: rutracker-pipeline
 spec:
   interval: 15m
   layerSelector:

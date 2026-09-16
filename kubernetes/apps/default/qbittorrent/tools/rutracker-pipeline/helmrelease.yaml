@@ -1,0 +1,123 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: rutracker-pipeline
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: rutracker-pipeline
+  interval: 1h
+  dependsOn:
+    - name: qbittorrent
+  values:
+    controllers:
+      main:
+        type: cronjob
+        cronjob:
+          # single hourly run of the whole sequence: emonoda -> handle_unregistered -> monitor_completed
+          schedule: "30 * * * *"
+          timeZone: "Europe/Warsaw"
+          concurrencyPolicy: Forbid
+          successfulJobsHistory: 1
+          failedJobsHistory: 1
+          # a later step failing re-runs the (idempotent) init steps from the top; keep retries small
+          backoffLimit: 2
+        # initContainers run in declared (alphabetical) order, fail-fast: if emonoda fails
+        # neither of the next two runs; if handle_unregistered fails, monitor_completed doesn't run.
+        initContainers:
+          01-emonoda:
+            image:
+              repository: ghcr.io/maksimshakavin/emonoda
+              tag: rolling@sha256:325f38e419a8ef6daac00b1b0c83ab435fdc4058bdd20ea22c902b99e093c0e6
+            command:
+              - emupdate
+            args:
+              - --config
+              - /app/config.yaml
+            resources:
+              requests:
+                cpu: 25m
+              limits:
+                memory: 256M
+          02-handle-unregistered:
+            image:
+              repository: ghcr.io/maksimshakavin/qbit-torrent-files-cleaner
+              tag: 0.3.1@sha256:95aced7765623e83ef2a903c6532e8def7152a4b3fc1d5a85af14435ffc45b81
+            command:
+              - qbit-torrent-files-cleaner
+            args:
+              - --config
+              - /config/config.yaml
+        containers:
+          03-monitor-completed:
+            image:
+              repository: ghcr.io/maksimshakavin/qbit-torrent-files-cleaner
+              tag: 0.3.1@sha256:95aced7765623e83ef2a903c6532e8def7152a4b3fc1d5a85af14435ffc45b81
+            command:
+              - qbit-torrent-files-cleaner
+            args:
+              - --config
+              - /config/config.yaml
+        pod:
+          restartPolicy: OnFailure
+          # emonoda mounts qBittorrent's RWO config PVC, so co-locate on its node
+          affinity:
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchExpressions:
+                      - key: app.kubernetes.io/name
+                        operator: In
+                        values: ["qbittorrent"]
+                  topologyKey: kubernetes.io/hostname
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    persistence:
+      # emonoda reads qBittorrent's config dir (BT_backup) to update the live .torrent files
+      qbittorrent:
+        existingClaim: qbittorrent
+        advancedMounts:
+          main:
+            01-emonoda:
+              - path: /config
+      config-emonoda:
+        type: secret
+        name: qbtools-emonoda-secret
+        advancedMounts:
+          main:
+            01-emonoda:
+              - path: /app/config.yaml
+                subPath: config.yaml
+                readOnly: true
+      config-unregistered:
+        type: secret
+        name: qbit-unregistered-handler-secret
+        advancedMounts:
+          main:
+            02-handle-unregistered:
+              - path: /config/config.yaml
+                subPath: config.yaml
+      config-monitor:
+        type: secret
+        name: qbit-torrent-files-cleaner-secret
+        advancedMounts:
+          main:
+            03-monitor-completed:
+              - path: /config/config.yaml
+                subPath: config.yaml
+      downloads:
+        type: nfs
+        server: "nas.exelent.click"
+        path: "/volume1/kubernetes"
+        advancedMounts:
+          main:
+            01-emonoda:
+              - path: /data
+            03-monitor-completed:
+              - path: /data
