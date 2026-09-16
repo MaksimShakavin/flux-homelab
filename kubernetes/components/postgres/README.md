@@ -8,7 +8,7 @@ retired CrunchyData PGO setup (`components/postgress`). Each consuming app gets 
 
 | File | Purpose |
 | --- | --- |
-| `cluster.yaml` | The CNPG `Cluster` CR — `postgres-${APP}` in `database`, `initdb` bootstrap, barman-cloud plugin as WAL archiver. |
+| `cluster.yaml` | The CNPG `Cluster` CR — `postgres-${APP}` in `database`, `recovery` bootstrap (auto-restore from Garage), barman-cloud plugin as WAL archiver. |
 | `objectstore.yaml` | `ObjectStore` CR (`postgres-${APP}`) — barman-cloud plugin backup config → Garage `s3://cnpg/${APP}`. |
 | `scheduledbackup.yaml` | Daily `ScheduledBackup` (`postgres-${APP}-daily`), `method: plugin`. |
 | `externalsecret.yaml` | Barman S3 creds `postgres-${APP}-backup` (pulled from the 1Password `garage-buckets` item). |
@@ -33,12 +33,46 @@ Set these in the consuming Flux Kustomization's `postBuild.substitute`.
 
 ## Bootstrap behavior
 
-The `Cluster` bootstraps with plain `initdb` — it creates a database and owner role both named `${APP}`,
-and CNPG generates that role's password into the `postgres-${APP}-app` secret. This is an
-empty-cluster bootstrap, not a restore; data is loaded separately (e.g. the Crunchy→CNPG cutover used a
-one-shot `pg_dump | pg_restore`, see `docs/cnpg-migration-runbook.md`).
+The `Cluster` bootstraps with **`recovery`** — on a fresh cluster it restores the base backup + replays
+WAL from that app's Garage object store (`externalClusters` → barman-cloud plugin, `serverName: ${APP}`).
+This makes disaster recovery automatic: if the whole k8s cluster is rebuilt, Flux re-applies these
+manifests and **every** database restores itself from Garage with no manual step.
 
-Adding a net-new app is just:
+CNPG only honors `bootstrap` when PGDATA is empty (the very first init of a fresh cluster), so this is
+safe for running clusters — the field is a no-op on them (no restart, no data touched), and a single
+replaced instance re-clones from the primary via `pg_basebackup`, never bootstrap. Recovery therefore
+only fires on a truly fresh cluster (all PVCs gone). Recovery starts a new timeline, so post-restore
+WAL never collides with the backed-up WAL.
+
+### Standing up a brand-new app (no backup exists yet)
+
+Recovery has nothing to restore from on day one, so **override the bootstrap to `initdb`** until the
+first backup lands. Add this to the app's `<app>-postgres` Flux Kustomization (the `ks.yaml` shown
+below), then commit:
+
+```yaml
+  # under spec: of the <app>-postgres Kustomization
+  patches:
+    - target:
+        kind: Cluster
+        name: postgres-<app>
+      patch: |
+        - op: remove
+          path: /spec/bootstrap/recovery
+        - op: remove
+          path: /spec/externalClusters
+        - op: add
+          path: /spec/bootstrap/initdb
+          value: { database: <app>, owner: <app> }
+```
+
+`initdb` creates a database and owner role both named `${APP}`, and CNPG generates that role's password
+into `postgres-${APP}-app`. Once the first daily `ScheduledBackup` completes (or trigger an on-demand
+`Backup`, see below), **delete this `patches:` block** — the cluster reverts to the recovery default.
+Removing it is a no-op on the now-initialized cluster (bootstrap is ignored post-init), so it just
+restores DR-auto-restore for the next rebuild.
+
+Adding the net-new app Kustomization itself:
 
 ```yaml
 ---
@@ -76,9 +110,11 @@ spec:
 ```
 
 The `db/postgres/app/kustomization.yaml` alongside it is `resources: []` — the component supplies
-everything. To run extra SQL at bootstrap (e.g. an extension), patch the `Cluster`'s
-`bootstrap.initdb.postInitApplicationSQL` in that file; target `kind: Cluster` with **no name** (the patch
-runs before Flux substitutes `${APP}`, so the name is still the literal `postgres-${APP}`).
+everything. To run extra SQL at first init (e.g. an extension), add `bootstrap.initdb.postInitApplicationSQL`
+to the `initdb` override above — it only applies while the new-app override is in place, since the recovery
+default has no `initdb`. When patching from the app's `db/postgres/app` kustomization instead of the Flux
+Kustomization, target `kind: Cluster` with **no name** (the patch runs before Flux substitutes `${APP}`,
+so the name is still the literal `postgres-${APP}`).
 
 ## Backups
 

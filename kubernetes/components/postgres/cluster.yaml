@@ -26,9 +26,15 @@ spec:
       max_wal_size: "5GB"
       synchronous_commit: "on"
   bootstrap:
-    initdb:
-      database: ${APP}
-      owner: ${APP}
+    recovery:
+      source: postgres-${APP}
+  externalClusters:
+    - name: postgres-${APP}
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: postgres-${APP}
+          serverName: ${APP}
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true
