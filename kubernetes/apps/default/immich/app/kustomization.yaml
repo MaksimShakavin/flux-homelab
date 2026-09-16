@@ -6,6 +6,7 @@ resources:
   - ./configmap.yaml
   - ./helmrelease.yaml
   - ./externalsecret.yaml
+  - ./hpa.yaml
   - ./ocirepository.yaml
   - ./resourceclaimtemplate.yaml
 configMapGenerator:
