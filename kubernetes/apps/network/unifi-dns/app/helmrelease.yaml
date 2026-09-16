@@ -37,6 +37,8 @@ spec:
             port: http-webhook
           initialDelaySeconds: 10
           timeoutSeconds: 5
+    extraArgs:
+      - --annotation-prefix=external-dns.alpha.kubernetes.io/
     triggerLoopOnEvent: true
     policy: sync
     sources:
