@@ -92,6 +92,9 @@ spec:
                 requestHeaderModifier:
                   remove:
                     - Range
+                  set: &pipeline # Plex drops idle keep-alives after 20s unless set, so Envoy owns the pool
+                    - name: X-Plex-Http-Pipeline
+                      value: infinite
             matches:
               - path:
                   type: PathPrefix
@@ -99,6 +102,10 @@ spec:
           - backendRefs:
               - identifier: app
                 port: *port
+            filters:
+              - type: RequestHeaderModifier
+                requestHeaderModifier:
+                  set: *pipeline
         annotations:
           gatus.home-operations.com/endpoint: |-
             path: /identity
