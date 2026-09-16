@@ -23,6 +23,7 @@ metadata:
   name: garage
 spec:
   allowCrossNamespaceImport: true
+  folder: storage
   instanceSelector:
     matchLabels:
       grafana.internal/instance: grafana
