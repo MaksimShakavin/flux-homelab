@@ -24,3 +24,15 @@ spec:
     spegel:
       containerdSock: /run/containerd/containerd.sock
       containerdRegistryConfigPath: /etc/cri/conf.d/hosts
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: GrafanaDashboard
+              name: spegel
+            patch: |
+              - op: add
+                path: /spec/datasources
+                value:
+                  - datasourceName: prometheus
+                    inputName: DS_PROMETHEUS
