@@ -26,7 +26,7 @@ spec:
           main:
             image:
               repository: ghcr.io/maksimshakavin/qbit-torrent-files-cleaner
-              tag: 0.2.0@sha256:4363aa7a11655ee517326fd27be8064d16d53075156c472087b6fe7b8fb8f367
+              tag: 0.3.1@sha256:95aced7765623e83ef2a903c6532e8def7152a4b3fc1d5a85af14435ffc45b81
             command:
               - qbit-torrent-files-cleaner
             args:
