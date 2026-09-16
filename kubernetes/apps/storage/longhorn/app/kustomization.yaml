@@ -7,4 +7,5 @@ resources:
   - ./snapshot.yaml
   - ./local.yaml
   - ./httproute.yaml
+  - ./networkpolicy.yaml
   - ./ocirepository.yaml
