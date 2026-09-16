@@ -31,12 +31,6 @@ module "secret_authentik" {
   item   = "authentik"
 }
 
-module "secret_minio" {
-  source = "github.com/bjw-s/terraform-1password-item?ref=main"
-  vault  = "homelab"
-  item   = "minio"
-}
-
 module "secret_portainer" {
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
   vault  = "homelab"

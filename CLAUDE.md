@@ -11,7 +11,7 @@ This is a Kubernetes homelab cluster managed through GitOps using FluxCD. The in
 - **Talos Linux**: Immutable Kubernetes-focused Linux distribution running on all cluster nodes
 - **FluxCD**: GitOps operator that syncs Kubernetes manifests from this repository to the cluster
 - **Proxmox**: Virtualization platform hosting the Talos VMs
-- **Terraform**: Infrastructure as Code for provisioning Proxmox VMs, MinIO buckets, UniFi network configuration, and Authentik
+- **Terraform**: Infrastructure as Code for provisioning Proxmox VMs, Garage buckets, UniFi network configuration, and Authentik
 - **talhelper**: Helper tool for generating Talos machine configurations from `talconfig.yaml`
 - **SOPS**: Secret encryption using age keys; secrets are encrypted before committing to Git
 - **1Password Connect**: Secrets management for Kubernetes via External Secrets Operator
@@ -25,7 +25,7 @@ This is a Kubernetes homelab cluster managed through GitOps using FluxCD. The in
   - `bootstrap/` - Scripts and Talos configuration for cluster bootstrapping
   - `flux/` - FluxCD configuration and cluster-level Kustomizations
 - `infrastructure/` - IaC configuration outside of Kubernetes
-  - `terraform/` - Terraform modules for Proxmox, MinIO, UniFi, Authentik
+  - `terraform/` - Terraform modules for Proxmox, Garage, Synology, UniFi, Authentik
   - `ansible/` - Ansible playbooks for Proxmox host configuration
 - `.taskfiles/` - Task-specific Taskfile includes for go-task
 - `docs/` - Documentation for setup, prerequisites, and how-to guides
@@ -150,8 +150,8 @@ kubectl -n storage get clusterrepository nas
 ```
 
 > Legacy note: PVCs were previously backed up by VolSync (restic, per-app MinIO buckets at
-> `s3://192.168.20.5:9000/<app>`). VolSync was decommissioned; the old restic buckets remain in MinIO
-> as a cold archive (readable by reinstalling VolSync). MinIO creds are in the 1Password `minio` item.
+> `s3://192.168.20.5:9000/<app>`). Both VolSync and MinIO have been decommissioned; object storage on
+> the NAS is now served entirely by Garage.
 
 ### Bootstrap Operations
 
@@ -225,7 +225,8 @@ SOPS will decrypt the file in your editor and re-encrypt on save.
 Terraform modules are located in `infrastructure/terraform/`:
 
 - `proxmox/` - Proxmox VM provisioning (not currently used; VMs created manually)
-- `minio/` - MinIO bucket creation
+- `garage/` - Garage cluster layout, bucket, and key creation
+- `synology/` - Synology NAS containers (Garage, Portainer agent, node exporter)
 - `unifi/` - UniFi network configuration (VLANs, firewall, DNS, clients, etc.)
 - `authentik/` - Authentik SSO configuration
 
@@ -246,7 +247,7 @@ terraform apply
 
 ### Terraform State
 
-Terraform state is stored in MinIO S3-compatible storage. The backend configuration is commented out by default in `main.tf` files. After MinIO buckets are created, uncomment the backend block and run `terraform init -migrate-state` to migrate local state to MinIO.
+Terraform state is stored in the `terraform` bucket on Garage (S3-compatible). On a fresh Garage, bootstrap the garage module with local state (`tofu init -backend=false && tofu apply`) to create the bucket and keys, then run `tofu init -migrate-state` to move state into Garage. Backend credentials come from the `terraform` bucket key published to the `garage-buckets` 1Password item.
 
 ## FluxCD Architecture
 
@@ -286,7 +287,7 @@ flux resume kustomization <name> -n flux-system
 - **Kubernetes Network**: 192.168.20.0/24 (nodes and services)
   - Node IPs: 192.168.20.51-53
   - VIP: 192.168.20.60
-  - MinIO: 192.168.20.5:9000
+  - Garage (S3): 192.168.20.5:3900
 - **DNS**: Pi-hole on Raspberry Pi (192.168.20.1)
 - **VLANs**: Configured via Terraform in `infrastructure/terraform/unifi/vlans.tf`
 
@@ -296,9 +297,8 @@ flux resume kustomization <name> -n flux-system
   - Each node has two disk configurations: nvme (`/var/lib/longhorn`) and ssd (`/var/mnt/ssd/longhorn`)
   - Tagged with `nvme` and `ssd` respectively for scheduling constraints
 - **Kopiur**: PVC backup/restore via Kopia to a shared repository on Garage S3 (see Kopiur Operations)
-- **Garage**: S3-compatible object storage for backups and app buckets (`192.168.20.5:3900`)
-- **MinIO**: S3-compatible object storage on NAS (Synology RS422+); hosts Terraform state and the
-  legacy VolSync restic cold-archive buckets
+- **Garage**: S3-compatible object storage on the NAS (Synology RS422+) at `192.168.20.5:3900`; hosts
+  Terraform state, Kopiur backups, CNPG barman backups, and app buckets (static-content, etc.)
 
 ## Important Notes
 

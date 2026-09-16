@@ -82,15 +82,18 @@ Delete information about rest nodes in /etc/pve/nodes
 
     ```
 
-### Remove minio bucket
+### Remove a Garage bucket
 
-1. Authenticate to minio
+Buckets are normally managed via the `infrastructure/terraform/garage` module. To
+remove one ad-hoc with the `mc` client:
+
+1. Authenticate to Garage (creds live in the 1Password `garage-buckets` item)
     ```shell
-    mc alias set myminio http://192.168.20.5:9000 [USER] [PASSWORD]
+    mc alias set garage https://garage-s3.exelent.click [ACCESS_KEY] [SECRET_KEY]
     ```
 2. Remove the bucket
     ```shell
-    mc rb --force --dangerous myminio/mybucket
+    mc rb --force --dangerous garage/mybucket
     ```
 
 

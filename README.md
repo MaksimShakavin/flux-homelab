@@ -44,7 +44,7 @@ exploring Kubernetes and Infrastructure as Code (IaC) practices using tools like
    - [UDM](docs/prerequisites.md#3-set-up-udm)
    - [Discord](docs/prerequisites.md#4-get-discord-token)
    - [PiHole](docs/prerequisites.md#5-set-up-pihole-and-generate-token-for-homepage)
-   - [NAS and Minio](docs/prerequisites.md#6-nas-set-up)
+   - [NAS and Garage](docs/prerequisites.md#6-nas-set-up)
 2. [Setup Guide](docs/set-up.md)
    - [Install and Configure Proxmox](docs/set-up.md#install-and-configure-proxmox)
    - [Create and Install Talos Images](docs/set-up.md#create-and-install-talos-images)

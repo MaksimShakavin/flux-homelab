@@ -63,9 +63,8 @@ The 1Password vault should contain the following items:
 
 | Item name                 | Fields                                          | Description                                               |
 |---------------------------|-------------------------------------------------|-----------------------------------------------------------|
-| mino                      | MINIO_ROOT_USER                                 |                                                           |
-|                           | MINO_ROOT_PASSWORD                              |                                                           |
-|                           | VOLSYNC_RESTIC_PASSWORD                         | rectic repo encryption key                                |
+| garage                    | rpc_secret                                      | Garage inter-node RPC secret                              |
+|                           | admin_token                                     | Garage admin API token                                    |
 | cloudnative-pg            | POSTGRESS_SUPER_USER                            |                                                           |
 |                           | POSTGRESS_SUPER_PASS                            |                                                           |
 | cloudflare                | CLOUDFLARE_ACCOUNT_TAG                          |                                                           |
@@ -214,14 +213,17 @@ https://stoufiler.github.io/isp/bypass-livebox/
 
 ### 5. NAS set up
 
-#### Install and Configure Minio on NAS
+#### Install and Configure Garage on NAS
 
 1. **Install Synology Container Manager:**
-   1. Install the `Synology Container Manager` package from the Package Center.
-   2. Open the `Synology Container Manager` and run a Docker container using the `minio/minio` image. Ensure that port
-      `9000` is forwarded.
-2. **Create Minio Buckets:**
-   - Use [terraform module](../infrastructure/terraform/minio) to create necessary buckets and users
+   - Install the `Synology Container Manager` package from the Package Center.
+2. **Deploy Garage:**
+   - The Garage container (config, folders, S3 on `3900` and admin on `3903`) is provisioned by the
+     [synology terraform module](../infrastructure/terraform/synology) (`container_garage.tofu`).
+3. **Create Garage Buckets:**
+   - Use the [garage terraform module](../infrastructure/terraform/garage) to assign the cluster layout
+     and create the necessary buckets and keys. Bucket credentials are auto-published to the
+     `garage-buckets` 1Password item.
 
 #### Configure NFS Connections
 
@@ -236,8 +238,8 @@ https://stoufiler.github.io/isp/bypass-livebox/
 1. Go to Config Panel -> Login Portal -> Advanced -> Reverse proxy and add:
    - `proxmox.exelent.click` -> `https 192.168.0.41:8006` with WebSocket
    - `sprut.exelent.click` -> `http 192.168.20.3:7777` with WebSocket
-   - `minio.exelent.click` -> `http localhost:9090`
-   - `minio-content.exelent.click` -> `http localhost:9090`
+   - `garage-s3.exelent.click` -> `http localhost:3900`
+   - `garage-admin.exelent.click` -> `http localhost:3903`
    - `unifi.exelent.click` -> `https 192.168.0.1:9090` with WebSocket
 2. Click on Certificates and upload tls.key and tls.crt from Onepassword
 3. Click Settings and apply the certificate to added domains
