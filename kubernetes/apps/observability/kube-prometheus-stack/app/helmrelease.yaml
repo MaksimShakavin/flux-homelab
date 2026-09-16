@@ -104,7 +104,25 @@ spec:
         folder: observability
         matchLabels:
           grafana.internal/instance: grafana
+    defaultRules:
+      disabled:
+        NodeDiskIOSaturation: true
     additionalPrometheusRulesMap:
+      node-diskio-rules:
+        groups:
+          - name: node-diskio
+            rules:
+              - alert: NodeDiskIOSaturation
+                annotations:
+                  summary: Disk IO queue is critically high on {{ $labels.instance }} ({{ $labels.device }}).
+                  description: >-
+                    Disk IO queue (aqu-sq) on {{ $labels.device }} at {{ $labels.instance }} has held
+                    above 100 (value {{ printf "%.1f" $value }}) for 15m, indicating severe saturation.
+                expr: |-
+                  rate(node_disk_io_time_weighted_seconds_total{job="node-exporter", device=~"(/dev/)?(mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|md.+|dasd.+)"}[5m]) > 100
+                for: 15m
+                labels:
+                  severity: warning
       dockerhub-rules:
         groups:
           - name: dockerhub
