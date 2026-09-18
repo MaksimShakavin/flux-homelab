@@ -203,7 +203,7 @@
         definition:
           services:
             portainer-agent:
-              image: portainer/agent:2.45.0
+              image: portainer/agent:2.45.1
               restart: unless-stopped
               ports:
                 - "9001:9001"
