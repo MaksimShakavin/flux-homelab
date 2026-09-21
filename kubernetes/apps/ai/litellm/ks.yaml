@@ -60,23 +60,6 @@ spec:
     namespace: flux-system
   targetNamespace: database
   wait: true
-  # First-init override: no barman backup exists yet, so bootstrap fresh with
-  # initdb instead of the recovery default. Remove this block once the first
-  # ScheduledBackup lands (the cluster then reverts to recovery for DR restore).
-  patches:
-    # Target by kind only: Flux applies spec.patches before postBuild envsubst,
-    # so the Cluster name is still the literal postgres-${APP} here. There is
-    # exactly one Cluster in this build, so kind alone matches unambiguously.
-    - target:
-        kind: Cluster
-      patch: |
-        - op: remove
-          path: /spec/bootstrap/recovery
-        - op: remove
-          path: /spec/externalClusters
-        - op: add
-          path: /spec/bootstrap/initdb
-          value: { database: litellm, owner: litellm }
   postBuild:
     substitute:
       APP: litellm

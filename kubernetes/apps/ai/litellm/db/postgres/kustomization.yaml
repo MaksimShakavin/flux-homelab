@@ -3,6 +3,25 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources: []
-# LiteLLM (Prisma) creates its own schema on first start — no bootstrap extensions
-# needed. Recovery restores the data on a DR rebuild. If re-initing from scratch and
-# the app ever needs an extension, add it via the initdb override (see component README).
+# First-init override: this brand-new cluster has no barman backup to recover from,
+# so bootstrap fresh with initdb instead of the component's recovery default. The patch
+# lives here (a native kustomize patch), not in the Flux Kustomization's spec.patches,
+# so kustomize applies it to the component's Cluster within a single build. Target by
+# kind only — the patch runs before Flux substitutes ${APP}, so the name is still the
+# literal postgres-${APP}; there is exactly one Cluster, so kind alone matches.
+#
+# LiteLLM (Prisma) builds its own schema on first start — no bootstrap extensions needed.
+# Remove this whole `patches:` block once the first ScheduledBackup lands: the cluster
+# reverts to the recovery default (a no-op on the initialized cluster) and DR auto-restore
+# is restored for the next rebuild.
+patches:
+  - target:
+      kind: Cluster
+    patch: |
+      - op: remove
+        path: /spec/bootstrap/recovery
+      - op: remove
+        path: /spec/externalClusters
+      - op: add
+        path: /spec/bootstrap/initdb
+        value: { database: litellm, owner: litellm }
