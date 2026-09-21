@@ -127,3 +127,19 @@ module "oauth2-securo" {
   client_secret      = module.secret_securo.fields["OIDC_CLIENT_SECRET"]
   redirect_uris      = ["https://securo.exelent.click/api/auth/oidc/callback"]
 }
+
+module "oauth2-litellm" {
+  source             = "./oauth2_application"
+  name               = "LiteLLM"
+  icon_url           = "https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/litellm.svg"
+  launch_url         = "https://litellm.exelent.click"
+  description        = "LLM gateway"
+  newtab             = true
+  group              = "Infrastructure"
+  auth_groups        = [authentik_group.infrastructure.id]
+  authorization_flow = resource.authentik_flow.provider-authorization-implicit-consent.uuid
+  invalidation_flow  = data.authentik_flow.default-provider-invalidation-flow.id
+  client_id          = module.secret_litellm.fields["OIDC_CLIENT_ID"]
+  client_secret      = module.secret_litellm.fields["OIDC_CLIENT_SECRET"]
+  redirect_uris      = ["https://litellm.exelent.click/sso/callback"]
+}

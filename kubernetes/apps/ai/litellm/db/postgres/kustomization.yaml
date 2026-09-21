@@ -1,0 +1,8 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources: []
+# LiteLLM (Prisma) creates its own schema on first start — no bootstrap extensions
+# needed. Recovery restores the data on a DR rebuild. If re-initing from scratch and
+# the app ever needs an extension, add it via the initdb override (see component README).

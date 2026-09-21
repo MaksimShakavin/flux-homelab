@@ -85,6 +85,12 @@ module "secret_securo" {
   item   = "securo"
 }
 
+module "secret_litellm" {
+  source = "github.com/bjw-s/terraform-1password-item?ref=main"
+  vault  = "homelab"
+  item   = "litellm"
+}
+
 provider "authentik" {
   url   = "https://sso.exelent.click"
   token = module.secret_authentik.fields["AUTHENTIK_TOKEN"]
