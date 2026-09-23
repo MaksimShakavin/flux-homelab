@@ -10,6 +10,7 @@ spec:
   replicas: 1
   generalSettings:
     health_check_endpoint: /v1/health
+    disable_env_credential_login: true
   routerSettings:
     routing_strategy: simple-shuffle
     redis_host: os.environ/REDIS_HOST
@@ -73,6 +74,8 @@ spec:
       value: https://sso.exelent.click/application/o/userinfo/
     - name: GENERIC_SCOPE
       value: openid email profile
+    - name: AUTO_REDIRECT_UI_LOGIN_TO_SSO
+      value: "true"
   resources:
     requests:
       cpu: 100m
