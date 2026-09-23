@@ -33,6 +33,10 @@ resource "authentik_provider_oauth2" "oauth2-application" {
   invalidation_flow  = var.invalidation_flow
   signing_key        = data.authentik_certificate_key_pair.generated.id
   client_type        = var.client_type
+  # authentik 2026.8 added grant_types; API/Terraform-created providers default to
+  # an empty list (rejecting every login), so name them explicitly. offline_access
+  # is in the scope mappings below, so refresh_token belongs here too.
+  grant_types        = ["authorization_code", "refresh_token"]
   property_mappings  = concat(data.authentik_property_mapping_provider_scope.scopes.ids, var.additional_property_mappings)
   allowed_redirect_uris = [
     for url in var.redirect_uris :
