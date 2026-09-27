@@ -30,7 +30,7 @@ spec:
           01-emonoda:
             image:
               repository: ghcr.io/maksimshakavin/emonoda
-              tag: rolling@sha256:325f38e419a8ef6daac00b1b0c83ab435fdc4058bdd20ea22c902b99e093c0e6
+              tag: rolling@sha256:77c3230c5d1b7232c05617bd894b824cd6e8df6983de1f8a18f42b9d98a70656
             command:
               - emupdate
             args:
