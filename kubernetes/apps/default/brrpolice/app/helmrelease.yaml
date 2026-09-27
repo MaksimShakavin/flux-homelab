@@ -21,6 +21,7 @@ spec:
               BRRPOLICE_HTTP__PORT: &port 80
               BRRPOLICE_LOGGING__LEVEL: info
               BRRPOLICE_QBITTORRENT__BASE_URL: http://qbittorrent.default.svc.cluster.local:8080
+              TMPDIR: /tmp
               TZ: "Europe/Warsaw"
             probes:
               liveness:
@@ -68,3 +69,7 @@ spec:
     persistence:
       data:
         existingClaim: "{{ .Release.Name }}"
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
