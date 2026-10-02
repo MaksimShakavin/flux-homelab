@@ -97,6 +97,7 @@ spec:
               TZ: "Europe/Warsaw"
               QBT_WEBUI_PORT: &port 8080
               QBT_TORRENTING_PORT: 58462
+              QBT_BitTorrent__Session__InterfaceName: tun0
               QBT_Preferences__Downloads__SavePath: /data/torrents
               QBT_Preferences__Downloads__TorrentExportDir: /data/torrents/.torrents
               QBT_Preferences__Downloads__FinishedTorrentExportDir: /data/torrents/.torrents/completed
