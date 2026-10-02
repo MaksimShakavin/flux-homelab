@@ -38,6 +38,8 @@ spec:
               FIREWALL_OUTBOUND_SUBNETS: "10.69.0.0/16,10.96.0.0/16"
               HEALTH_SERVER_ADDRESS: ":9999"
               VERSION_INFORMATION: "off"
+              PUID: "0"
+              PGID: "0"
             probes:
               startup:
                 enabled: true
@@ -68,7 +70,7 @@ spec:
               runAsNonRoot: false
               allowPrivilegeEscalation: false
               capabilities:
-                add: [ "NET_ADMIN" ]
+                add: [ "NET_ADMIN", "CHOWN" ]
                 drop: [ "ALL" ]
             resources:
               requests:
