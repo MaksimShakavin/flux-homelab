@@ -1,0 +1,31 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: qbittorrent-rules
+spec:
+  groups:
+    - name: qbittorrent.rules
+      rules:
+        - alert: QbittorrentGluetunRestarting
+          expr: |-
+            increase(kube_pod_container_status_restarts_total{namespace="default", container="gluetun"}[15m]) > 3
+          for: 5m
+          annotations:
+            summary: >-
+              qBittorrent's Gluetun VPN sidecar has restarted repeatedly in the last 15m;
+              the ProtonVPN tunnel may be unstable (qBittorrent egress is fail-closed while it is down)
+          labels:
+            severity: warning
+
+        - alert: QbittorrentGluetunCrashLooping
+          expr: |-
+            kube_pod_container_status_waiting_reason{namespace="default", container="gluetun", reason="CrashLoopBackOff"} == 1
+          for: 15m
+          annotations:
+            summary: >-
+              qBittorrent's Gluetun VPN sidecar is in CrashLoopBackOff; the kill switch is holding
+              qBittorrent offline until the tunnel recovers
+          labels:
+            severity: critical
