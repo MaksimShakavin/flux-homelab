@@ -210,6 +210,13 @@ spec:
         path: /volume1/kubernetes
         globalMounts:
           - path: /data
+      gluetun-tmp:
+        type: emptyDir
+        medium: Memory
+        advancedMounts:
+          qbittorrent:
+            gluetun:
+              - path: /tmp/gluetun
       gluetun-auth:
         type: secret
         name: gluetun-secret
