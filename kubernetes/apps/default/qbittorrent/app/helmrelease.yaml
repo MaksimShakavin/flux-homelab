@@ -29,7 +29,7 @@ spec:
                   secretKeyRef:
                     name: gluetun-secret
                     key: WIREGUARD_PRIVATE_KEY
-              SERVER_COUNTRIES: Russian Federation
+              SERVER_COUNTRIES: "Russian Federation,Finland,Sweden,Poland"
               PORT_FORWARD_ONLY: "on"
               VPN_PORT_FORWARDING: "on"
               HTTP_CONTROL_SERVER_ADDRESS: "127.0.0.1:8000"
