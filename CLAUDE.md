@@ -12,8 +12,8 @@ This is a Kubernetes homelab cluster managed through GitOps using FluxCD. The in
 - **FluxCD**: GitOps operator that syncs Kubernetes manifests from this repository to the cluster
 - **Proxmox**: Virtualization platform hosting the Talos VMs
 - **Terraform**: Infrastructure as Code for provisioning Proxmox VMs, Garage buckets, UniFi network configuration, and Authentik
-- **talhelper**: Helper tool for generating Talos machine configurations from `talconfig.yaml`
-- **SOPS**: Secret encryption using age keys; secrets are encrypted before committing to Git
+- **talosctl + minijinja**: Talos machine configs are rendered from a `machineconfig.yaml.j2` template (minijinja-cli) with per-node patch overlays, composed with plain `talosctl machineconfig patch`
+- **SOPS**: Secret encryption using age keys; secrets are encrypted before committing to Git (Kubernetes secrets only; Talos secrets live in 1Password)
 - **1Password Connect**: Secrets management for Kubernetes via External Secrets Operator
 
 ## Architecture
@@ -34,16 +34,16 @@ This is a Kubernetes homelab cluster managed through GitOps using FluxCD. The in
 
 1. Proxmox hosts are configured via Ansible (`task ansible:proxmox-setup`)
 2. Talos VMs are provisioned via Terraform
-3. Talos cluster is bootstrapped via talhelper (`task bootstrap:talos`)
+3. Talos cluster is bootstrapped via plain talosctl (`task bootstrap:talos`)
 4. FluxCD and core apps are installed (`task bootstrap:apps`)
 5. FluxCD continuously syncs applications from `kubernetes/apps/` to the cluster
 
 ### Secrets Management
 
 - **SOPS encryption**: `.sops.yaml` defines encryption rules using age key
-  - Talos secrets: `talos/*.sops.yaml` files
   - Kubernetes secrets: `kubernetes/**/*.sops.yaml` files (encrypted on `data` and `stringData` fields only)
   - Age key file: `age.key` (gitignored, required for decryption)
+- **Talos secrets (1Password)**: the machineconfig's CA keypairs and tokens are `op://homelab/talos/<FIELD>` references, injected at render time by `op inject`. Requires an active `op signin` session. (`talsecret.sops.yaml` is retained only as an encrypted DR backup of the bundle.)
 - **1Password Connect**: Used as the upstream secrets store for Kubernetes via External Secrets Operator
   - Temporary Connect server runs locally via Docker Compose during initial setup
   - After cluster bootstrap, 1Password Connect runs inside the cluster
@@ -89,7 +89,7 @@ task kubernetes:upgrade-arc
 ### Talos Operations
 
 ```sh
-# Generate Talos configuration from talconfig.yaml
+# Render Talos machine configs for all nodes (minijinja + op inject + talosctl patch)
 task talos:generate-config
 
 # Apply Talos config to a specific node
@@ -302,9 +302,12 @@ flux resume kustomization <name> -n flux-system
 
 ## Important Notes
 
-- **Talos Configuration**: Generated via talhelper from `kubernetes/bootstrap/talos/talconfig.yaml`
-  - Do not manually edit files in `clusterconfig/` directory - they are generated
-  - Make changes in `talconfig.yaml` and regenerate with `task talos:generate-config`
+- **Talos Configuration**: Rendered from templates under `kubernetes/bootstrap/talos/`
+  - `machineconfig.yaml.j2` — shared base (minijinja template; secrets as `op://homelab/talos/...` refs)
+  - `talenv.yaml` — minijinja data context (Talos/Kubernetes versions, schematic; also the Renovate anchor)
+  - `nodes/k8s-control-{1,2,3}.yaml` — per-node patch overlays (hostname, NIC-by-MAC, static IP; node-3 carries the VIP)
+  - Do not manually edit files in `clusterconfig/` directory - they are rendered output (gitignored)
+  - Make changes in the templates and regenerate with `task talos:generate-config`
 - **Renovate**: Automated dependency updates via Renovate bot
   - Updates Docker images, Helm charts, and Terraform providers
   - PRs are automatically created for review

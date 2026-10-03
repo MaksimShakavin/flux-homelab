@@ -28,6 +28,7 @@
             pkgs.sops
             pkgs.sshpass
             pkgs.stern
+            pkgs.talosctl
             pkgs.yq-go
             pkgs.envsubst
             pkgs.minijinja

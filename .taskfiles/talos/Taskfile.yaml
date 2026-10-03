@@ -2,60 +2,90 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: '3'
 
+vars:
+  TEMPLATE: '{{.TALOS_DIR}}/machineconfig.yaml.j2'
+  TALENV: '{{.TALOS_DIR}}/talenv.yaml'
+  NODES: k8s-control-1 k8s-control-2 k8s-control-3
+
 tasks:
 
   generate-config:
-    desc: Generate Talos configuration
-    dir: '{{.TALOS_DIR}}'
-    cmd: talhelper genconfig
+    desc: Render Talos machine configs for all nodes
+    cmds:
+      - for: { var: NODES, split: ' ' }
+        cmd: >-
+          minijinja-cli --autoescape=none {{.TEMPLATE}} {{.TALENV}} | op inject
+          | talosctl machineconfig patch /dev/stdin
+          --patch @{{.TALOS_DIR}}/nodes/{{.ITEM}}.yaml
+          --output {{.TALOS_DIR}}/clusterconfig/home-kubernetes-{{.ITEM}}.yaml
     preconditions:
-      - test -f {{.TALOS_DIR}}/talconfig.yaml
-      - test -f {{.ROOT_DIR}}/.sops.yaml
-      - test -f {{.SOPS_AGE_KEY_FILE}}
-      - which talhelper
+      - op account get
+      - test -f {{.TEMPLATE}}
+      - test -f {{.TALENV}}
+      - which minijinja-cli op talosctl
 
   apply-node:
-    desc: Apply Talos config to a node [IP=required]
-    dir: '{{.TALOS_DIR}}'
-    cmd: talhelper gencommand apply --node {{.IP}} --extra-flags '--mode={{.MODE}}' | bash
+    desc: Apply Talos config to a node [IP=required] [MODE=auto]
+    cmd: >-
+      minijinja-cli --autoescape=none {{.TEMPLATE}} {{.TALENV}} | op inject
+      | talosctl machineconfig patch /dev/stdin --patch @{{.TALOS_DIR}}/nodes/{{.HOSTNAME}}.yaml
+      | talosctl --nodes {{.IP}} apply-config --mode={{.MODE}} --file /dev/stdin
     vars:
       MODE: '{{.MODE | default "auto"}}'
+      HOSTNAME:
+        sh: echo "k8s-control-$(( $(echo {{.IP}} | cut -d. -f4) - 50 ))"
     requires:
       vars: [IP]
     preconditions:
+      - op account get
+      - test -f {{.TALOS_DIR}}/nodes/{{.HOSTNAME}}.yaml
       - talosctl --nodes {{.IP}} get machineconfig
       - talosctl config info
       - test -f {{.TALOSCONFIG}}
-      - which talhelper talosctl yq
+      - which minijinja-cli op talosctl
 
   upgrade-node:
     desc: Upgrade Talos on a single node [IP=required]
-    dir: '{{.TALOS_DIR}}'
-    cmd: talhelper gencommand upgrade --node {{.IP}} --timeout=10m" | bash
+    cmd: >-
+      talosctl --nodes {{.IP}} upgrade
+      --image factory.talos.dev/installer/{{.SCHEMATIC}}:{{.TALOS_VERSION}}
+      --stage --timeout=10m
+    vars:
+      TALOS_VERSION:
+        sh: yq '.talosVersion' {{.TALENV}}
+      SCHEMATIC:
+        sh: yq '.schematic' {{.TALENV}}
     requires:
       vars: [IP]
     preconditions:
       - talosctl --nodes {{.IP}} get machineconfig
       - talosctl config info
       - test -f {{.TALOSCONFIG}}
-      - which kubectl talhelper talosctl yq
+      - which kubectl talosctl yq
 
   upgrade-k8s:
-    desc: Upgrade Kubernetes
-    dir: '{{.TALOS_DIR}}'
-    cmd: talhelper gencommand upgrade-k8s --extra-flags "--to '{{.KUBERNETES_VERSION}}'" | bash
+    desc: Upgrade Kubernetes across the cluster [NODE=192.168.20.51]
+    cmd: talosctl --nodes {{.NODE}} upgrade-k8s --to {{.KUBERNETES_VERSION}}
     vars:
+      NODE: '{{.NODE | default "192.168.20.51"}}'
       KUBERNETES_VERSION:
-        sh: yq '.kubernetesVersion' {{.TALOS_DIR}}/talenv.yaml
+        sh: yq '.kubernetesVersion' {{.TALENV}}
+    preconditions:
+      - talosctl config info
+      - test -f {{.TALENV}}
+      - test -f {{.TALOSCONFIG}}
+      - which talosctl yq
+
+  reset:
+    desc: Resets nodes back to maintenance mode [DESTRUCTIVE]
+    prompt: This will destroy your cluster and reset the nodes back to maintenance mode... continue?
+    cmd: >-
+      talosctl reset --nodes {{.NODE_IPS}} --reboot
+      {{- if eq .CLI_FORCE false }} --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL{{ end }}
+      --graceful=false --wait=false
+    vars:
+      NODE_IPS: 192.168.20.51,192.168.20.52,192.168.20.53
     preconditions:
       - talosctl config info
       - test -f {{.TALOSCONFIG}}
-      - which talhelper talosctl yq
-
-  reset:
-    desc: Resets nodes back to maintenance mode
-    dir: '{{.TALOS_DIR}}'
-    prompt: This will destroy your cluster and reset the nodes back to maintenance mode... continue?
-    cmd: talhelper gencommand reset --extra-flags="--reboot {{- if eq .CLI_FORCE false }} --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL{{ end }} --graceful=false --wait=false" | bash
-    preconditions:
-      - which talhelper
+      - which talosctl

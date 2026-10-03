@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=https://json.schemastore.org/base.json
+---
+# renovate: datasource=docker depName=ghcr.io/siderolabs/installer
+talosVersion: v1.14.1
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+kubernetesVersion: v1.36.2
+# schematic: i915, iscsi-tools, qemu-guest-agent, util-linux-tools (kata parked — incompatible with Cilium netkit, kata #12159)
+schematic: 583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e
