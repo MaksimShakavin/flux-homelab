@@ -2,11 +2,10 @@
   description = "Basic workstation dependencies";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    talhelper.url = "github:budimanjojo/talhelper/v3.1.17";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { nixpkgs, talhelper, flake-utils, ... }:
+  outputs = { nixpkgs, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
@@ -35,7 +34,6 @@
             pkgs._1password-cli
             pkgs.cilium-cli
             pkgs.minio-client
-            talhelper.packages.${system}.default
           ];
         };
       });
