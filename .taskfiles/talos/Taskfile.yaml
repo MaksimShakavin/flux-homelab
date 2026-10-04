@@ -49,7 +49,7 @@ tasks:
     cmd: >-
       talosctl --nodes {{.IP}} upgrade
       --image factory.talos.dev/installer/{{.SCHEMATIC}}:{{.TALOS_VERSION}}
-      --stage --timeout=10m
+      --stage --drain=false --timeout=10m
     vars:
       TALOS_VERSION:
         sh: yq '.talosVersion' {{.TALENV}}
