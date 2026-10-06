@@ -74,6 +74,7 @@ spec:
         annotations:
           gatus.home-operations.com/endpoint: |-
             conditions: ["[STATUS] == 200"]
+            path: /api/v1/status
           gethomepage.dev/enabled: "true"
           gethomepage.dev/href: "https://seerr.exelent.click"
           gethomepage.dev/group: "Media & Downloading"
