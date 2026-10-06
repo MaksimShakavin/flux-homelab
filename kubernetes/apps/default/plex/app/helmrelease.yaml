@@ -84,28 +84,42 @@ spec:
           - name: envoy-external
             namespace: network
         rules:
-          - backendRefs:
+          - name: app
+            backendRefs: &backendRefs
               - identifier: app
                 port: *port
             filters:
               - type: RequestHeaderModifier
-                requestHeaderModifier:
-                  remove:
-                    - Range
-                  set: &pipeline # Plex drops idle keep-alives after 20s unless set, so Envoy owns the pool
+                requestHeaderModifier: &pipeline
+                  set:
+                    # Plex drops idle keep-alives after 20s unless set, so Envoy owns the pool
                     - name: X-Plex-Http-Pipeline
                       value: infinite
+          - name: events
+            backendRefs: *backendRefs
+            filters:
+              - type: RequestHeaderModifier
+                requestHeaderModifier: *pipeline
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /:/eventsource
+              - path:
+                  type: PathPrefix
+                  value: /:/websockets
+          - # Ref: https://forums.plex.tv/t/external-srt-subtitles-are-not-working-w-reverse-proxy/886540
+            name: subtitles
+            backendRefs: *backendRefs
+            filters:
+              - type: RequestHeaderModifier
+                requestHeaderModifier:
+                  <<: *pipeline
+                  remove:
+                    - Range
             matches:
               - path:
                   type: PathPrefix
                   value: /library/streams
-          - backendRefs:
-              - identifier: app
-                port: *port
-            filters:
-              - type: RequestHeaderModifier
-                requestHeaderModifier:
-                  set: *pipeline
         annotations:
           gatus.home-operations.com/endpoint: |-
             path: /identity
