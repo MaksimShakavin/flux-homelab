@@ -36,6 +36,11 @@ machine:
     extraConfig:
       maxParallelImagePulls: 3
       serializeImagePulls: false
+      imageMaximumGCAge: 168h
+      crashLoopBackOff:
+        maxContainerRestartPeriod: 60s
+      shutdownGracePeriod: 90s
+      shutdownGracePeriodCriticalPods: 60s
     defaultRuntimeSeccompProfileEnabled: true
     nodeIP:
       validSubnets:
