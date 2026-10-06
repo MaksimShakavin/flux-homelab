@@ -127,6 +127,11 @@ spec:
     - type: Zstd
     - type: Brotli
     - type: Gzip
+  retry:
+    numRetries: 2
+    retryOn:
+      triggers:
+        - reset-before-request
   targetSelectors:
     - group: gateway.networking.k8s.io
       kind: Gateway
