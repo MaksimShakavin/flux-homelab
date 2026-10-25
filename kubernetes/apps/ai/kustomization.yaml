@@ -9,5 +9,7 @@ components:
 
 resources:
   - ./namespace.yaml
+  - ./cliproxyapi/ks.yaml
+  - ./hermes/ks.yaml
   - ./litellm-operator/ks.yaml
   - ./litellm/ks.yaml

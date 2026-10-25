@@ -1,0 +1,113 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: hermes
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: hermes
+  interval: 1h
+  values:
+    controllers:
+      hermes:
+        # Recreate: a Telegram bot allows only one poller; overlapping pods conflict on getUpdates.
+        strategy: Recreate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: docker.io/nousresearch/hermes-agent
+              tag: v2026.9.24@sha256:fca358f12efd65bfaaca05884166f15c0e2788375ca30d77061ac1ebc96452b7
+            args:
+              - sleep
+              - infinity
+            envFrom:
+              - secretRef:
+                  name: hermes-secret
+              - secretRef:
+                  name: hermes-litellm-key
+            env:
+              HERMES_HOME: /opt/data
+              HOME: /opt/data
+              TZ: "Europe/Warsaw"
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: &dashboard-port 9119
+                  initialDelaySeconds: 60
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 6
+              readiness: *probe
+              startup:
+                enabled: false
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop: [ "ALL" ]
+            resources:
+              requests:
+                cpu: 100m
+                memory: 1Gi
+              limits:
+                memory: 2Gi
+    defaultPodOptions:
+      terminationGracePeriodSeconds: 600
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10000
+        runAsGroup: 10000
+        fsGroup: 10000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      dashboard:
+        controller: hermes
+        ports:
+          http:
+            port: *dashboard-port
+    route:
+      dashboard:
+        hostnames:
+          - "{{ .Release.Name }}.exelent.click"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: dashboard
+                port: http
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: "Home Apps"
+          gethomepage.dev/name: Hermes
+          gethomepage.dev/icon: hermes.png
+          gethomepage.dev/description: AI agent
+          gethomepage.dev/href: "https://hermes.exelent.click"
+    persistence:
+      data:
+        existingClaim: "{{ .Release.Name }}"
+        globalMounts:
+          - path: /opt/data
+      config:
+        type: configMap
+        name: hermes-config
+        globalMounts:
+          - path: /opt/data/config.yaml
+            subPath: config.yaml
+            readOnly: true
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+      run:
+        type: emptyDir
+        globalMounts:
+          - path: /run

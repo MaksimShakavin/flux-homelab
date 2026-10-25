@@ -49,6 +49,11 @@ spec:
         secretKeyRef:
           name: litellm-secret
           key: LITELLM_MASTER_KEY
+    - name: CLIPROXY_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: litellm-secret
+          key: CLIPROXY_API_KEY
     - name: DATABASE_URL
       valueFrom:
         secretKeyRef:

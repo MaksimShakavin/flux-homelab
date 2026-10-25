@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: personal-gpt-codex
+spec:
+  modelName: personal-gpt-codex
+  params:
+    model: openai/gpt-6.1-sol
+    apiBase: http://cliproxyapi.ai.svc.cluster.local:8317/v1
+    apiKey: os.environ/CLIPROXY_API_KEY
+  info:
+    mode: chat

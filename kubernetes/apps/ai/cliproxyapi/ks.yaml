@@ -1,0 +1,30 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: cliproxyapi
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: cliproxyapi
+  components:
+    - ../../../../components/kopiur/backup
+  dependsOn:
+    - name: onepassword
+      namespace: external-secrets
+  interval: 1h
+  path: ./kubernetes/apps/ai/cliproxyapi/app
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  wait: false
+  postBuild:
+    substitute:
+      APP: cliproxyapi
+      APP_NAMESPACE: ai
+      KOPIUR_CAPACITY: 1Gi
