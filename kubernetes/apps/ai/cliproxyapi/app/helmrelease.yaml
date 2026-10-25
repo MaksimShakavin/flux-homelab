@@ -19,7 +19,7 @@ spec:
           seed:
             image:
               repository: docker.io/library/busybox
-              tag: 1.37.0@sha256:f85340bf132ae937d2c2a763b8335c9bab35d6e8293f70f606b9c6178d84f42b
+              tag: 1.38.0@sha256:fd7dc98638c8e305f4dc34e979f1c0fdfdcaeb0fbf8fcff77ae834b6da3d7e6e
             command:
               - /bin/sh
               - -c
