@@ -23,5 +23,7 @@ spec:
       name: kopiur-repository-secret
       namespace: storage
       key: KOPIA_PASSWORD
+  maintenance:
+    takeoverPolicy: Force
   scheduleDefaults:
     timezone: Europe/Warsaw
