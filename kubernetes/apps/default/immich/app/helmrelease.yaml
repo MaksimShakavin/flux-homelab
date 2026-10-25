@@ -143,6 +143,7 @@ spec:
               tag: v3.3.5
             env:
               MPLCONFIGDIR: /tmp/matplotlib
+              MACHINE_LEARNING_MODEL_REVISION: v2
             resources:
               requests:
                 cpu: 100m
