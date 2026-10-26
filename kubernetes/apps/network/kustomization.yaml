@@ -12,6 +12,7 @@ resources:
   - ./certificates/ks.yaml
   - ./cloudflare-tunnel/ks.yaml
   - ./cloudflare-dns/ks.yaml
+  - ./crowdsec/ks.yaml
   - ./echo/ks.yaml
   - ./unifi-dns/ks.yaml
   - ./playit/ks.yaml
