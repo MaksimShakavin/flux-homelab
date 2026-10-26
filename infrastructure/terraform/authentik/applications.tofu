@@ -17,12 +17,12 @@ module "oauth2-grafana" {
 module "oauth2-paperless" {
   source             = "./oauth2_application"
   name               = "Paperless"
-  icon_url           = "https://raw.githubusercontent.com/paperless-ngx/paperless-ngx/dev/resources/logo/web/svg/Color%20logo%20-%20no%20background.svg"
+  icon_url           = "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/paperless.svg"
   launch_url         = "https://paperless.exelent.click"
   description        = "Documents"
   newtab             = true
   group              = "Selfhosted"
-  auth_groups        = [authentik_group.infrastructure.id]
+  auth_groups        = [authentik_group.users.id]
   authorization_flow = resource.authentik_flow.provider-authorization-implicit-consent.uuid
   invalidation_flow  = data.authentik_flow.default-provider-invalidation-flow.id
   client_id          = module.secret_paperless.fields["OIDC_CLIENT_ID"]
@@ -131,7 +131,7 @@ module "oauth2-securo" {
 module "oauth2-litellm" {
   source             = "./oauth2_application"
   name               = "LiteLLM"
-  icon_url           = "https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/litellm.svg"
+  icon_url           = "https://cdn.jsdelivr.net/gh/selfhst/icons/svg/litellm.svg"
   launch_url         = "https://litellm.exelent.click"
   description        = "LLM gateway"
   newtab             = true
