@@ -23,12 +23,7 @@ spec:
       name: kopiur-repository-secret
       namespace: storage
       key: KOPIA_PASSWORD
-  bootstrap:
-    failurePolicy:
-      activeDeadlineSeconds: 900
   maintenance:
     takeoverPolicy: Force
-    failurePolicy:
-      activeDeadlineSeconds: 3600
   scheduleDefaults:
     timezone: Europe/Warsaw
