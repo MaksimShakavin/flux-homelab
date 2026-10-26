@@ -143,3 +143,19 @@ module "oauth2-litellm" {
   client_secret      = module.secret_litellm.fields["OIDC_CLIENT_SECRET"]
   redirect_uris      = ["https://litellm.exelent.click/sso/callback"]
 }
+
+module "oauth2-hermes" {
+  source             = "./oauth2_application"
+  name               = "Hermes"
+  icon_url           = "https://cdn.jsdelivr.net/gh/selfhst/icons/svg/hermes.svg"
+  launch_url         = "https://hermes.exelent.click"
+  description        = "AI agent"
+  newtab             = true
+  group              = "Infrastructure"
+  auth_groups        = [authentik_group.infrastructure.id]
+  authorization_flow = resource.authentik_flow.provider-authorization-implicit-consent.uuid
+  invalidation_flow  = data.authentik_flow.default-provider-invalidation-flow.id
+  client_type        = "public"
+  client_id          = module.secret_hermes.fields["OIDC_CLIENT_ID"]
+  redirect_uris      = ["https://hermes.exelent.click/auth/callback"]
+}
