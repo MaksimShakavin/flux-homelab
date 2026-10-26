@@ -22,8 +22,8 @@ spec:
               repository: docker.io/nousresearch/hermes-agent
               tag: v2026.9.24@sha256:fca358f12efd65bfaaca05884166f15c0e2788375ca30d77061ac1ebc96452b7
             args:
-              - sleep
-              - infinity
+              - gateway
+              - run
             envFrom:
               - secretRef:
                   name: hermes-secret
@@ -33,6 +33,14 @@ spec:
               HERMES_HOME: /opt/data
               HOME: /opt/data
               TZ: "Europe/Warsaw"
+              # s6-overlay escape hatch: accept the root-owned emptyDir /run under non-root
+              # Kubernetes instead of chowning it, so no privileged fix-run initContainer is needed.
+              S6_YES_I_WANT_A_WORLD_WRITABLE_RUN_BECAUSE_KUBERNETES: "1"
+              LITELLM_BASE_URL: http://litellm.ai.svc.cluster.local:4000/v1
+              HERMES_DASHBOARD: "1"
+              HERMES_DASHBOARD_HOST: "0.0.0.0"
+              HERMES_DASHBOARD_PORT: "9119"
+              HERMES_DASHBOARD_PUBLIC_URL: https://hermes.exelent.click
             probes:
               liveness: &probe
                 enabled: true
