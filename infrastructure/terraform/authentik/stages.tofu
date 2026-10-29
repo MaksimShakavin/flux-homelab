@@ -54,7 +54,8 @@ resource "authentik_stage_authenticator_validate" "authentication-passkey-valida
 }
 
 resource "authentik_stage_user_login" "authentication-login" {
-  name = "authentication-login"
+  name             = "authentication-login"
+  session_duration = "days=30"
 }
 
 ## Invalidation stages
