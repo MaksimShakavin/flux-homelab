@@ -26,7 +26,7 @@ spec:
     success_callback:
       - prometheus
     prometheus_adapter: true
-    cache: true
+    cache: false
     cache_params:
       type: redis
       host: os.environ/REDIS_HOST
