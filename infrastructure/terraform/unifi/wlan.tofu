@@ -18,16 +18,20 @@ resource "unifi_wlan" "main" {
   minimum_data_rate_5g_kbps = 6000 #default value of controller, not setting it causes errors on apply
 
   # enable WPA2/WPA3 support
-  wpa3_support      = true
-  wpa3_transition   = true
+  wpa3 = {
+    support    = true
+    transition = true
+  }
   pmf_mode          = "optional"
   bss_transition    = true
   multicast_enhance = true
   # TODO test it
   # fast_roaming_enabled = true
 
-  network_id    = unifi_network.main.id
-  ap_group_ids  = [data.unifi_ap_group.default.id]
+  network_id = unifi_network.main.id
+  ap_group = {
+    ids = [data.unifi_ap_group.default.id]
+  }
   user_group_id = data.unifi_client_qos_rate.default.id
 }
 
@@ -49,8 +53,10 @@ resource "unifi_wlan" "iot" {
   multicast_enhance = true
   bss_transition    = false
 
-  network_id    = unifi_network.iot.id
-  ap_group_ids  = [data.unifi_ap_group.default.id]
+  network_id = unifi_network.iot.id
+  ap_group = {
+    ids = [data.unifi_ap_group.default.id]
+  }
   user_group_id = data.unifi_client_qos_rate.default.id
 }
 
@@ -65,13 +71,17 @@ resource "unifi_wlan" "guest" {
   minimum_data_rate_2g_kbps = 1000
   minimum_data_rate_5g_kbps = 6000
 
-  is_guest        = true
-  wpa3_support    = true
-  wpa3_transition = true
-  pmf_mode        = "optional"
+  is_guest = true
+  wpa3 = {
+    support    = true
+    transition = true
+  }
+  pmf_mode = "optional"
 
-  network_id    = unifi_network.guest.id
-  ap_group_ids  = [data.unifi_ap_group.default.id]
+  network_id = unifi_network.guest.id
+  ap_group = {
+    ids = [data.unifi_ap_group.default.id]
+  }
   user_group_id = data.unifi_client_qos_rate.default.id
 }
 
@@ -93,8 +103,10 @@ resource "unifi_wlan" "cameras" {
   bss_transition = true
   no2ghz_oui     = false # there is only one band, but provider set's default value(true) on apply, which is incorrect
 
-  network_id    = unifi_network.cameras.id
-  ap_group_ids  = [data.unifi_ap_group.default.id]
+  network_id = unifi_network.cameras.id
+  ap_group = {
+    ids = [data.unifi_ap_group.default.id]
+  }
   user_group_id = data.unifi_client_qos_rate.default.id
 
 }

@@ -14,11 +14,13 @@ resource "unifi_network" "main" {
   igmp_snooping      = true
 
   dhcp_server = {
-    enabled     = true
-    start       = "192.168.10.100"
-    stop        = "192.168.10.200"
-    dns_enabled = true
-    dns_servers = ["192.168.10.1"]
+    enabled = true
+    start   = "192.168.10.100"
+    stop    = "192.168.10.200"
+    dns = {
+      enabled = true
+      servers = ["192.168.10.1"]
+    }
   }
 }
 
@@ -33,11 +35,13 @@ resource "unifi_network" "servers_trusted" {
   igmp_snooping      = true
 
   dhcp_server = {
-    enabled     = true
-    start       = "192.168.20.100"
-    stop        = "192.168.20.200"
-    dns_enabled = true
-    dns_servers = ["192.168.20.1"]
+    enabled = true
+    start   = "192.168.20.100"
+    stop    = "192.168.20.200"
+    dns = {
+      enabled = true
+      servers = ["192.168.20.1"]
+    }
   }
 }
 
@@ -52,11 +56,13 @@ resource "unifi_network" "iot" {
   lte_lan            = false
 
   dhcp_server = {
-    enabled     = true
-    start       = "192.168.30.100"
-    stop        = "192.168.30.200"
-    dns_enabled = true
-    dns_servers = ["192.168.30.1"]
+    enabled = true
+    start   = "192.168.30.100"
+    stop    = "192.168.30.200"
+    dns = {
+      enabled = true
+      servers = ["192.168.30.1"]
+    }
   }
 }
 
@@ -72,11 +78,13 @@ resource "unifi_network" "cameras" {
   igmp_snooping      = true
 
   dhcp_server = {
-    enabled     = true
-    start       = "192.168.40.100"
-    stop        = "192.168.40.200"
-    dns_enabled = true
-    dns_servers = ["192.168.40.1"]
+    enabled = true
+    start   = "192.168.40.100"
+    stop    = "192.168.40.200"
+    dns = {
+      enabled = true
+      servers = ["192.168.40.1"]
+    }
   }
 }
 
@@ -90,10 +98,12 @@ resource "unifi_network" "guest" {
   multicast_dns      = false
 
   dhcp_server = {
-    enabled     = true
-    start       = "192.168.50.100"
-    stop        = "192.168.50.200"
-    dns_enabled = true
-    dns_servers = ["1.1.1.1", "8.8.8.8"]
+    enabled = true
+    start   = "192.168.50.100"
+    stop    = "192.168.50.200"
+    dns = {
+      enabled = true
+      servers = ["1.1.1.1", "8.8.8.8"]
+    }
   }
 }
