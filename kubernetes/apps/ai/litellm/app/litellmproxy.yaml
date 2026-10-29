@@ -27,11 +27,6 @@ spec:
       - prometheus
     prometheus_adapter: true
     cache: false
-    cache_params:
-      type: redis
-      host: os.environ/REDIS_HOST
-      port: os.environ/REDIS_PORT
-      password: os.environ/REDIS_PASSWORD
     drop_params: true
     merge_reasoning_content_in_choices: true
   env:
