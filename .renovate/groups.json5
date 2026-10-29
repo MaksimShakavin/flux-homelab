@@ -78,6 +78,15 @@
       minimumGroupSize: 2,
     },
     {
+      description: "Portainer Group",
+      groupName: "Portainer",
+      matchDatasources: ["docker", "helm"],
+      matchPackageNames: ["portainer/portainer-ce", "portainer/agent", "portainer"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+    },
+    {
       // Talos version lives in 3 places tracked as 2 deps: talconfig.yaml
       // (custom.talos-factory / siderolabs/talos) and tuppr talosupgrade.yaml
       // + talos.tofu (docker / ghcr.io/siderolabs/installer). Group so every
