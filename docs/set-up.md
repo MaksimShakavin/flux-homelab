@@ -63,3 +63,35 @@
     ```sh
    task bootstrap:apps
    ```
+
+## Post-bootstrap manual steps
+
+Flux brings everything up from Git, but a few things need a one-time human touch per cluster.
+
+### CrowdSec console enrollment (optional)
+
+CrowdSec comes up fully protective from Git with no action — the Envoy bouncer is registered, the
+collections and acquisition load, the community blocklist (CAPI) auto-enrolls, and ext-authz enforces
+on the `envoy-external` gateway. Enrolling in the hosted console at
+[app.crowdsec.net](https://app.crowdsec.net) is **optional**: it only adds a web dashboard and a few
+extra managed blocklists. It is **not** automated (it also requires a manual "Accept" in the web UI),
+so do it by hand if you want it.
+
+1. **Prerequisite** — the 1Password `crowdsec` item must exist (it backs the `crowdsec`
+   ExternalSecret in the `network` namespace) with:
+   - `CROWDSEC_BOUNCER_KEY` — any random 64-char string (shared secret: LAPI pre-registers the
+     `ENVOY` bouncer with it, and the bouncer reads the same value).
+   - `CROWDSEC_ENROLL_KEY` — the enrollment key from app.crowdsec.net (leave a placeholder if you
+     skip the console).
+
+2. Enroll the instance (once per cluster):
+   ```sh
+   kubectl -n network exec deploy/crowdsec-lapi -- sh -c 'cscli console enroll "$ENROLL_KEY"'
+   ```
+
+3. Accept the pending instance at **app.crowdsec.net → Security Engines**.
+
+4. Verify:
+   ```sh
+   kubectl -n network exec deploy/crowdsec-lapi -- cscli console status
+   ```
