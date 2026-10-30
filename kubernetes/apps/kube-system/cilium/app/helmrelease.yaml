@@ -15,7 +15,7 @@ spec:
       enabled: true
       bbr: true
     bpf:
-      datapathMode: netkit # kata-containers dropped from the Talos schematic: can't attach to netkit https://github.com/kata-containers/kata-containers/issues/12159
+      datapathMode: veth # veth (not netkit) required for gVisor-sandboxed runners (kritika); netkit drops their L2-less frames
       masquerade: true
       preallocateMaps: true
     bpfClockProbe: true
