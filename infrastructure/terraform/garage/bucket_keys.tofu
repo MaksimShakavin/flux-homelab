@@ -5,6 +5,7 @@ locals {
   bucket_credentials = {
     kopiur         = module.kopiur_bucket
     cnpg           = module.cnpg_bucket
+    kritika        = module.kritika_bucket
     terraform      = module.terraform_bucket
     static-content = module.static_content_bucket
   }
