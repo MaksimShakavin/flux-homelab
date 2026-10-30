@@ -25,6 +25,7 @@
 - siderolabs/util-linux-tools -- for Longhorn
 - siderolabs/qemu-guest-agent -- for managing VMs from the Proxmox UI
 - siderolabs/i915 -- for GPU support
+- siderolabs/gvisor -- for the gVisor (runsc) sandboxed pod runtime; requires Cilium `datapathMode: veth`
 
 2. Go to `/infrastructure/terraform/proxmox/talos.tofu` and update the ISO URL if needed.
 3. Check the Terraform changes with `terraform plan`.
