@@ -12,12 +12,11 @@ resource "unifi_wlan" "main" {
   security   = "wpapsk"
   uapsd      = true
   mac_filter = {
-    enabled = false #default value of controller, not setting it causes errors on apply
+    enabled = false # controller default; omitting it errors on apply
   }
-  minimum_data_rate_2g_kbps = 1000 #default value of controller, not setting it causes errors on apply
-  minimum_data_rate_5g_kbps = 6000 #default value of controller, not setting it causes errors on apply
+  minimum_data_rate_2g_kbps = 1000 # controller default; omitting it errors on apply
+  minimum_data_rate_5g_kbps = 6000 # controller default; omitting it errors on apply
 
-  # enable WPA2/WPA3 support
   wpa3 = {
     support    = true
     transition = true
@@ -47,7 +46,7 @@ resource "unifi_wlan" "iot" {
   minimum_data_rate_5g_kbps = 6000
 
   hide_ssid         = true
-  no2ghz_oui        = false #
+  no2ghz_oui        = false
   wlan_band         = "2g"
   wlan_bands        = ["2g"]
   multicast_enhance = true
@@ -101,7 +100,7 @@ resource "unifi_wlan" "cameras" {
   wlan_bands     = ["5g"]
   l2_isolation   = true
   bss_transition = true
-  no2ghz_oui     = false # there is only one band, but provider set's default value(true) on apply, which is incorrect
+  no2ghz_oui     = false # single-band; provider wrongly defaults this to true on apply
 
   network_id = unifi_network.cameras.id
   ap_group = {

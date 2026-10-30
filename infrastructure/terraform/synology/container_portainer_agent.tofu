@@ -1,7 +1,4 @@
-# Portainer agent deployment on Synology
-# The in-cluster Portainer server connects to this agent as a Docker Standalone
-# environment at nas.exelent.click:9001.
-
+# The in-cluster Portainer server reaches this agent at nas.exelent.click:9001.
 resource "synology_container_project" "portainer_agent" {
   name = "portainer-agent"
   run  = true

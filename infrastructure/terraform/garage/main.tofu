@@ -1,11 +1,6 @@
 terraform {
-  # Chicken-and-egg: this module CREATES the "terraform" bucket that stores this
-  # very state. On a fresh Garage, bootstrap with local state and skip the
-  # backend, then migrate once the bucket exists:
-  #   tofu init -backend=false && tofu apply   # creates bucket + keys
-  #   tofu init -migrate-state                 # moves state into Garage
-  # Backend creds come from AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY (the
-  # `terraform` bucket key, published to the garage-buckets 1Password item).
+  # This module creates the "terraform" bucket that holds this state, so a fresh
+  # Garage must bootstrap with local state (-backend=false) then `-migrate-state`.
   backend "s3" {
     bucket = "terraform"
     key    = "garage/state.tfstate"
@@ -21,9 +16,8 @@ terraform {
   }
 
   required_providers {
-    # Forked to add website_access on garage_bucket; use dev_overrides in
-    # ~/.tofurc pointing at the locally built binary until the upstream PR
-    # is merged and released, then pin a version here.
+    # Forked to add website_access on garage_bucket; unpinned because it runs via
+    # a ~/.tofurc dev_override until the upstream PR is released.
     garage = {
       source = "arsolitt/garagehq"
     }
@@ -41,7 +35,6 @@ locals {
 }
 
 module "secret_garage" {
-  # Remember to export OP_CONNECT_HOST and OP_CONNECT_TOKEN
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
   vault  = "homelab"
   item   = "garage"
@@ -53,13 +46,10 @@ provider "garage" {
   token  = module.secret_garage.fields.admin_token
 }
 
-# Connect credentials are read from OP_CONNECT_HOST / OP_CONNECT_TOKEN in the
-# environment (already exported for Tofu runs).
 provider "onepassword" {}
 
-# The node ID is derived from node_key at container boot and is reported by the
-# admin API before any layout role is assigned, so we read it directly instead of
-# capturing it by hand. Single-node cluster => nodes[0].
+# Read the node ID from the admin API rather than hardcode it; it's derived from
+# node_key at boot and reported before any layout role is assigned. Single node => [0].
 data "http" "garage_status" {
   url = "https://${local.garage_admin_endpoint}/v2/GetClusterStatus"
   request_headers = {

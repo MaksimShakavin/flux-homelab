@@ -1,4 +1,3 @@
-## Raw config mode
 resource "unifi_bgp" "k8s" {
   description      = "K8s bgp"
   enabled          = true

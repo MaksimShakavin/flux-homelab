@@ -1,14 +1,11 @@
-# Garage S3-compatible object storage deployment on Synology
-
 locals {
-  # FileStation API uses share-relative paths (starting at the shared folder),
-  # while Docker bind mounts need the physical /volume1 path.
+  # FileStation API uses share-relative paths; Docker bind mounts need the
+  # physical /volume1 path.
   garage_share_dir = "/docker/garage"
   garage_phys_dir  = "/volume1/docker/garage"
 }
 
 module "secret_garage" {
-  # Remember to export OP_CONNECT_HOST and OP_CONNECT_TOKEN
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
   vault  = "homelab"
   item   = "garage"
@@ -50,13 +47,12 @@ resource "synology_container_project" "garage" {
     garage = {
       image   = "dxflrs/garage:v2.3.0"
       restart = "unless-stopped"
-      # The garage image has no ENTRYPOINT and the binary lives at /garage, so
-      # the command must include the full path (default CMD is /garage server).
+      # Image has no ENTRYPOINT, so the command needs the full binary path.
       command = ["/garage", "server"]
       networks = {
         garage = {}
       }
-      # Only S3 (3900) and admin (3903) are published; RPC (3901) stays internal.
+      # RPC (3901) stays internal; only S3 and admin are published.
       ports = [
         {
           target    = 3900
@@ -70,8 +66,6 @@ resource "synology_container_project" "garage" {
       environment = {
         RUST_LOG = "garage=info"
       }
-      # Bind sources use the physical /volume1 path; depend on the FileStation
-      # resources so the folders/file exist before the container starts.
       volumes = [
         {
           type   = "bind"

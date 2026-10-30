@@ -1,17 +1,12 @@
-# Auto-publish every bucket module's Garage-generated S3 key into a single
-# 1Password item so External Secrets can sync them into the cluster. Garage only
-# returns the secret at key creation time, so this closes the loop instead of
-# copy-pasting Tofu outputs by hand.
-#
-# ESO's 1Password provider ignores section names and matches fields by label
-# only, so field labels must be unique per bucket => bucket-prefixed.
+# Publish each bucket's S3 key to 1Password for ESO to sync: Garage only returns
+# the secret at creation time. ESO matches fields by label (sections ignored), so
+# labels are bucket-prefixed to stay globally unique.
 locals {
   bucket_credentials = {
     kopiur         = module.kopiur_bucket
     cnpg           = module.cnpg_bucket
     terraform      = module.terraform_bucket
     static-content = module.static_content_bucket
-    # add one line when a new bucket module is introduced
   }
 }
 

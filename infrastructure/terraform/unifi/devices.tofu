@@ -3,8 +3,6 @@ resource "unifi_device" "us_24_pro" {
 
   name = "USW Pro 24"
 
-
-  # default values imported from existing configured device
   port_override {
     index                  = 13
     autoneg                = true

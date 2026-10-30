@@ -14,11 +14,11 @@
         item: Proxmox root
         field: password
         vault: homelab
-      no_log: true  # Turn off logs to avoid logging sensitive data
-      delegate_to: localhost # this task is only run on localhost
+      no_log: true
+      delegate_to: localhost
       register: password
 
-    - set_fact: # use registered password and vars to setup connection
+    - set_fact:
         ansible_password: "{{ password.field.value }}"
       no_log: true
 

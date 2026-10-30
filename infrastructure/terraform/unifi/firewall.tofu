@@ -1,69 +1,31 @@
 # Zone-based firewall (UniFi Network 8.x+ / UniFi OS 9.x).
-#
-# ---------------------------------------------------------------------------
-# HISTORY: v1 of this file caused a network outage on 2026-09-04 (restored from
-# UniFi backup). Root cause was never confirmed (logging was off), but the
-# trigger was pulling the Default/management network into a custom zone and
-# slamming default-deny down on everything at once. v2 avoids that:
-#   - Default (Proxmox hosts, UniFi device adoption, CONF LEOX) STAYS in the
-#     built-in Internal zone and is never managed/fenced here.
-#   - Guest reuses the built-in Hotspot zone (the controller auto-assigns
-#     is_guest networks there; a custom Guest zone fought it for ownership).
-#   - Only Main/Servers/IoT/Cameras become custom zones.
-#   - Every policy has logging = true so a staged rollout is observable.
-#   - Routed/inter-zone sources match by IP/network, never client MAC (MAC
-#     matching is unreliable once traffic is routed through the gateway).
-#
-# ROLLOUT (do NOT apply blind):
-#   1. Apply zones + all allow policies with the zone matrix still permissive.
-#   2. Watch Settings -> Security -> firewall logs. Confirm the BGP session
-#      (bgp.tf: UDM AS64513 <-> nodes 192.168.20.51-53 AS64514, TCP/179) and
-#      the Cilium LB IPs (e.g. 192.168.20.61) stay reachable across the new
-#      Gateway<->Servers boundary. If Gateway->Servers drops appear, add an
-#      explicit policy before proceeding (see servers zone note below).
-#   3. Only then enable default-deny, and only for the custom zones.
-#   Run tofu against a LOCAL 1Password Connect (docker-compose in
-#   infrastructure/1password-store/) so the apply never depends on the cluster
-#   IP it might disrupt.
-# ---------------------------------------------------------------------------
-#
-# Model: default-deny between custom zones. Every cross-zone flow is an
-# explicit ALLOW; anything not listed is denied. Inter-zone ALLOWs use
-# create_allow_respond = true so the controller adds the established/related
-# return rule. The *_to_wan policies OMIT it: the controller rejects
-# create_allow_respond when the destination is the External zone
-# (api.err.FirewallPolicyCreateRespondTrafficPolicyNotAllowed) since WAN return
-# traffic is implicit.
+# Default-deny between custom zones; every cross-zone flow is an explicit ALLOW.
+# Inter-zone ALLOWs set create_allow_respond for the return rule; the *_to_wan
+# policies omit it because the controller rejects it for External destinations.
 
 ############################
 # Built-in zones (lookups) #
 ############################
 
-# WAN / internet.
 data "unifi_firewall_zone" "external" {
   name = "External"
 }
 
-# WireGuard clients land here. The controller stores the name as "Vpn" (the UI
-# shows "VPN"); the data source match is case-sensitive.
+# Controller stores the name as "Vpn" (UI shows "VPN"); match is case-sensitive.
 data "unifi_firewall_zone" "vpn" {
   name = "Vpn"
 }
 
-# Catch-all LAN zone. Holds the Default network (Proxmox host mgmt, UniFi device
-# adoption) and the manual CONF LEOX config network. Left intact and unmanaged;
-# referenced only as a policy source/destination.
+# Default network stays here, unmanaged; referenced only as policy source/dest.
 data "unifi_firewall_zone" "internal" {
   name = "Internal"
 }
 
-# Guest network is auto-assigned to the built-in Hotspot zone (is_guest = true).
+# Guest networks auto-assign to the built-in Hotspot zone (is_guest = true).
 data "unifi_firewall_zone" "hotspot" {
   name = "Hotspot"
 }
 
-# The gateway (UDM) itself. Source zone for gateway-originated traffic such as
-# the BGP session to the k8s nodes.
 data "unifi_firewall_zone" "gateway" {
   name = "Gateway"
 }
@@ -71,7 +33,6 @@ data "unifi_firewall_zone" "gateway" {
 #################
 # Custom zones  #
 #################
-# Pulled out of Internal. Default is intentionally NOT among these.
 
 resource "unifi_firewall_zone" "main" {
   name        = "Main"
@@ -96,17 +57,14 @@ resource "unifi_firewall_zone" "cameras" {
 ###############################
 # Internet access (-> WAN)    #
 ###############################
-# Cameras omitted (unifi_network.cameras has internet_access = false).
-# Internal->External and Hotspot->External are UniFi built-in default policies;
-# not redefined here. These cover only the custom zones.
+# Cameras omitted (internet_access = false). Internal/Hotspot -> External are
+# UniFi built-in defaults; only the custom zones are covered here.
 
 resource "unifi_firewall_policy" "main_to_wan" {
   name     = "Main to Internet"
   action   = "ALLOW"
   protocol = "all"
   logging  = true
-  # No create_allow_respond for External-destination policies (rejected by the
-  # controller; WAN return traffic is implicit).
 
   source = {
     zone_id         = unifi_firewall_zone.main.id
@@ -150,8 +108,7 @@ resource "unifi_firewall_policy" "iot_to_wan" {
   }
 }
 
-# WireGuard clients reach the internet through the tunnel (full-tunnel).
-# Remove for split-tunnel (internal-only) access.
+# Full-tunnel; remove for split-tunnel (internal-only) access.
 resource "unifi_firewall_policy" "vpn_to_wan" {
   name     = "VPN to Internet"
   action   = "ALLOW"
@@ -248,7 +205,6 @@ resource "unifi_firewall_policy" "main_to_cameras" {
   }
 }
 
-# Guest lives in the built-in Hotspot zone.
 resource "unifi_firewall_policy" "main_to_guest" {
   name                 = "Main to Guest"
   description          = "Trusted devices reach guest-zone devices."
@@ -271,7 +227,6 @@ resource "unifi_firewall_policy" "main_to_guest" {
 # Servers -> device zones     #
 ###############################
 
-# Pi (192.168.20.3) and in-cluster integrations poll/control IoT devices.
 resource "unifi_firewall_policy" "servers_to_iot" {
   name                 = "Servers to IoT"
   description          = "Home automation (Pi / k8s) reaches IoT devices."
@@ -290,7 +245,6 @@ resource "unifi_firewall_policy" "servers_to_iot" {
   }
 }
 
-# NVR / stream consumers in the Servers zone pull camera feeds.
 resource "unifi_firewall_policy" "servers_to_cameras" {
   name                 = "Servers to Cameras"
   description          = "NVR / stream consumers pull camera feeds."
@@ -312,12 +266,9 @@ resource "unifi_firewall_policy" "servers_to_cameras" {
 ###############################
 # Custom <-> Internal         #
 ###############################
-# Internal holds the Default network (Proxmox host mgmt, UniFi UI). Routed
-# flows are matched by IP/network, NOT client MAC (MAC matching is unreliable
-# for traffic routed through the gateway - the v1 proxmox_to_nas rule used MAC
-# and is suspected of never matching).
+# Routed flows match by IP/network, not client MAC (MAC is unreliable once
+# traffic is routed through the gateway).
 
-# Manage Proxmox hosts / UniFi UI from trusted devices on Main.
 resource "unifi_firewall_policy" "main_to_internal" {
   name                 = "Main to Internal"
   description          = "Reach Proxmox / UniFi UI from trusted devices."
@@ -336,7 +287,6 @@ resource "unifi_firewall_policy" "main_to_internal" {
   }
 }
 
-# Manage Proxmox hosts / UniFi UI remotely over WireGuard.
 resource "unifi_firewall_policy" "vpn_to_internal" {
   name                 = "VPN to Internal"
   description          = "Remote admin of Proxmox / UniFi UI over WireGuard."
@@ -355,7 +305,6 @@ resource "unifi_firewall_policy" "vpn_to_internal" {
   }
 }
 
-# View camera streams remotely over WireGuard.
 resource "unifi_firewall_policy" "vpn_to_cameras" {
   name                 = "VPN to Cameras"
   description          = "Remote camera viewing over WireGuard."
@@ -374,9 +323,6 @@ resource "unifi_firewall_policy" "vpn_to_cameras" {
   }
 }
 
-# Homepage in k8s (Servers) polls the Proxmox PVE API at 192.168.0.41:8006.
-# Destination scoped to just the three Proxmox management IPs (by resource
-# reference, matched as IPs).
 resource "unifi_firewall_policy" "servers_to_proxmox" {
   name                 = "Servers to Proxmox"
   description          = "Homepage / metrics poll the Proxmox PVE API."
@@ -400,9 +346,6 @@ resource "unifi_firewall_policy" "servers_to_proxmox" {
   }
 }
 
-# Proxmox hosts (Internal) mount NFS on the NAS for VM images (non-critical -
-# images only; VM disks are local, k8s<->NAS NFS is intra-Servers). Source
-# scoped to the Proxmox IPs, destination to the NAS IP - both by IP, not MAC.
 resource "unifi_firewall_policy" "proxmox_to_nas" {
   name                 = "Proxmox to NAS"
   description          = "Proxmox NFS to Synology for VM images."
@@ -430,12 +373,8 @@ resource "unifi_firewall_policy" "proxmox_to_nas" {
 ###############################
 # Gateway -> Servers (BGP)    #
 ###############################
-# bgp.tf peers the UDM (Gateway zone) with the k8s nodes in the Servers zone on
-# TCP/179. When everything was flat in Internal this needed no rule; with
-# Servers split out it crosses Gateway->Servers. Whether UniFi implicitly
-# allows gateway-originated BGP is unverified - if the firewall log shows
-# Gateway->Servers drops (or Cilium LB IPs stop being routed) during rollout,
-# enable this policy.
+# Enable only if firewall logs show Gateway->Servers BGP (TCP/179) drops or
+# Cilium LB IPs stop being routed; UniFi may allow gateway BGP implicitly.
 #
 # resource "unifi_firewall_policy" "gateway_to_servers_bgp" {
 #   name                 = "Gateway to Servers BGP"

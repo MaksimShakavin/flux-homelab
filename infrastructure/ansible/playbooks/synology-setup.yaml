@@ -136,12 +136,11 @@
             garage:
               image: dxflrs/garage:v2.5.0
               restart: unless-stopped
-              # The garage image has no ENTRYPOINT and the binary lives at /garage,
-              # so the command must include the full path.
+              # Image has no ENTRYPOINT, so the command needs the full binary path.
               command: ["/garage", "server"]
               networks:
                 garage: {}
-              # S3 (3900), web (3902), and admin (3903) are published; RPC (3901) stays internal.
+              # RPC (3901) stays internal; S3, web, and admin are published.
               ports:
                 - "3900:3900"
                 - "3902:3902"
@@ -189,8 +188,8 @@
               network_mode: host
               pid: host
               command: ["--path.rootfs=/host"]
-              # No rslave propagation: Synology's Docker root mount is not shared/slave,
-              # so requesting it fails the container with "not a shared or slave mount".
+              # No rslave propagation: Synology's Docker root mount isn't shared/slave,
+              # so requesting it fails the container.
               volumes:
                 - "/:/host:ro"
         state: present

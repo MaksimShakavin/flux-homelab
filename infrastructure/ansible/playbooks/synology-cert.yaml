@@ -9,9 +9,8 @@
 
   vars:
     op_vault: homelab
-    # The _archive folder id for the "exelent.click" cert (see INFO). This cert
-    # serves the ReverseProxy vhosts + the nas.exelent.click FQDN system service.
-    # It is NOT the DSM default cert (K8hIci), so we only touch this folder.
+    # _archive folder for the "exelent.click" cert (ReverseProxy vhosts +
+    # nas.exelent.click), not the DSM default cert — only this folder is touched.
     cert_dir: /usr/syno/etc/certificate/_archive/zA0KRW
     # DSM ships Python 3.8, but ansible-core needs 3.9+ on the target. Bootstrap a
     # self-contained standalone Python over raw SSH, use it, then remove it.

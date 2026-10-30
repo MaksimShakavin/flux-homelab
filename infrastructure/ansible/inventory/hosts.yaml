@@ -19,8 +19,7 @@ all:
           ansible_host: nas.exelent.click
       vars:
         ansible_remote_tmp: /tmp/.ansible/tmp
-        # DSM's sshd doesn't expose the SFTP subsystem, so the default smart
-        # transfer (sftp, then scp which also rides SFTP on DSM's OpenSSH) fails.
-        # piped transfers over the shell session instead.
+        # DSM's sshd exposes no SFTP subsystem (which scp also rides), so the
+        # default transfer fails; use piped transfers over the shell session.
         ansible_ssh_transfer_method: piped
         sops: "{{ lookup('community.sops.sops', lookup('env', 'INFRA_SECRETS_FILE')) | ansible.builtin.from_yaml }}"

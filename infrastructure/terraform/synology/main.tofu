@@ -22,7 +22,6 @@ terraform {
 }
 
 module "secret_synology" {
-  # Remember to export OP_CONNECT_HOST and OP_CONNECT_TOKEN
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
   vault  = "homelab"
   item   = "synology"

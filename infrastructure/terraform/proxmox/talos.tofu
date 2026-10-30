@@ -3,7 +3,7 @@ data "unifi_network" "Servers" {
 }
 
 locals {
-  // if changing, don't forget to change it in other places. DRY is to hard
+  # also hardcoded in the Talos node overlays; keep in sync when changing
   mac_addresses = ["BC:24:11:B5:DD:1F", "BC:24:11:0C:FD:22", "BC:24:11:A8:19:33"]
   # renovate: datasource=custom.talos-factory depName=siderolabs/talos
   talos_version  = "v1.13.10"

@@ -25,7 +25,6 @@ terraform {
 }
 
 module "secret_authentik" {
-  # Remember to export OP_CONNECT_HOST and OP_CONNECT_TOKEN
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
   vault  = "homelab"
   item   = "authentik"
@@ -102,6 +101,4 @@ provider "authentik" {
   token = module.secret_authentik.fields["AUTHENTIK_TOKEN"]
 }
 
-# Connect credentials are read from OP_CONNECT_HOST / OP_CONNECT_TOKEN in the
-# environment (already exported for Tofu runs).
 provider "onepassword" {}
