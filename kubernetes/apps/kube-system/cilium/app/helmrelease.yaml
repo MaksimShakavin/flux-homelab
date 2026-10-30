@@ -15,7 +15,7 @@ spec:
       enabled: true
       bbr: true
     bpf:
-      datapathMode: veth # veth (not netkit) required for sandboxed runtimes (gvisor/kata): netkit's L3 device drops their L2-less frames https://github.com/kata-containers/kata-containers/issues/12159
+      datapathMode: netkit # kata-containers dropped from the Talos schematic: can't attach to netkit https://github.com/kata-containers/kata-containers/issues/12159
       masquerade: true
       preallocateMaps: true
     bpfClockProbe: true
