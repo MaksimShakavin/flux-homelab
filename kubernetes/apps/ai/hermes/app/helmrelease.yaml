@@ -16,6 +16,16 @@ spec:
         strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
+        initContainers:
+          seed-config:
+            image:
+              repository: docker.io/library/busybox
+              tag: 1.38.0@sha256:a46257e06c82ad85242d0d38077d0a52d9896389ca60a1a59d3463db586e5fa4
+            command: ["/bin/cp", "-f", "/opt/config/config.yaml", "/opt/data/config.yaml"]
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: [ "ALL" ] }
         containers:
           app:
             image:
@@ -102,15 +112,21 @@ spec:
     persistence:
       data:
         existingClaim: "{{ .Release.Name }}"
-        globalMounts:
-          - path: /opt/data
+        advancedMounts:
+          hermes:
+            seed-config:
+              - path: /opt/data
+            app:
+              - path: /opt/data
       config:
         type: configMap
         name: hermes-config
-        globalMounts:
-          - path: /opt/data/config.yaml
-            subPath: config.yaml
-            readOnly: true
+        advancedMounts:
+          hermes:
+            seed-config:
+              - path: /opt/config/config.yaml
+                subPath: config.yaml
+                readOnly: true
       tmp:
         type: emptyDir
         globalMounts:
