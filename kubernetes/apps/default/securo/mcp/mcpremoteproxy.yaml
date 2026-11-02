@@ -1,0 +1,12 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPRemoteProxy
+metadata:
+  name: securo
+spec:
+  remoteUrl: http://securo-mcp.default.svc.cluster.local:8765/mcp
+  transport: streamable-http
+  proxyPort: 8080
+  allowPrivateEndpoint: true
+  externalAuthConfigRef:
+    name: securo-bearer

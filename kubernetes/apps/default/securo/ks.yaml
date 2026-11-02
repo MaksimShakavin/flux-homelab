@@ -100,3 +100,25 @@ spec:
       APP: securo
       APP_NAMESPACE: default
       DRAGONFLY_PASSWORD_SECRET: dragonfly-securo-auth
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: securo-mcp
+spec:
+  dependsOn:
+    - name: toolhive-operator
+      namespace: ai
+    - name: onepassword
+      namespace: external-secrets
+  interval: 1h
+  path: ./kubernetes/apps/default/securo/mcp
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: default
+  wait: false

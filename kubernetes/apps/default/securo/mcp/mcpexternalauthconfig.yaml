@@ -1,0 +1,11 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPExternalAuthConfig
+metadata:
+  name: securo-bearer
+spec:
+  type: bearerToken
+  bearerToken:
+    tokenSecretRef:
+      name: securo-mcp-token
+      key: token

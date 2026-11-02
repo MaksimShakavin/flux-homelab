@@ -18,6 +18,10 @@ model:
 dashboard:
   public_url: https://hermes.exelent.click
 
+mcp_servers:
+  securo:
+    url: http://mcp-securo-remote-proxy.default.svc.cluster.local:8080/mcp
+
 gateway:
   platforms:
     telegram:
