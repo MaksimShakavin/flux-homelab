@@ -153,7 +153,7 @@ spec:
           port-watchdog:
             image:
               repository: docker.io/alpine/curl
-              tag: 8.22.0@sha256:f05779b04a6f3c6f228c67118786f5c80d4c4922dd79b0b24c92dc10a74f594f
+              tag: 8.23.0@sha256:96a0479d24c465a7d8d29ebf5ebe92b82536e8443a870d2654e66d3ac235441f
             command: [ "/bin/sh", "/scripts/port-watchdog.sh" ]
             env:
               TZ: "Europe/Warsaw"
