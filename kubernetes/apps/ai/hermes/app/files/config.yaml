@@ -17,3 +17,9 @@ model:
 
 dashboard:
   public_url: https://hermes.exelent.click
+
+gateway:
+  platforms:
+    telegram:
+      extra:
+        disable_topic_auto_rename: true
