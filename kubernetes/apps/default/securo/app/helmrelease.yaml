@@ -35,7 +35,11 @@ spec:
               - name: STORAGE_LOCAL_PATH
                 value: /app/data/attachments
               - name: AGENTS_ENABLED
-                value: "false"
+                value: "true"
+              - name: AGENTS_BUILTIN_MCP_URL
+                value: "http://securo-mcp.default.svc:8765/mcp"
+              - name: AGENTS_MCP_ALLOWED_ORIGINS
+                value: ""
               - name: SIMPLEFIN_ENABLED
                 value: "false"
               - name: TESOURO_DIRETO_ENABLED
@@ -127,6 +131,23 @@ spec:
                 memory: 128Mi
               limits:
                 memory: 512Mi
+      mcp-server:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image: *image
+            command:
+              ["uvicorn", "mcp_server.main:app", "--host", "0.0.0.0", "--port", "8765"]
+            env: *env
+            envFrom: *envFrom
+            securityContext: *hardenedSec
+            resources:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
       frontend:
         containers:
           app:
@@ -179,6 +200,11 @@ spec:
         ports:
           http:
             port: *frontendPort
+      mcp:
+        controller: mcp-server
+        ports:
+          http:
+            port: 8765
     route:
       app:
         hostnames:
