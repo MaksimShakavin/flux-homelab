@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/gateway.networking.k8s.io/httproute_v1.json
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: litellm
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: AI
+    gethomepage.dev/name: LiteLLM
+    gethomepage.dev/icon: litellm.png
+    gethomepage.dev/description: LLM gateway / proxy
+    gethomepage.dev/href: "https://litellm.exelent.click"
+    gethomepage.dev/weight: "20"
+spec:
+  hostnames:
+    - litellm.exelent.click
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+  rules:
+    - backendRefs:
+        - name: litellm
+          port: 4000

@@ -103,6 +103,10 @@ data:
       opacity: 27 # 0-100
     cardBlur: sm
     layout:
+        AI:
+          icon: mdi-robot
+          style: row
+          columns: 2
         Home Apps:
           icon: mdi-home-assistant
           style: row

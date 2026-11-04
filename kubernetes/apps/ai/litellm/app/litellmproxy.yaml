@@ -94,9 +94,3 @@ spec:
   service:
     type: ClusterIP
     port: 4000
-  route:
-    hostnames:
-      - litellm.exelent.click
-    parentRefs:
-      - name: envoy-internal
-        namespace: network

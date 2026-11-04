@@ -104,11 +104,12 @@ spec:
                 port: http
         annotations:
           gethomepage.dev/enabled: "true"
-          gethomepage.dev/group: "Home Apps"
+          gethomepage.dev/group: AI
           gethomepage.dev/name: Hermes
           gethomepage.dev/icon: hermes.png
           gethomepage.dev/description: AI agent
           gethomepage.dev/href: "https://hermes.exelent.click"
+          gethomepage.dev/weight: "10"
     persistence:
       data:
         existingClaim: "{{ .Release.Name }}"
