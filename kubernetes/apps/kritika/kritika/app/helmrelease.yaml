@@ -1,0 +1,107 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kritika
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: kritika
+  interval: 1h
+  values:
+    replicas: 2
+    deploymentAnnotations:
+      secret.reloader.stakater.com/auto: "true"
+    config:
+      webUrl: https://kritika.exelent.click
+      auth:
+        admin:
+          password: { env: KRITIKA_AUTH_ADMIN_PASSWORD }
+      review:
+        model: litellm/personal-gpt-codex
+        approve: true
+      confidence:
+        model: litellm/personal-gpt-luna
+      embedding:
+        model: litellm/voyage-code-4
+        dims: 1024
+        documentPrompt: "Represent the document for retrieval: "
+        queryPrompt: "Represent the query for retrieving supporting documents: "
+        similarFloor: 0.3
+      apps:
+        github:
+          accounts: [MaksimShakavin]
+          clientId: { env: KRITIKA_GITHUB_CLIENT_ID }
+          privateKey: { env: KRITIKA_GITHUB_PRIVATE_KEY }
+          webhookSecret: { env: KRITIKA_GITHUB_WEBHOOK_SECRET }
+      providers:
+        litellm:
+          type: openai
+          baseUrl: http://litellm.ai.svc.cluster.local:4000/v1
+          apiKey: { env: LITELLM_API_KEY }
+      egress:
+        allow: ["*"]
+        deny: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, "*.internal"]
+      trigger:
+        exclude:
+          - { name: forks, expr: pr.fork }
+    envFrom:
+      - secretRef:
+          name: kritika-secret
+      - secretRef:
+          name: kritika-litellm-key
+    database:
+      app:
+        existingSecret: kritika-postgres-app
+      owner:
+        existingSecret: kritika-postgres-owner
+    gatewayCache:
+      enabled: true
+      storage:
+        type: s3
+        endpoint: https://garage-s3.exelent.click
+        region: garage
+        bucket: kritika
+        forcePathStyle: true
+        existingSecret: kritika-s3-secret
+    runner:
+      podTemplate:
+        spec:
+          resources:
+            requests:
+              cpu: 10m
+              memory: 512Mi
+            limits:
+              memory: 2Gi
+          runtimeClassName: gvisor
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: envoy-external
+          namespace: network
+      hostnames:
+        - kritika.exelent.click
+    monitoring:
+      prometheusRule:
+        enabled: true
+      serviceMonitor:
+        enabled: true
+    networkPolicy:
+      # litellm serves on :4000 (not an egressPort); only litellm listens on 4000
+      # in the ai namespace, so the namespace-scoped rule is effectively scoped to it.
+      extraEgress:
+        - to:
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: ai
+          ports:
+            - port: 4000
+      postgres:
+        namespace: database
+        podSelector:
+          cnpg.io/cluster: postgres-kritika
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi

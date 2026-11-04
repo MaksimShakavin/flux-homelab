@@ -1,0 +1,50 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./database.yaml
+  - ./databaserole.yaml
+  - ./externalsecret.yaml
+patches:
+  # kritika needs: a non-superuser owner (it refuses a superuser owner),
+  # pgvector + VectorChord, and the two-role model (owner + kritika_app). vchord
+  # is supplied declaratively via an image volume onto the standard CNPG PG18
+  # image (same proven pattern as immich on this cluster).
+  - target:
+      kind: Cluster
+    patch: |
+      - op: replace
+        path: /spec/enableSuperuserAccess
+        value: false
+      - op: add
+        path: /spec/postgresql/shared_preload_libraries
+        value:
+          - vchord.so
+      - op: add
+        path: /spec/postgresql/extensions
+        value:
+          - name: vchord
+            image:
+              reference: ghcr.io/tensorchord/vchord-scratch:pg18-v1.1.1
+            dynamic_library_path:
+              - /usr/lib/postgresql/18/lib
+            extension_control_path:
+              - /usr/share/postgresql/18/
+      # Brand-new cluster: nothing to recover yet, so initdb instead of recovery.
+      # The owner password comes from 1Password (postgres-kritika-owner), shared
+      # with the app-namespace uri secrets, so CNPG does not auto-generate one.
+      # After the first backup lands, remove this block to restore DR auto-restore
+      # (recovery). Keep the owner password stable in 1Password so a recovered
+      # cluster's owner creds still match the uri secrets.
+      - op: remove
+        path: /spec/bootstrap/recovery
+      - op: remove
+        path: /spec/externalClusters
+      - op: add
+        path: /spec/bootstrap/initdb
+        value:
+          database: kritika
+          owner: kritika
+          secret:
+            name: postgres-kritika-owner
