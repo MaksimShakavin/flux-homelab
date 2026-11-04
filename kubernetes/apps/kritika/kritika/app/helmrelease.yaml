@@ -40,6 +40,10 @@ spec:
           type: openai
           baseUrl: http://litellm.ai.svc.cluster.local:4000/v1
           apiKey: { env: LITELLM_API_KEY }
+          # USD per 1M tokens; drop for runtime usage.cost once litellm ships BerriAI/litellm#41532
+          pricing:
+            personal-gpt-codex: { input: 2, output: 10 }
+            personal-gpt-luna: { input: 0.1, output: 0.5 }
       egress:
         allow: ["*"]
         deny: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, "*.internal"]
