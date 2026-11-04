@@ -53,6 +53,11 @@ spec:
         secretKeyRef:
           name: litellm-secret
           key: CLIPROXY_API_KEY
+    - name: OPENROUTER_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: litellm-secret
+          key: OPENROUTER_API_KEY
     - name: DATABASE_URL
       valueFrom:
         secretKeyRef:
