@@ -8,7 +8,7 @@ metadata:
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: AI
     gethomepage.dev/name: LiteLLM
-    gethomepage.dev/icon: litellm.png
+    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/litellm.png
     gethomepage.dev/description: LLM gateway / proxy
     gethomepage.dev/href: "https://litellm.exelent.click"
     gethomepage.dev/weight: "20"
