@@ -81,6 +81,14 @@ spec:
           runtimeClassName: gvisor
     httpRoute:
       enabled: true
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: AI
+        gethomepage.dev/name: Kritika
+        gethomepage.dev/icon: https://cdn.simpleicons.org/refinedgithub/9E95B7
+        gethomepage.dev/description: AI PR reviewer
+        gethomepage.dev/href: "https://kritika.exelent.click"
+        gethomepage.dev/weight: "30"
       parentRefs:
         - name: envoy-external
           namespace: network
