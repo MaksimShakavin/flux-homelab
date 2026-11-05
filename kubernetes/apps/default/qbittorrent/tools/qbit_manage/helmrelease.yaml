@@ -27,7 +27,7 @@ spec:
           copy-config-secret:
             image:
               repository: docker.io/library/alpine
-              tag: 3.24.3
+              tag: 3.24.4
             command:
               - "sh"
               - "-c"
