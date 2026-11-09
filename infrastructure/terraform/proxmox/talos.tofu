@@ -6,7 +6,7 @@ locals {
   # also hardcoded in the Talos node overlays; keep in sync when changing
   mac_addresses = ["BC:24:11:B5:DD:1F", "BC:24:11:0C:FD:22", "BC:24:11:A8:19:33"]
   # renovate: datasource=custom.talos-factory depName=siderolabs/talos
-  talos_version  = "v1.13.10"
+  talos_version  = "v1.13.12"
   talos_image_id = "583560d413df7502f15f3c274c36fc23ce1af48cef89e98b1e563fb49127606e"
 }
 
