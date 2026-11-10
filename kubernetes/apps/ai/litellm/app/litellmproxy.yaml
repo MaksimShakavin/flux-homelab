@@ -15,6 +15,10 @@ spec:
   generalSettings:
     health_check_endpoint: /v1/health
     disable_env_credential_login: true
+    store_model_in_db: true
+    store_prompts_in_spend_logs: true
+    maximum_spend_logs_retention_period: 30d
+    maximum_spend_logs_retention_interval: 1d
   routerSettings:
     routing_strategy: simple-shuffle
     redis_host: os.environ/REDIS_HOST
