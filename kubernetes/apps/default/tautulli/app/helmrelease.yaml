@@ -39,7 +39,6 @@ spec:
                   timeoutSeconds: 1
                   failureThreshold: 3
               readiness: *probes
-              # 2.19.x first-boot config/db upgrade can exceed the 30s liveness budget → SIGKILL loop
               startup:
                 enabled: true
                 custom: true
