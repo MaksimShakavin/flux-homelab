@@ -10,6 +10,6 @@ spec:
   keyAlias: paperless
   models:
     - personal-gpt-codex
-    - voyage-3-5
+    - text-embedding-3-small
   secretName: paperless-litellm-key
   secretKey: LITELLM_API_KEY

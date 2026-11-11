@@ -17,11 +17,11 @@ spec:
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
 metadata:
-  name: voyage-3-5
+  name: text-embedding-3-small
 spec:
-  modelName: voyage-3-5
+  modelName: text-embedding-3-small
   params:
-    model: openai/voyageai/voyage-3.5
+    model: openai/openai/text-embedding-3-small
     apiBase: https://openrouter.ai/api/v1
     apiKey: os.environ/OPENROUTER_API_KEY
   info:
