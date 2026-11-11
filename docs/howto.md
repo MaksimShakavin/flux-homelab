@@ -85,15 +85,17 @@ Delete information about rest nodes in /etc/pve/nodes
 ### Remove a Garage bucket
 
 Buckets are normally managed via the `infrastructure/terraform/garage` module. To
-remove one ad-hoc with the `mc` client:
+remove one ad-hoc with the `rclone` client:
 
-1. Authenticate to Garage (creds live in the 1Password `garage-buckets` item)
+1. Configure a Garage remote (creds live in the 1Password `garage-buckets` item)
     ```shell
-    mc alias set garage https://garage-s3.exelent.click [ACCESS_KEY] [SECRET_KEY]
+    rclone config create garage s3 provider=Other \
+      endpoint=https://garage-s3.exelent.click \
+      access_key_id=[ACCESS_KEY] secret_access_key=[SECRET_KEY]
     ```
-2. Remove the bucket
+2. Remove the bucket (deletes all objects and the bucket itself)
     ```shell
-    mc rb --force --dangerous garage/mybucket
+    rclone purge garage:mybucket
     ```
 
 
