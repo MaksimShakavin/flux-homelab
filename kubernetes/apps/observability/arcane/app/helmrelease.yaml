@@ -1,0 +1,92 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app arcane
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: arcane
+  values:
+    controllers:
+      arcane:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: getarcaneapp/manager
+              tag: "v2.17.3"
+            env:
+              TZ: Europe/Warsaw
+              ARCANE_PORT: &port 3552
+              ARCANE_APP_URL: https://arcane.exelent.click
+              ARCANE_ENVIRONMENT: production
+              ARCANE_TRUSTED_PROXIES: 10.69.0.0/16
+            envFrom:
+              - secretRef:
+                  name: arcane-secret
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: *port
+                  initialDelaySeconds: 15
+                  periodSeconds: 20
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.exelent.click"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://arcane.exelent.click"
+          gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/arcane.png
+          gethomepage.dev/name: Arcane
+          gethomepage.dev/group: "Monitoring & Observability"
+          gethomepage.dev/description: Container management UI
+          gethomepage.dev/weight: "20"
+    persistence:
+      data:
+        existingClaim: *app
+        globalMounts:
+          - path: /app/data
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp

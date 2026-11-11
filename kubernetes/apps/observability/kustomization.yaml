@@ -10,6 +10,7 @@ components:
 
 resources:
   - ./namespace.yaml
+  - ./arcane/ks.yaml
   - ./portainer/ks.yaml
   - ./gatus/ks.yaml
   - ./kube-prometheus-stack/ks.yaml
