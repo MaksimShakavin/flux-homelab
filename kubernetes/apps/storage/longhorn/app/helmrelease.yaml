@@ -23,6 +23,9 @@ spec:
       storageMinimalAvailablePercentage: 1
       guaranteedEngineManagerCPU: 20
       guaranteedReplicaManagerCPU: 20
+      engineImagePodLivenessProbeTimeout: 15
+      engineImagePodLivenessProbeFailureThreshold: 5
+      instanceManagerPodLivenessProbeTimeout: 30
       orphanAutoDeletion: true
       defaultLonghornStaticStorageClass: longhorn
       nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod

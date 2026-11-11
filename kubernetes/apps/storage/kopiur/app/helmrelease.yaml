@@ -10,6 +10,7 @@ spec:
     name: kopiur
   interval: 1h
   values:
+    maxConcurrentJobs: 3
     monitoring:
       dashboards:
         enabled: true
