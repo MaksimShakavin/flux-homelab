@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: victoria-metrics
+spec:
+  components:
+    - ../../../../components/kopiur/backup
+  dependsOn:
+    - name: longhorn
+      namespace: storage
+  interval: 1h
+  path: ./kubernetes/apps/observability/victoria-metrics/app
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: observability
+  wait: false
+  postBuild:
+    substitute:
+      APP: victoria-metrics
+      APP_NAMESPACE: observability
+      KOPIUR_CAPACITY: 20Gi
+      KOPIUR_PUID: "0"
+      KOPIUR_PGID: "0"

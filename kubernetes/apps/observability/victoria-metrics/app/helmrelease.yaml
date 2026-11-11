@@ -1,0 +1,54 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: victoria-metrics
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: victoria-metrics
+  interval: 1h
+  values:
+    fullnameOverride: victoria-metrics
+    server:
+      persistentVolume:
+        enabled: true
+        existingClaim: victoria-metrics
+      retentionPeriod: 5y
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 2Gi
+      route:
+        enabled: true
+        hostnames:
+          - victoria-metrics.exelent.click
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://victoria-metrics.exelent.click"
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=victoria-metrics-single
+          gethomepage.dev/icon: victoriametrics.png
+          gethomepage.dev/name: Victoria Metrics
+          gethomepage.dev/group: "Monitoring & Observability"
+          gethomepage.dev/description: IoT metrics storage & querying
+          gethomepage.dev/weight: "71"
+        extraRules:
+          - filters:
+              - type: RequestRedirect
+                requestRedirect:
+                  path:
+                    type: ReplaceFullPath
+                    replaceFullPath: /vmui/
+                  statusCode: 302
+            matches:
+              - path:
+                  type: Exact
+                  value: /
+      serviceMonitor:
+        enabled: true
