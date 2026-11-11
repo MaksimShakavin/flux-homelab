@@ -89,8 +89,6 @@ spec:
       value: openid email profile
     - name: AUTO_REDIRECT_UI_LOGIN_TO_SSO
       value: "true"
-  # v1.109.0 cold start (~66s) exceeds the operator's default ~40s liveness budget;
-  # no startupProbe is exposed, so widen the liveness window to tolerate it.
   livenessProbe:
     httpGet:
       path: /health/liveliness
