@@ -12,3 +12,17 @@ spec:
     apiKey: os.environ/OPENROUTER_API_KEY
   info:
     mode: embedding
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: voyage-3-5
+spec:
+  modelName: voyage-3-5
+  params:
+    model: openai/voyageai/voyage-3.5
+    apiBase: https://openrouter.ai/api/v1
+    apiKey: os.environ/OPENROUTER_API_KEY
+  info:
+    mode: embedding

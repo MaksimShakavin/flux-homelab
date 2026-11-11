@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: paperless
+spec:
+  proxyRef: litellm
+  proxyNamespace: ai
+  keyAlias: paperless
+  models:
+    - personal-gpt-codex
+    - voyage-3-5
+  secretName: paperless-litellm-key
+  secretKey: LITELLM_API_KEY
