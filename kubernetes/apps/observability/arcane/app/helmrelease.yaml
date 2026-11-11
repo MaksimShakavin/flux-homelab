@@ -21,10 +21,10 @@ spec:
               tag: "v2.17.3"
             env:
               TZ: Europe/Warsaw
-              ARCANE_PORT: &port 3552
-              ARCANE_APP_URL: https://arcane.exelent.click
-              ARCANE_ENVIRONMENT: production
-              ARCANE_TRUSTED_PROXIES: 10.69.0.0/16
+              PORT: &port 3552
+              APP_URL: https://arcane.exelent.click
+              ENVIRONMENT: production
+              TRUSTED_PROXIES: 10.69.0.0/16
             envFrom:
               - secretRef:
                   name: arcane-secret
