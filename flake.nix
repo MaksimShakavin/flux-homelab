@@ -33,7 +33,6 @@
             pkgs.minijinja
             pkgs._1password-cli
             pkgs.cilium-cli
-            pkgs.minio-client
           ];
         };
       });
