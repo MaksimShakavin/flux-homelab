@@ -64,6 +64,22 @@ module "oauth2-portainer" {
   redirect_uris      = ["https://portainer.exelent.click/"]
 }
 
+module "oauth2-arcane" {
+  source             = "./oauth2_application"
+  name               = "Arcane"
+  icon_url           = "https://cdn.jsdelivr.net/gh/selfhst/icons/svg/arcane.svg"
+  launch_url         = "https://arcane.exelent.click"
+  description        = "Container management UI"
+  newtab             = true
+  group              = "Infrastructure"
+  auth_groups        = [authentik_group.infrastructure.id]
+  authorization_flow = resource.authentik_flow.provider-authorization-implicit-consent.uuid
+  invalidation_flow  = data.authentik_flow.default-provider-invalidation-flow.id
+  client_id          = module.secret_arcane.fields["OIDC_CLIENT_ID"]
+  client_secret      = module.secret_arcane.fields["OIDC_CLIENT_SECRET"]
+  redirect_uris      = ["https://arcane.exelent.click/auth/oidc/callback"]
+}
+
 module "oauth2-lubelogger" {
   source             = "./oauth2_application"
   name               = "Lubelogger"
