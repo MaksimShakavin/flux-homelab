@@ -9,6 +9,11 @@ spec:
     - targets:
         - 192.168.20.3:9100
         - nas.exelent.click:9100
+    - targets:
+        - pirs-vpn.observability.svc.cluster.local:9100
+      labels:
+        instance: pirs-rpi
+        home: pirs
   metricsPath: /metrics
   relabelings:
     - action: replace
