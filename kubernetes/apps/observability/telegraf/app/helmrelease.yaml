@@ -57,7 +57,7 @@ spec:
                   secretKeyRef:
                     name: telegraf-vpn-secret
                     key: OPENVPN_PASSWORD
-              FIREWALL_INPUT_PORTS: "1883"
+              FIREWALL_INPUT_PORTS: "1883,9999"
               FIREWALL_OUTBOUND_SUBNETS: "10.69.0.0/16,10.96.0.0/16"
               HEALTH_SERVER_ADDRESS: ":9999"
             probes:
