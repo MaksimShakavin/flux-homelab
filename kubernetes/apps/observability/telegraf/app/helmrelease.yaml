@@ -31,100 +31,11 @@ spec:
                 cpu: 10m
               limits:
                 memory: 256Mi
-      vpn-gateway:
-        annotations:
-          reloader.stakater.com/auto: "true"
-        initContainers:
-          gluetun:
-            image:
-              repository: ghcr.io/qdm12/gluetun
-              tag: v3.41.3@sha256:fa19cc76b2af13d57a8d3dc3066f2ada061b1c761b8aecf989b3877c0486e027
-            restartPolicy: Always
-            env:
-              TZ: "Europe/Warsaw"
-              PUID: "0"
-              PGID: "0"
-              VPN_SERVICE_PROVIDER: custom
-              VPN_TYPE: openvpn
-              OPENVPN_CUSTOM_CONFIG: /gluetun/custom/client.conf
-              OPENVPN_USER:
-                valueFrom:
-                  secretKeyRef:
-                    name: telegraf-vpn-secret
-                    key: OPENVPN_USER
-              OPENVPN_PASSWORD:
-                valueFrom:
-                  secretKeyRef:
-                    name: telegraf-vpn-secret
-                    key: OPENVPN_PASSWORD
-              FIREWALL_INPUT_PORTS: "1883,9999"
-              FIREWALL_OUTBOUND_SUBNETS: "10.69.0.0/16,10.96.0.0/16"
-              HEALTH_SERVER_ADDRESS: ":9999"
-            probes:
-              startup:
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /
-                    port: 9999
-                  initialDelaySeconds: 5
-                  periodSeconds: 10
-                  failureThreshold: 30
-              liveness:
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /
-                    port: 9999
-                  initialDelaySeconds: 30
-                  periodSeconds: 30
-                  timeoutSeconds: 5
-                  failureThreshold: 5
-              readiness:
-                enabled: false
-            securityContext:
-              runAsUser: 0
-              runAsGroup: 0
-              runAsNonRoot: false
-              allowPrivilegeEscalation: false
-              capabilities:
-                add: ["NET_ADMIN"]
-                drop: ["ALL"]
-            resources:
-              requests:
-                cpu: 25m
-              limits:
-                squat.ai/tun: 1
-                memory: 128Mi
-        containers:
-          socat:
-            image:
-              repository: docker.io/alpine/socat
-              tag: 1.8.1.3@sha256:e8a6e8868a8e6e01d9c2c321a8f8d4474d2d741d962462e5c5a124a8e66a0055
-            args: ["-d", "TCP-LISTEN:1883,fork,reuseaddr", "TCP:192.168.50.27:1883"]
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
-            resources:
-              requests:
-                cpu: 10m
-              limits:
-                memory: 32Mi
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
         runAsGroup: 1000
-    service:
-      pirs-broker:
-        controller: vpn-gateway
-        forceRename: pirs-broker
-        ports:
-          mqtt:
-            port: 1883
     persistence:
       config:
         type: configMap
@@ -134,19 +45,3 @@ spec:
             app:
               - path: /etc/telegraf/telegraf.conf
                 subPath: telegraf.conf
-      vpn-config:
-        type: secret
-        name: telegraf-vpn-secret
-        advancedMounts:
-          vpn-gateway:
-            gluetun:
-              - path: /gluetun/custom/client.conf
-                subPath: client.conf
-                readOnly: true
-      gluetun-tmp:
-        type: emptyDir
-        medium: Memory
-        advancedMounts:
-          vpn-gateway:
-            gluetun:
-              - path: /tmp/gluetun
