@@ -1,0 +1,36 @@
+services:
+  garage:
+    image: dxflrs/garage:v2.5.0
+    restart: unless-stopped
+    command: ["/garage", "server"]
+    networks:
+      garage: {}
+    ports:
+      - "3900:3900"
+      - "3902:3902"
+      - "3903:3903"
+    environment:
+      RUST_LOG: garage=info
+    volumes:
+      - "/volume1/docker/garage/data:/data"
+      - "/volume1/docker/garage/meta:/metadata"
+      - "/volume1/docker/garage/garage.toml:/etc/garage.toml:ro"
+  garage-webui:
+    image: khairul169/garage-webui:1.1.0
+    restart: unless-stopped
+    depends_on:
+      - garage
+    networks:
+      garage: {}
+    ports:
+      - "3909:3909"
+    environment:
+      API_BASE_URL: "http://garage:3903"
+      S3_ENDPOINT_URL: "http://garage:3900"
+      S3_REGION: "garage"
+    volumes:
+      - "/volume1/docker/garage/garage.toml:/etc/garage.toml:ro"
+
+networks:
+  garage:
+    driver: bridge

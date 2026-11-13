@@ -1,0 +1,11 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  packageRules: [
+    {
+      // let docker-compose own these; kubernetes manager would duplicate the PR
+      matchFileNames: ["infrastructure/compose/**"],
+      matchManagers: ["kubernetes"],
+      enabled: false,
+    },
+  ],
+}

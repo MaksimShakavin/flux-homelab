@@ -9,6 +9,7 @@
 
   vars:
     garage_dir: /volume1/docker/garage
+    compose_src: "{{ playbook_dir }}/../../compose/nas"
     # DSM keeps the docker CLI out of Ansible's PATH (/usr/bin:/bin:/usr/sbin:/sbin).
     docker_cli: /usr/local/bin/docker
     # DSM ships Python 3.8, but ansible-core needs 3.9+ on the target. Bootstrap a
@@ -89,6 +90,23 @@
         garage_admin_token: "{{ garage_admin_token_field.field.value }}"
       no_log: true
 
+    - name: Get arcane-agent enrollment token from 1Password
+      onepassword.connect.field_info:
+        token: "{{ sops.OP_CONNECT_TOKEN }}"
+        hostname: "{{ sops.OP_CONNECT_HOST }}"
+        item: arcane
+        field: AGENT_TOKEN_NAS
+        vault: homelab
+      no_log: true
+      delegate_to: localhost
+      become: false
+      register: arcane_agent_token_field
+
+    - name: Set arcane-agent token fact
+      ansible.builtin.set_fact:
+        arcane_agent_token: "{{ arcane_agent_token_field.field.value }}"
+      no_log: true
+
     # --- Bootstrap a target Python (raw = no target Python required) ---------
     - name: Bootstrap standalone Python for Ansible
       ansible.builtin.raw: |
@@ -131,48 +149,7 @@
       community.docker.docker_compose_v2:
         docker_cli: "{{ docker_cli }}"
         project_name: garage
-        definition:
-          services:
-            garage:
-              image: dxflrs/garage:v2.5.0
-              restart: unless-stopped
-              # Image has no ENTRYPOINT, so the command needs the full binary path.
-              command: ["/garage", "server"]
-              networks:
-                garage: {}
-              # RPC (3901) stays internal; S3, web, and admin are published.
-              ports:
-                - "3900:3900"
-                - "3902:3902"
-                - "3903:3903"
-              environment:
-                RUST_LOG: garage=info
-              volumes:
-                - "{{ garage_dir }}/data:/data"
-                - "{{ garage_dir }}/meta:/metadata"
-                - "{{ garage_dir }}/garage.toml:/etc/garage.toml:ro"
-            # Web UI for bucket/key/object management (Garage ships no UI of its own).
-            garage-webui:
-              image: khairul169/garage-webui:1.1.0
-              restart: unless-stopped
-              depends_on:
-                - garage
-              networks:
-                garage: {}
-              ports:
-                - "3909:3909"
-              # It reads admin_token from garage.toml, but the toml's bind addrs are
-              # "[::]" which the UI would resolve to its own localhost — so point the
-              # admin/S3 URLs at the garage service over the shared bridge explicitly.
-              environment:
-                API_BASE_URL: "http://garage:3903"
-                S3_ENDPOINT_URL: "http://garage:3900"
-                S3_REGION: "garage"
-              volumes:
-                - "{{ garage_dir }}/garage.toml:/etc/garage.toml:ro"
-          networks:
-            garage:
-              driver: bridge
+        definition: "{{ lookup('ansible.builtin.file', compose_src + '/garage/compose.yaml') | from_yaml }}"
         state: present
 
     # --- Prometheus node-exporter -------------------------------------------
@@ -180,36 +157,19 @@
       community.docker.docker_compose_v2:
         docker_cli: "{{ docker_cli }}"
         project_name: node-exporter
-        definition:
-          services:
-            node-exporter:
-              image: quay.io/prometheus/node-exporter:v1.12.1
-              restart: unless-stopped
-              network_mode: host
-              pid: host
-              command: ["--path.rootfs=/host"]
-              # No rslave propagation: Synology's Docker root mount isn't shared/slave,
-              # so requesting it fails the container.
-              volumes:
-                - "/:/host:ro"
+        definition: "{{ lookup('ansible.builtin.file', compose_src + '/node-exporter/compose.yaml') | from_yaml }}"
         state: present
 
-    # --- Portainer agent -----------------------------------------------------
-    - name: Deploy portainer-agent container project
+    # --- Arcane agent --------------------------------------------------------
+    - name: Deploy arcane-agent container project
       community.docker.docker_compose_v2:
         docker_cli: "{{ docker_cli }}"
-        project_name: portainer-agent
-        definition:
-          services:
-            portainer-agent:
-              image: portainer/agent:2.45.3
-              restart: unless-stopped
-              ports:
-                - "9001:9001"
-              volumes:
-                - "/var/run/docker.sock:/var/run/docker.sock"
-                - "/volume1/@docker/volumes:/var/lib/docker/volumes"
+        project_name: arcane-agent
+        definition: "{{ lookup('ansible.builtin.file', compose_src + '/arcane-agent/compose.yaml') | from_yaml }}"
         state: present
+      environment:
+        ARCANE_AGENT_TOKEN: "{{ arcane_agent_token }}"
+      no_log: true
 
     # --- Tear down the bootstrapped Python -----------------------------------
     - name: Remove the bootstrapped Python

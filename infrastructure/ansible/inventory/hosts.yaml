@@ -23,3 +23,11 @@ all:
         # default transfer fails; use piped transfers over the shell session.
         ansible_ssh_transfer_method: piped
         sops: "{{ lookup('community.sops.sops', lookup('env', 'INFRA_SECRETS_FILE')) | ansible.builtin.from_yaml }}"
+    raspberrypi:
+      hosts:
+        rpi:
+          ansible_host: 192.168.20.3
+      vars:
+        ansible_user: pi
+        ansible_python_interpreter: auto_silent
+        sops: "{{ lookup('community.sops.sops', lookup('env', 'INFRA_SECRETS_FILE')) | ansible.builtin.from_yaml }}"

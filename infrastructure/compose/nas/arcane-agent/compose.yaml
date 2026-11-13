@@ -1,0 +1,16 @@
+services:
+  arcane-agent:
+    image: getarcaneapp/agent:v2.17.3
+    restart: unless-stopped
+    environment:
+      EDGE_AGENT: "true"
+      EDGE_TRANSPORT: auto
+      # Routed LB IP: the arcane.exelent.click envoy VIP (.20) isn't ARP-reachable from this subnet.
+      MANAGER_API_URL: http://192.168.69.64:3552
+      AGENT_TOKEN: ${ARCANE_AGENT_TOKEN:?ARCANE_AGENT_TOKEN is required}
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "arcane-agent-data:/app/data"
+
+volumes:
+  arcane-agent-data:

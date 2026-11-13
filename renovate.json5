@@ -8,6 +8,7 @@
     "helpers:pinGitHubActionDigests",
     "github>MaksimShakavin/flux-homelab//.renovate/autoMerge.json5",
     "github>MaksimShakavin/flux-homelab//.renovate/customManagers.json5",
+    "github>MaksimShakavin/flux-homelab//.renovate/composeFiles.json5",
     "github>MaksimShakavin/flux-homelab//.renovate/changelogs.json5",
     "github>MaksimShakavin/flux-homelab//.renovate/grafanaDashboards.json5",
     "github>MaksimShakavin/flux-homelab//.renovate/groups.json5",

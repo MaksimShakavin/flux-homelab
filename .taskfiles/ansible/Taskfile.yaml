@@ -28,10 +28,16 @@ tasks:
       - ansible-playbook -i {{.ANSIBLE_INVENTORY_DIR}}/hosts.yaml {{.ANSIBLE_PLAYBOOK_DIR}}/proxmox-apt-upgrade.yaml
 
   synology-setup:
-    desc: Deploy pre-cluster containers (garage, node-exporter, portainer-agent) on Synology
+    desc: Deploy pre-cluster containers (garage, node-exporter, arcane-agent) on Synology
     deps: [deps]
     cmds:
       - ansible-playbook -i {{.ANSIBLE_INVENTORY_DIR}}/hosts.yaml {{.ANSIBLE_PLAYBOOK_DIR}}/synology-setup.yaml -v
+
+  raspberrypi-setup:
+    desc: Deploy pre-cluster containers (arcane-agent) on the Raspberry Pi
+    deps: [deps]
+    cmds:
+      - ansible-playbook -i {{.ANSIBLE_INVENTORY_DIR}}/hosts.yaml {{.ANSIBLE_PLAYBOOK_DIR}}/raspberrypi-setup.yaml -v
 
   synology-cert:
     desc: Update the Synology exelent.click TLS certificate from 1Password

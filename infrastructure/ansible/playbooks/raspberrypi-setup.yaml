@@ -1,0 +1,54 @@
+---
+- name: Set up Raspberry Pi containers (pre-cluster dependencies)
+  hosts:
+    - raspberrypi
+  become: true
+  gather_facts: false
+  any_errors_fatal: true
+
+  vars:
+    compose_src: "{{ playbook_dir }}/../../compose/pi"
+
+  tasks:
+    - name: Get arcane-agent enrollment token from 1Password
+      onepassword.connect.field_info:
+        token: "{{ sops.OP_CONNECT_TOKEN }}"
+        hostname: "{{ sops.OP_CONNECT_HOST }}"
+        item: arcane
+        field: AGENT_TOKEN_PI
+        vault: homelab
+      no_log: true
+      delegate_to: localhost
+      become: false
+      register: arcane_agent_token_field
+
+    - name: Set arcane-agent token fact
+      ansible.builtin.set_fact:
+        arcane_agent_token: "{{ arcane_agent_token_field.field.value }}"
+      no_log: true
+
+    - name: Check whether Docker is installed
+      ansible.builtin.command: docker version
+      register: docker_check
+      changed_when: false
+      failed_when: false
+
+    - name: Install Docker via the official convenience script
+      ansible.builtin.shell: curl -fsSL https://get.docker.com | sh
+      when: docker_check.rc != 0
+      changed_when: true
+
+    - name: Ensure PyYAML is present
+      ansible.builtin.apt:
+        name: python3-yaml
+        state: present
+        update_cache: true
+
+    - name: Deploy arcane-agent container project
+      community.docker.docker_compose_v2:
+        project_name: arcane-agent
+        definition: "{{ lookup('ansible.builtin.file', compose_src + '/arcane-agent/compose.yaml') | from_yaml }}"
+        state: present
+      environment:
+        ARCANE_AGENT_TOKEN: "{{ arcane_agent_token }}"
+      no_log: true
