@@ -48,22 +48,6 @@ module "oauth2-mealie" {
   redirect_uris                = ["https://mealie.exelent.click/login"]
 }
 
-module "oauth2-portainer" {
-  source             = "./oauth2_application"
-  name               = "Portainer"
-  icon_url           = "https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/portainer.svg"
-  launch_url         = "https://portainer.exelent.click"
-  description        = "Container management UI"
-  newtab             = true
-  group              = "Infrastructure"
-  auth_groups        = [authentik_group.infrastructure.id]
-  authorization_flow = resource.authentik_flow.provider-authorization-implicit-consent.uuid
-  invalidation_flow  = data.authentik_flow.default-provider-invalidation-flow.id
-  client_id          = module.secret_portainer.fields["OIDC_CLIENT_ID"]
-  client_secret      = module.secret_portainer.fields["OIDC_CLIENT_SECRET"]
-  redirect_uris      = ["https://portainer.exelent.click/"]
-}
-
 module "oauth2-arcane" {
   source             = "./oauth2_application"
   name               = "Arcane"
