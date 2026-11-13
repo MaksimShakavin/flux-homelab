@@ -8,6 +8,9 @@ spec:
   allowFirstLastIPs: "No"
   blocks:
     - cidr: 192.168.20.0/24
+    # BGP-routed range for LAN-reachable LB IPs (same-subnet hosts route in via the UDM).
+    # Must NOT be defined as a UniFi network/VLAN — a connected route would shadow the BGP route.
+    - cidr: 192.168.69.0/24
 ---
 # yaml-language-server: $schema=https://k8s-schemas.home-operations.com/cilium.io/ciliumbgpadvertisement_v2.json
 apiVersion: cilium.io/v2
