@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://json.schemastore.org/base.json
 ---
 # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-talosVersion: v1.14.5
+talosVersion: v1.14.6
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
 kubernetesVersion: v1.36.2
 # schematic: gvisor, i915, iscsi-tools, qemu-guest-agent, util-linux-tools (gvisor for kritika sandboxed runners; needs Cilium veth)
