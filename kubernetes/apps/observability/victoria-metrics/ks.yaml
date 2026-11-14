@@ -25,5 +25,5 @@ spec:
       APP: victoria-metrics
       APP_NAMESPACE: observability
       KOPIUR_CAPACITY: 20Gi
-      KOPIUR_PUID: "0"
-      KOPIUR_PGID: "0"
+      KOPIUR_PUID: "65532"
+      KOPIUR_PGID: "65532"

@@ -12,6 +12,20 @@ spec:
   values:
     fullnameOverride: victoria-metrics
     server:
+      podSecurityContext:
+        enabled: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        runAsNonRoot: true
+        fsGroup: 65532
+      securityContext:
+        enabled: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: ["ALL"]
       persistentVolume:
         enabled: true
         existingClaim: victoria-metrics
