@@ -5,3 +5,17 @@ kind: Kustomization
 resources:
   - ./helmrelease.yaml
   - ./ocirepository.yaml
+patches:
+  # VM's cache/ is regenerable and its dirs are mode drwxrws--- (no "other"
+  # access); the non-root mover reads the Longhorn clone as "other" and fails
+  # on them. Exclude cache from the backup. (ext4 PVC, so only /lost+found of
+  # the CRD default ignoreRules is relevant.)
+  - target:
+      kind: SnapshotPolicy
+    patch: |
+      - op: add
+        path: /spec/files
+        value:
+          ignoreRules:
+            - /lost+found
+            - /cache
