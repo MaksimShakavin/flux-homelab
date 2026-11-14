@@ -1,6 +1,6 @@
 services:
   node-red-homekit:
-    image: nrchkb/node-red-homekit:latest@sha256:85dd7e30c6edc3f2bde19129bcd1e7d348b8e219835b3eb06d6d7fb6ddecb86b
+    image: nrchkb/node-red-homekit:latest@sha256:cd740ac20c77726001791a408318e4c70005dfd95c2dfdac40d2c1da9e77b633
     restart: unless-stopped
     # HomeKit (HAP/mDNS) needs the host network to be discoverable by the Home app.
     network_mode: host
