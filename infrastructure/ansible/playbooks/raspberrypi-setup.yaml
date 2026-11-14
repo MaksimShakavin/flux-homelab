@@ -58,3 +58,9 @@
         project_name: node-exporter
         definition: "{{ lookup('ansible.builtin.file', compose_src + '/node-exporter/compose.yaml') | from_yaml }}"
         state: present
+
+    - name: Deploy node-red container project
+      community.docker.docker_compose_v2:
+        project_name: node-red
+        definition: "{{ lookup('ansible.builtin.file', compose_src + '/node-red/compose.yaml') | from_yaml }}"
+        state: present
