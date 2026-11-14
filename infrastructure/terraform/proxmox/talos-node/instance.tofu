@@ -55,7 +55,7 @@ resource "proxmox_virtual_environment_vm" "node" {
   }
 
   cdrom {
-    file_id   = proxmox_virtual_environment_download_file.talos_img.id
+    file_id   = proxmox_download_file.talos_img.id
     interface = "ide0"
   }
 
@@ -71,9 +71,14 @@ resource "proxmox_virtual_environment_vm" "node" {
   }
 }
 
-resource "proxmox_virtual_environment_download_file" "talos_img" {
+resource "proxmox_download_file" "talos_img" {
   content_type = "iso"
   datastore_id = "local"
   node_name    = var.target_node
   url          = var.iso_path
+}
+
+moved {
+  from = proxmox_virtual_environment_download_file.talos_img
+  to   = proxmox_download_file.talos_img
 }

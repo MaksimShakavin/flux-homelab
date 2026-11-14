@@ -72,3 +72,21 @@ provider "registry.opentofu.org/hashicorp/http" {
     "zh:d9d81ecebfe6edabdd4c527f3f4debde3e052ff87c5ef4c67497ab3d7539e424",
   ]
 }
+
+provider "registry.terraform.io/arsolitt/garagehq" {
+  version     = "1.3.1"
+  constraints = "1.3.1"
+  hashes = [
+    "h1:1v3ZdzIPUUiLbe/K8G7zGv0WO0SLmS5jsgyv7WlEZFs=",
+    "h1:e7dOlL0KaKBW/B3i9U3M8wMfm42VSExIG5VG6GsT7yA=",
+    "zh:074b3f5be1c72dfff22bd1b533b34355992339bde6ab888ff10eea63bbc264b2",
+    "zh:3c2e93e2694698dc2bd1e1e33375bccd6b350ae9dac0cdc817229461e7c6aad5",
+    "zh:83b5ebcc1e0aeb425b93d10345a0297ee7a80cf8568ca33805a29862a9cd075c",
+    "zh:baed3c20f8db698572a80d3b5e67c759127b76326c09cab9d957cd359a250cb1",
+    "zh:c1e5419333d97894bd9e39c823c1ade3ee2b1aa509fbb491eb4026fe31e94336",
+    "zh:c622818efebf90dcd95c58e7e5fa0447a8513bfec6b2cf711b0fc5b317237ac1",
+    "zh:d1a335489bdcdd0f92d474ce7a13176f2256214fa65ae6aee80fbf1f6677f069",
+    "zh:d801fdad7e867d8d5456eefb3535b01d6ae25b453fe29c4d7cbe38d1033ff41a",
+    "zh:e4a43a0acf21a21ec93fde017c995ac5de116eda3aa69a87a71a636d80d6fceb",
+  ]
+}

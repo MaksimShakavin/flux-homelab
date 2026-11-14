@@ -16,10 +16,10 @@ terraform {
   }
 
   required_providers {
-    # Forked to add website_access on garage_bucket; unpinned because it runs via
-    # a ~/.tofurc dev_override until the upstream PR is released.
+    # Terraform-registry-only provider; host-qualified so OpenTofu resolves it.
     garage = {
-      source = "arsolitt/garagehq"
+      source  = "registry.terraform.io/arsolitt/garagehq"
+      version = "1.3.1"
     }
     http = {
       source = "hashicorp/http"

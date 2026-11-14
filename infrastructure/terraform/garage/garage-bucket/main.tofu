@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     garage = {
-      source = "arsolitt/garagehq"
+      source = "registry.terraform.io/arsolitt/garagehq"
     }
   }
 }
