@@ -31,3 +31,57 @@ spec:
     - datasourceName: prometheus
       inputName: DS_DS_PROMETHEUS
   url: https://git.deuxfleurs.fr/Deuxfleurs/garage/raw/tag/v2.3.0/script/telemetry/grafana-garage-dashboard-prometheus.json
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: iot-pohulanka
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: smart-home-pohulanka
+  instanceSelector:
+    matchLabels:
+      grafana.internal/instance: grafana
+  datasources:
+    - datasourceName: VictoriaMetrics
+      inputName: DS_VICTORIAMETRICS
+  configMapRef:
+    name: grafana-dashboard-pohulanka
+    key: pohulanka.json
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: iot-pirs-consumption
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: smart-home-pirs
+  instanceSelector:
+    matchLabels:
+      grafana.internal/instance: grafana
+  datasources:
+    - datasourceName: VictoriaMetrics
+      inputName: DS_VICTORIAMETRICS
+  configMapRef:
+    name: grafana-dashboard-pirs-consumption
+    key: pirs-consumption.json
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: iot-pirs-climate
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: smart-home-pirs
+  instanceSelector:
+    matchLabels:
+      grafana.internal/instance: grafana
+  datasources:
+    - datasourceName: VictoriaMetrics
+      inputName: DS_VICTORIAMETRICS
+  configMapRef:
+    name: grafana-dashboard-pirs-climate
+    key: pirs-climate.json

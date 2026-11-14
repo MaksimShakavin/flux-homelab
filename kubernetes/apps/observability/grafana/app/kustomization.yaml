@@ -4,6 +4,19 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ./externalsecret.yaml
+  - ./grafanafolder.yaml
   - ./grafanadashboard.yaml
   - ./helmrelease.yaml
   - ./ocirepository.yaml
+configMapGenerator:
+  - name: grafana-dashboard-pohulanka
+    files:
+      - pohulanka.json=./resources/pohulanka.json
+  - name: grafana-dashboard-pirs-consumption
+    files:
+      - pirs-consumption.json=./resources/pirs-consumption.json
+  - name: grafana-dashboard-pirs-climate
+    files:
+      - pirs-climate.json=./resources/pirs-climate.json
+generatorOptions:
+  disableNameSuffixHash: true
