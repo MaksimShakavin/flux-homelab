@@ -52,3 +52,9 @@
       environment:
         ARCANE_AGENT_TOKEN: "{{ arcane_agent_token }}"
       no_log: true
+
+    - name: Deploy node-exporter container project
+      community.docker.docker_compose_v2:
+        project_name: node-exporter
+        definition: "{{ lookup('ansible.builtin.file', compose_src + '/node-exporter/compose.yaml') | from_yaml }}"
+        state: present
