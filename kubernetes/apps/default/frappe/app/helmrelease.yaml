@@ -221,7 +221,7 @@ spec:
           gethomepage.dev/href: "https://frappe.exelent.click"
           gethomepage.dev/group: "Home Apps"
           gethomepage.dev/name: Frappe LMS
-          gethomepage.dev/icon: frappe.svg
+          gethomepage.dev/icon: frappe-lending.svg
           gethomepage.dev/description: Learning management
           gethomepage.dev/weight: "95"
     persistence:
