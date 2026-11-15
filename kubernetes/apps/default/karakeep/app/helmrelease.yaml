@@ -193,7 +193,11 @@ spec:
           gethomepage.dev/name: Karakeep
           gethomepage.dev/icon: karakeep.svg
           gethomepage.dev/description: Bookmark everything
-          gethomepage.dev/weight: "90"
+          gethomepage.dev/weight: "65"
+          gethomepage.dev/widget.type: karakeep
+          gethomepage.dev/widget.url: http://karakeep.default:3000
+          gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_KARAKEEP_TOKEN}}` }}"
+          gethomepage.dev/widget.fields: '["bookmarks","favorites","archived","tags"]'
     persistence:
       data:
         existingClaim: "{{ .Release.Name }}"
