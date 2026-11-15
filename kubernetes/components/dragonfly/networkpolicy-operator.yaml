@@ -1,0 +1,27 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: dragonfly-${APP}-operator
+spec:
+  podSelector:
+    matchLabels:
+      app: dragonfly-${APP}
+      app.kubernetes.io/name: dragonfly
+      app.kubernetes.io/part-of: dragonfly
+  policyTypes:
+    - Ingress
+  ingress:
+    # the operator polls the admin port for readiness/master election; without this
+    # the client/metrics netpols isolate the pod before it creates its own base
+    # netpol, deadlocking the Dragonfly at ResourcesCreated
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: database
+          podSelector:
+            matchLabels:
+              control-plane: controller-manager
+      ports:
+        - protocol: TCP
+          port: 9999

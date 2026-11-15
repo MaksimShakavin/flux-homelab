@@ -7,3 +7,4 @@ resources:
   - ./podmonitor.yaml
   - ./networkpolicy-prometheus-metrics.yaml
   - ./networkpolicy-client.yaml
+  - ./networkpolicy-operator.yaml
