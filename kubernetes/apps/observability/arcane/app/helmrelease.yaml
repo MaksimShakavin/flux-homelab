@@ -84,6 +84,11 @@ spec:
           gethomepage.dev/group: "Monitoring & Observability"
           gethomepage.dev/description: Container management UI
           gethomepage.dev/weight: "30"
+          gethomepage.dev/widget.type: arcane
+          gethomepage.dev/widget.url: http://arcane.observability:3552
+          gethomepage.dev/widget.env: "2001c899-5cec-4dc0-8642-aaf20675f66d"
+          gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_ARCANE_TOKEN}}` }}"
+          gethomepage.dev/widget.fields: '["running","stopped","total","image_updates"]'
     persistence:
       data:
         existingClaim: *app
