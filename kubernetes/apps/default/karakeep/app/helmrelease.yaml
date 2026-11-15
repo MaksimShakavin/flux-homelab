@@ -113,7 +113,10 @@ spec:
                 enabled: false
             securityContext:
               allowPrivilegeEscalation: false
-              capabilities: { drop: [ "ALL" ] }
+              # SYS_RESOURCE lets Chromium set renderer OOM scores (silences perm-denied spam)
+              capabilities:
+                drop: [ "ALL" ]
+                add: [ "SYS_RESOURCE" ]
             resources:
               requests:
                 cpu: 50m
