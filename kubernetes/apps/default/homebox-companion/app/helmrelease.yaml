@@ -97,7 +97,7 @@ spec:
           gethomepage.dev/name: Homebox Companion
           gethomepage.dev/icon: homebox.png
           gethomepage.dev/description: AI item capture for Homebox
-          gethomepage.dev/weight: "80"
+          gethomepage.dev/weight: "70"
     persistence:
       data:
         existingClaim: *app
