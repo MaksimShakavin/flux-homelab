@@ -36,4 +36,5 @@ resources:
   - ./karakeep/ks.yaml
   - ./homebox/ks.yaml
   - ./homebox-companion/ks.yaml
+  - ./frappe/ks.yaml
 #  - ./valheim/ks.yaml

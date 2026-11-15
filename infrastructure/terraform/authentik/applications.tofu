@@ -191,3 +191,19 @@ module "oauth2-homebox" {
   client_secret      = module.secret_homebox.fields["OIDC_CLIENT_SECRET"]
   redirect_uris      = ["https://homebox.exelent.click/api/v1/users/login/oidc/callback"]
 }
+
+module "oauth2-frappe" {
+  source             = "./oauth2_application"
+  name               = "Frappe LMS"
+  icon_url           = "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/frappe.svg"
+  launch_url         = "https://frappe.exelent.click"
+  description        = "Learning management"
+  newtab             = true
+  group              = "Selfhosted"
+  auth_groups        = [authentik_group.users.id]
+  authorization_flow = resource.authentik_flow.provider-authorization-implicit-consent.uuid
+  invalidation_flow  = data.authentik_flow.default-provider-invalidation-flow.id
+  client_id          = module.secret_frappe.fields["OIDC_CLIENT_ID"]
+  client_secret      = module.secret_frappe.fields["OIDC_CLIENT_SECRET"]
+  redirect_uris      = ["https://frappe.exelent.click/api/method/frappe.integrations.oauth2_logins.custom/authentik"]
+}

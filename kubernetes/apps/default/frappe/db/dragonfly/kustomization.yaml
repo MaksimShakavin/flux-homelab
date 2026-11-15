@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# No auth component: keeps Frappe's redis URL a plain host:port.
+patches:
+  # python-rq's Lua scripts touch keys not declared in KEYS[]; cluster_mode=emulated
+  # rejects that ("undeclared key") unless allowed.
+  - target:
+      kind: Dragonfly
+    patch: |
+      - op: add
+        path: /spec/args/-
+        value: --default_lua_flags=allow-undeclared-keys

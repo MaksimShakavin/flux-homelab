@@ -1,0 +1,88 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: frappe
+spec:
+  dependsOn:
+    - name: frappe-mariadb
+      namespace: default
+    - name: frappe-dragonfly
+      namespace: default
+  interval: 1h
+  path: ./kubernetes/apps/default/frappe/app
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: default
+  wait: false
+  postBuild:
+    substitute:
+      APP: frappe
+      APP_NAMESPACE: default
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: frappe-mariadb
+spec:
+  components:
+    - ../../../../../components/kopiur/backup
+  dependsOn:
+    - name: onepassword
+      namespace: external-secrets
+  interval: 1h
+  path: ./kubernetes/apps/default/frappe/db/mariadb
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: database
+  wait: true
+  postBuild:
+    substitute:
+      # APP names the kopiur PVC + CRs; must equal the mariadb existingClaim
+      APP: frappe-mariadb
+      APP_NAMESPACE: default
+      KOPIUR_CAPACITY: 8Gi
+      # mover reads the datadir as mariadb's uid/gid, not the default 1000
+      KOPIUR_PUID: "999"
+      KOPIUR_PGID: "999"
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: frappe-dragonfly
+spec:
+  components:
+    - ../../../../../components/dragonfly
+  dependsOn:
+    - name: dragonfly
+      namespace: database
+  healthCheckExprs:
+    - apiVersion: dragonflydb.io/v1alpha1
+      kind: Dragonfly
+      failed: status.phase != 'Ready'
+      current: status.phase == 'Ready'
+  interval: 1h
+  path: ./kubernetes/apps/default/frappe/db/dragonfly
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: database
+  wait: true
+  postBuild:
+    substitute:
+      APP: frappe
+      APP_NAMESPACE: default

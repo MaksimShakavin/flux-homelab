@@ -35,8 +35,8 @@ resource "authentik_provider_oauth2" "oauth2-application" {
   client_type        = var.client_type
   # Terraform-created providers default to an empty grant_types (rejecting every
   # login), so set them explicitly; refresh_token pairs with the offline_access scope.
-  grant_types        = ["authorization_code", "refresh_token"]
-  property_mappings  = concat(data.authentik_property_mapping_provider_scope.scopes.ids, var.additional_property_mappings)
+  grant_types       = ["authorization_code", "refresh_token"]
+  property_mappings = concat(data.authentik_property_mapping_provider_scope.scopes.ids, var.additional_property_mappings)
   allowed_redirect_uris = [
     for url in var.redirect_uris :
     {
@@ -49,7 +49,7 @@ resource "authentik_provider_oauth2" "oauth2-application" {
 
 resource "authentik_application" "oauth2-application" {
   name              = var.name
-  slug              = lower(var.name)
+  slug              = replace(lower(var.name), "/[^a-z0-9_]+/", "-")
   group             = var.group
   protocol_provider = authentik_provider_oauth2.oauth2-application.id
   meta_icon         = var.icon_url

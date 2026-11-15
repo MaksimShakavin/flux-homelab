@@ -1,0 +1,75 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: frappe-mariadb
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: frappe-mariadb
+  interval: 1h
+  values:
+    controllers:
+      frappe-mariadb:
+        strategy: Recreate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              # renovate: datasource=docker depName=mariadb
+              repository: mariadb
+              tag: "11.8"
+            args:
+              - --character-set-server=utf8mb4
+              - --collation-server=utf8mb4_unicode_ci
+              - --skip-character-set-client-handshake
+              - --innodb-snapshot-isolation=OFF
+            env:
+              MARIADB_AUTO_UPGRADE: "1"
+            envFrom:
+              - secretRef:
+                  name: frappe-mariadb-secret
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command: ["healthcheck.sh", "--connect", "--innodb_initialized"]
+                  initialDelaySeconds: 30
+                  periodSeconds: 15
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *probe
+              startup:
+                enabled: false
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 250m
+                memory: 512Mi
+              limits:
+                memory: 1Gi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      app:
+        controller: frappe-mariadb
+        ports:
+          mysql:
+            port: 3306
+    persistence:
+      data:
+        existingClaim: frappe-mariadb
+        globalMounts:
+          - path: /var/lib/mysql
