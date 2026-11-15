@@ -36,6 +36,19 @@ spec:
       autoscaling:
         enabled: true
         minReplicas: 1
+      resources:
+        requests:
+          cpu: 250m
+          memory: 512Mi
+        limits:
+          memory: 1Gi
+      livenessProbe:
+        timeoutSeconds: 15
+        periodSeconds: 15
+        failureThreshold: 6
+      readinessProbe:
+        timeoutSeconds: 10
+        failureThreshold: 3
       metrics:
         enabled: true
         serviceMonitor:
@@ -67,6 +80,19 @@ spec:
       autoscaling:
         enabled: true
         minReplicas: 1
+      resources:
+        requests:
+          cpu: 250m
+          memory: 512Mi
+        limits:
+          memory: 1Gi
+      livenessProbe:
+        timeoutSeconds: 15
+        periodSeconds: 15
+        failureThreshold: 6
+      readinessProbe:
+        timeoutSeconds: 10
+        failureThreshold: 3
     prometheus:
       rules:
         enabled: true
