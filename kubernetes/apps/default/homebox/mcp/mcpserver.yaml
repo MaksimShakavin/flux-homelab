@@ -1,0 +1,16 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPServer
+metadata:
+  name: homebox
+spec:
+  image: ghcr.io/maksimshakavin/homebox-mcp:1.5.1@sha256:d987ece10563a20ed8491e2df93e34d5c0c518e7fac396561bb350b32e627a02
+  transport: stdio
+  proxyPort: 8080
+  env:
+    - name: HOMEBOX_URL
+      value: http://homebox.default.svc.cluster.local:7745
+  secrets:
+    - name: homebox-mcp-token
+      key: token
+      targetEnvName: HOMEBOX_TOKEN
