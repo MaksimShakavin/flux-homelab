@@ -22,7 +22,7 @@ mcp_servers:
   securo:
     url: http://mcp-securo-remote-proxy.default.svc.cluster.local:8080/mcp
   homebox:
-    url: http://mcp-homebox-proxy.default.svc.cluster.local:8080/mcp
+    url: http://mcp-homebox-mcp-proxy.default.svc.cluster.local:8080/mcp
 
 gateway:
   platforms:
