@@ -147,7 +147,7 @@ spec:
             resources:
               requests:
                 cpu: 100m
-                memory: 2Gi
+                memory: 1Gi
               limits:
                 memory: 10Gi
           port-watchdog:
