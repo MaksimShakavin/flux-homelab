@@ -1,0 +1,13 @@
+---
+# Rebuildable Meilisearch index — plain Longhorn, not Kopiur-backed.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: karakeep-meilisearch
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 5Gi

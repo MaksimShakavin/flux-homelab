@@ -96,6 +96,12 @@ module "secret_hermes" {
   item   = "hermes"
 }
 
+module "secret_karakeep" {
+  source = "github.com/bjw-s/terraform-1password-item?ref=main"
+  vault  = "homelab"
+  item   = "karakeep"
+}
+
 provider "authentik" {
   url   = "https://sso.exelent.click"
   token = module.secret_authentik.fields["AUTHENTIK_TOKEN"]

@@ -144,6 +144,22 @@ module "oauth2-litellm" {
   redirect_uris      = ["https://litellm.exelent.click/sso/callback"]
 }
 
+module "oauth2-karakeep" {
+  source             = "./oauth2_application"
+  name               = "Karakeep"
+  icon_url           = "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/karakeep.svg"
+  launch_url         = "https://karakeep.exelent.click"
+  description        = "Bookmark everything"
+  newtab             = true
+  group              = "Selfhosted"
+  auth_groups        = [authentik_group.users.id]
+  authorization_flow = resource.authentik_flow.provider-authorization-implicit-consent.uuid
+  invalidation_flow  = data.authentik_flow.default-provider-invalidation-flow.id
+  client_id          = module.secret_karakeep.fields["OIDC_CLIENT_ID"]
+  client_secret      = module.secret_karakeep.fields["OIDC_CLIENT_SECRET"]
+  redirect_uris      = ["https://karakeep.exelent.click/api/auth/callback/custom"]
+}
+
 module "oauth2-hermes" {
   source             = "./oauth2_application"
   name               = "Hermes"

@@ -1,0 +1,214 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app karakeep
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: karakeep
+  interval: 1h
+  values:
+    controllers:
+      karakeep:
+        strategy: Recreate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              # renovate: datasource=docker depName=ghcr.io/karakeep-app/karakeep
+              repository: ghcr.io/karakeep-app/karakeep
+              tag: 0.34.1
+            env:
+              TZ: "Europe/Warsaw"
+              DATA_DIR: /data
+              MEILI_ADDR: http://127.0.0.1:7700
+              BROWSER_WEB_URL: http://127.0.0.1:9222
+              WORKERS_PORT: &metricsport 3001
+              # default bind is 127.0.0.1; 0.0.0.0 so the ServiceMonitor can scrape :3001
+              WORKERS_HOST: 0.0.0.0
+              # non-default archival behaviour (default is readable-text only)
+              CRAWLER_FULL_PAGE_ARCHIVE: "true"
+              # AI (LiteLLM, OpenAI-compatible)
+              OPENAI_BASE_URL: http://litellm.ai.svc.cluster.local:4000/v1
+              INFERENCE_TEXT_MODEL: personal-gpt-luna
+              INFERENCE_IMAGE_MODEL: personal-gpt-terra
+              INFERENCE_ENABLE_AUTO_SUMMARIZATION: "true"
+              INFERENCE_CONTEXT_LENGTH: "8000"
+              INFERENCE_JOB_TIMEOUT_SEC: "120"
+              EMBEDDING_TEXT_MODEL: text-embedding-3-small
+              # not auto-enabled once OPENAI_BASE_URL is overridden, so set it explicitly
+              EMBEDDING_ENABLE_AUTO_INDEXING: "true"
+              OPENAI_API_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: karakeep-litellm-key
+                    key: LITELLM_API_KEY
+            envFrom:
+              - secretRef:
+                  name: karakeep-secret
+            probes:
+              # readiness gates traffic; liveness only restarts a hung pod (generous grace
+              # for first-boot SQLite migrations) — no separate startup probe needed
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/health
+                    port: &httpport 3000
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/health
+                    port: *httpport
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              startup:
+                enabled: false
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: [ "ALL" ] }
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+          chrome:
+            image:
+              # renovate: datasource=docker depName=ghcr.io/karakeep-app/karakeep-chrome
+              repository: ghcr.io/karakeep-app/karakeep-chrome
+              tag: 157.0.8103.38-r1
+            args:
+              - --disable-gpu
+              - --disable-dev-shm-usage
+              - --hide-scrollbars
+              - --disable-blink-features=AutomationControlled
+              - --window-size=1440,900
+            env:
+              HOME: /tmp
+            probes:
+              liveness: &chromeprobe
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: &chromeport 9222
+                  initialDelaySeconds: 10
+                  periodSeconds: 15
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *chromeprobe
+              startup:
+                enabled: false
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities: { drop: [ "ALL" ] }
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+          meilisearch:
+            image:
+              # renovate: datasource=docker depName=getmeili/meilisearch
+              repository: getmeili/meilisearch
+              tag: v1.55.0
+            env:
+              MEILI_ENV: production
+              MEILI_NO_ANALYTICS: "true"
+              MEILI_MASTER_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: karakeep-secret
+                    key: MEILI_MASTER_KEY
+            probes:
+              liveness: &meiliprobe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: &meiliport 7700
+                  initialDelaySeconds: 10
+                  periodSeconds: 15
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *meiliprobe
+              startup:
+                enabled: false
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: [ "ALL" ] }
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        supplementalGroups: [ 10000 ]
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      app:
+        controller: karakeep
+        ports:
+          http:
+            port: *httpport
+          metrics:
+            port: *metricsport
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.exelent.click"
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *httpport
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://karakeep.exelent.click"
+          gethomepage.dev/group: "Home Apps"
+          gethomepage.dev/name: Karakeep
+          gethomepage.dev/icon: karakeep.svg
+          gethomepage.dev/description: Bookmark everything
+          gethomepage.dev/weight: "40"
+    persistence:
+      data:
+        existingClaim: "{{ .Release.Name }}"
+        advancedMounts:
+          karakeep:
+            app:
+              - path: /data
+      meilisearch:
+        existingClaim: karakeep-meilisearch
+        advancedMounts:
+          karakeep:
+            meilisearch:
+              - path: /meili_data
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp

@@ -1,0 +1,38 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/monitoring.coreos.com/servicemonitor_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: karakeep
+  labels:
+    app.kubernetes.io/instance: karakeep
+    app.kubernetes.io/name: karakeep
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: karakeep
+      app.kubernetes.io/name: karakeep
+  namespaceSelector:
+    matchNames:
+      - default
+  endpoints:
+    # Main app / API metrics (Bearer-protected, PROMETHEUS_AUTH_TOKEN)
+    - port: http
+      path: /api/metrics
+      interval: 30s
+      scrapeTimeout: 10s
+      authorization:
+        type: Bearer
+        credentials:
+          name: karakeep-secret
+          key: PROMETHEUS_AUTH_TOKEN
+    # Background worker queue metrics (WORKERS_PORT, Bearer-protected)
+    - port: metrics
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+      authorization:
+        type: Bearer
+        credentials:
+          name: karakeep-secret
+          key: PROMETHEUS_AUTH_TOKEN

@@ -33,6 +33,7 @@ resources:
   - ./agregarr/ks.yaml
   - ./komga/ks.yaml
   - ./securo/ks.yaml
+  - ./karakeep/ks.yaml
   - ./homebox/ks.yaml
   - ./homebox-companion/ks.yaml
 #  - ./valheim/ks.yaml
