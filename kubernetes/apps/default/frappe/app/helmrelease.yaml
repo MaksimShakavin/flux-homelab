@@ -41,8 +41,17 @@ spec:
                 bench set-config -g  redis_socketio redis://frappe-valkey.database.svc.cluster.local:6379
                 bench set-config -gp socketio_port 9000
                 if [ -f "sites/${SITE_NAME}/site_config.json" ]; then
-                  echo "site ${SITE_NAME} already exists, skipping new-site"
-                  exit 0
+                  # site_config alone isn't proof of a usable site: a new-site that crashed
+                  # mid-way leaves it behind. Probe the DB; drop + recreate if unusable.
+                  if bench --site "${SITE_NAME}" list-apps >/dev/null 2>&1; then
+                    echo "site ${SITE_NAME} healthy, skipping new-site"
+                    exit 0
+                  fi
+                  echo "site ${SITE_NAME} present but unusable (incomplete bootstrap); recreating"
+                  bench drop-site "${SITE_NAME}" \
+                    --db-root-username root \
+                    --db-root-password "${DB_ROOT_PASSWORD}" \
+                    --force --no-backup
                 fi
                 bench new-site "${SITE_NAME}" \
                   --db-root-username root \
@@ -86,6 +95,17 @@ spec:
       frontend:
         annotations:
           reloader.stakater.com/auto: "true"
+        pod:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile: { type: RuntimeDefault }
+            # nginx-entrypoint writes /etc/nginx/conf.d + /run; those dirs are group-root
+            # writable (arbitrary-uid image), so the non-root uid needs supplementary gid 0
+            supplementalGroups: [0]
         initContainers:
           wait-for-site: &waitforsite
             image: *image
