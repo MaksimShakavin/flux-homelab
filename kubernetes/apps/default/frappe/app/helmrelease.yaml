@@ -42,9 +42,18 @@ spec:
                 bench set-config -gp socketio_port 9000
                 if [ -d "sites/${SITE_NAME}" ]; then
                   # the dir (not just site_config.json) is what blocks new-site: a crashed
-                  # bootstrap can leave the dir with no/stale config. Probe the DB; rebuild if bad.
-                  if bench --site "${SITE_NAME}" list-apps >/dev/null 2>&1; then
-                    echo "site ${SITE_NAME} healthy, skipping new-site"
+                  # bootstrap can leave the dir with no/stale config. Probe the DB; act on what we find.
+                  if apps=$(bench --site "${SITE_NAME}" list-apps 2>/dev/null); then
+                    installed=$(echo "${apps}" | awk '{print $1}')
+                    if echo "${installed}" | grep -qx lms; then
+                      echo "site ${SITE_NAME} healthy with lms, nothing to do"
+                      exit 0
+                    fi
+                    # site DB is usable but lacks lms (created against an image without the app).
+                    # install onto the existing site rather than rebuild; payments is lms' required_app.
+                    echo "site ${SITE_NAME} present but missing lms; installing payments + lms onto it"
+                    echo "${installed}" | grep -qx payments || bench --site "${SITE_NAME}" install-app payments
+                    bench --site "${SITE_NAME}" install-app lms
                     exit 0
                   fi
                   echo "site ${SITE_NAME} unusable (incomplete bootstrap); moving aside for a clean rebuild"
@@ -60,6 +69,7 @@ spec:
                   --db-root-password "${DB_ROOT_PASSWORD}" \
                   --mariadb-user-host-login-scope=% \
                   --admin-password "${ADMIN_PASSWORD}" \
+                  --install-app payments \
                   --install-app lms
             env:
               SITE_NAME: &sitename "{{ .Release.Name }}.exelent.click"
