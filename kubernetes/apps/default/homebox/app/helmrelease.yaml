@@ -1,0 +1,92 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app homebox
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: homebox
+  interval: 1h
+  values:
+    controllers:
+      homebox:
+        strategy: Recreate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              # renovate: datasource=docker depName=ghcr.io/sysadminsmedia/homebox
+              repository: ghcr.io/sysadminsmedia/homebox
+              tag: 0.27.1-rootless@sha256:6bb4472e91d3084d292ce654772e26df765d01aa0d38aa7077a7bb07b7d44ac7
+            env:
+              TZ: Europe/Warsaw
+              TMPDIR: /tmp
+            envFrom:
+              - secretRef:
+                  name: homebox-secret
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/v1/status
+                    port: &port 7745
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *probe
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: [ "ALL" ] }
+            resources:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+    defaultPodOptions:
+      securityContext:
+        # fsGroup is set solely so that user can write the Longhorn /data volume.
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      app:
+        controller: homebox
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.exelent.click"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/href: "https://homebox.exelent.click"
+          gethomepage.dev/group: "Home Apps"
+          gethomepage.dev/name: Homebox
+          gethomepage.dev/icon: homebox.png
+          gethomepage.dev/description: Household inventory
+          gethomepage.dev/weight: "25"
+    persistence:
+      data:
+        existingClaim: *app
+        globalMounts:
+          - path: /data
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp

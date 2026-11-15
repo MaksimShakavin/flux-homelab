@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: homebox-companion
+spec:
+  proxyRef: litellm
+  proxyNamespace: ai
+  keyAlias: homebox-companion
+  # terra (gpt-6.1-terra) is the visual-reasoning model used for photo item
+  # detection; luna is a cheaper fallback the HelmRelease can switch to.
+  models:
+    - personal-gpt-terra
+    - personal-gpt-luna
+  secretName: homebox-companion-litellm-key
+  secretKey: LITELLM_API_KEY
