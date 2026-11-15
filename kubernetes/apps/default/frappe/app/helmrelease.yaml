@@ -36,9 +36,9 @@ spec:
                 [ -f sites/common_site_config.json ] || echo '{}' > sites/common_site_config.json
                 bench set-config -g  db_host frappe-mariadb.database.svc.cluster.local
                 bench set-config -gp db_port 3306
-                bench set-config -g  redis_cache    redis://dragonfly-frappe.database.svc.cluster.local:6379
-                bench set-config -g  redis_queue    redis://dragonfly-frappe.database.svc.cluster.local:6379
-                bench set-config -g  redis_socketio redis://dragonfly-frappe.database.svc.cluster.local:6379
+                bench set-config -g  redis_cache    redis://frappe-valkey.database.svc.cluster.local:6379
+                bench set-config -g  redis_queue    redis://frappe-valkey.database.svc.cluster.local:6379
+                bench set-config -g  redis_socketio redis://frappe-valkey.database.svc.cluster.local:6379
                 bench set-config -gp socketio_port 9000
                 if [ -f "sites/${SITE_NAME}/site_config.json" ]; then
                   echo "site ${SITE_NAME} already exists, skipping new-site"

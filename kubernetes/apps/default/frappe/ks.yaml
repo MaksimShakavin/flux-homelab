@@ -8,7 +8,7 @@ spec:
   dependsOn:
     - name: frappe-mariadb
       namespace: default
-    - name: frappe-dragonfly
+    - name: frappe-valkey
       namespace: default
   interval: 1h
   path: ./kubernetes/apps/default/frappe/app
@@ -60,20 +60,10 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: frappe-dragonfly
+  name: frappe-valkey
 spec:
-  components:
-    - ../../../../../components/dragonfly
-  dependsOn:
-    - name: dragonfly
-      namespace: database
-  healthCheckExprs:
-    - apiVersion: dragonflydb.io/v1alpha1
-      kind: Dragonfly
-      failed: status.phase != 'Ready'
-      current: status.phase == 'Ready'
   interval: 1h
-  path: ./kubernetes/apps/default/frappe/db/dragonfly
+  path: ./kubernetes/apps/default/frappe/db/valkey
   prune: true
   retryInterval: 2m
   sourceRef:
@@ -82,7 +72,3 @@ spec:
     namespace: flux-system
   targetNamespace: database
   wait: true
-  postBuild:
-    substitute:
-      APP: frappe
-      APP_NAMESPACE: default

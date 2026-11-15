@@ -1,0 +1,64 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: frappe-valkey
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: frappe-valkey
+  interval: 1h
+  values:
+    controllers:
+      frappe-valkey:
+        containers:
+          app:
+            image:
+              # renovate: datasource=docker depName=valkey/valkey
+              repository: valkey/valkey
+              tag: 8.1.11-alpine
+            # Frappe 16 needs RESP3 client-tracking (Dragonfly/KeyDB can't); keep it
+            # open+unauthenticated like the dragonfly it replaces, no RDB persistence
+            args: ["--protected-mode", "no", "--save", ""]
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command: ["valkey-cli", "ping"]
+                  initialDelaySeconds: 10
+                  periodSeconds: 15
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness: *probe
+              startup:
+                enabled: false
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 25m
+                memory: 64Mi
+              limits:
+                memory: 256Mi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      app:
+        controller: frappe-valkey
+        ports:
+          redis:
+            port: 6379
+    persistence:
+      data:
+        type: emptyDir
+        globalMounts:
+          - path: /data
