@@ -9,8 +9,8 @@ spec:
   proxyNamespace: ai
   keyAlias: kritika
   models:
-    - personal-gpt-codex
-    - personal-gpt-luna
+    - subscription-gpt-sol
+    - subscription-gpt-luna
     - voyage-code-4
   secretName: kritika-litellm-key
   secretKey: LITELLM_API_KEY

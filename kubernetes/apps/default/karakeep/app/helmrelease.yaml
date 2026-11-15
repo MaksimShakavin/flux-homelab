@@ -33,8 +33,8 @@ spec:
               # accept root-owned /run under non-root
               S6_YES_I_WANT_A_WORLD_WRITABLE_RUN_BECAUSE_KUBERNETES: "1"
               OPENAI_BASE_URL: http://litellm.ai.svc.cluster.local:4000/v1
-              INFERENCE_TEXT_MODEL: personal-gpt-luna
-              INFERENCE_IMAGE_MODEL: personal-gpt-terra
+              INFERENCE_TEXT_MODEL: subscription-gpt-luna
+              INFERENCE_IMAGE_MODEL: subscription-gpt-terra
               INFERENCE_ENABLE_AUTO_SUMMARIZATION: "true"
               INFERENCE_CONTEXT_LENGTH: "8000"
               INFERENCE_JOB_TIMEOUT_SEC: "120"

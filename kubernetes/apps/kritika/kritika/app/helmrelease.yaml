@@ -19,10 +19,10 @@ spec:
         admin:
           password: { env: KRITIKA_AUTH_ADMIN_PASSWORD }
       review:
-        model: litellm/personal-gpt-codex
+        model: litellm/subscription-gpt-sol
         approve: true
       confidence:
-        model: litellm/personal-gpt-luna
+        model: litellm/subscription-gpt-luna
       embedding:
         model: litellm/voyage-code-4
         dims: 1024
@@ -42,8 +42,8 @@ spec:
           apiKey: { env: LITELLM_API_KEY }
           # USD per 1M tokens; drop for runtime usage.cost once litellm ships BerriAI/litellm#41532
           pricing:
-            personal-gpt-codex: { input: 2, output: 10 }
-            personal-gpt-luna: { input: 0.1, output: 0.5 }
+            subscription-gpt-sol: { input: 2, output: 10 }
+            subscription-gpt-luna: { input: 0.1, output: 0.5 }
       egress:
         allow: ["*"]
         deny: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, "*.internal"]

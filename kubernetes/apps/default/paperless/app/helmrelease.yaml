@@ -43,7 +43,7 @@ spec:
               # AI / LLM (LiteLLM, OpenAI-compatible)
               PAPERLESS_AI_ENABLED: true
               PAPERLESS_AI_LLM_BACKEND: openai-like
-              PAPERLESS_AI_LLM_MODEL: personal-gpt-codex
+              PAPERLESS_AI_LLM_MODEL: subscription-gpt-sol
               PAPERLESS_AI_LLM_ENDPOINT: http://litellm.ai.svc.cluster.local:4000/v1
               PAPERLESS_AI_LLM_EMBEDDING_BACKEND: openai-like
               PAPERLESS_AI_LLM_EMBEDDING_MODEL: text-embedding-3-small

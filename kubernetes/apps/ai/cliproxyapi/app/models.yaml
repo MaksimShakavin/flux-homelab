@@ -3,9 +3,9 @@
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
 metadata:
-  name: personal-gpt-codex
+  name: subscription-gpt-sol
 spec:
-  modelName: personal-gpt-codex
+  modelName: subscription-gpt-sol
   params:
     model: openai/gpt-6.1-sol
     apiBase: http://cliproxyapi.ai.svc.cluster.local:8317/v1
@@ -17,9 +17,9 @@ spec:
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
 metadata:
-  name: personal-gpt-luna
+  name: subscription-gpt-luna
 spec:
-  modelName: personal-gpt-luna
+  modelName: subscription-gpt-luna
   params:
     model: openai/gpt-6-luna
     apiBase: http://cliproxyapi.ai.svc.cluster.local:8317/v1
@@ -31,9 +31,9 @@ spec:
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
 metadata:
-  name: personal-gpt-terra
+  name: subscription-gpt-terra
 spec:
-  modelName: personal-gpt-terra
+  modelName: subscription-gpt-terra
   params:
     model: openai/gpt-6.1-terra
     apiBase: http://cliproxyapi.ai.svc.cluster.local:8317/v1

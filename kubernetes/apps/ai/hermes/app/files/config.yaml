@@ -13,7 +13,7 @@ providers:
 
 model:
   provider: litellm
-  default: personal-gpt-codex
+  default: subscription-gpt-sol
 
 dashboard:
   public_url: https://hermes.exelent.click

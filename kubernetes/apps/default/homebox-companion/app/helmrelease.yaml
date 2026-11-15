@@ -29,7 +29,7 @@ spec:
               # LiteLLM alias (openai/ prefix selects the OpenAI-compatible provider).
               # terra = gpt-6.1-terra, tuned for visual reasoning (photo -> item
               # detection); luna is a cheaper fallback the key also authorizes.
-              HBC_LLM_MODEL: openai/personal-gpt-terra
+              HBC_LLM_MODEL: openai/subscription-gpt-terra
               # Required: custom LiteLLM aliases aren't in the capability registry,
               # so the vision precheck rejects them without this.
               HBC_LLM_ALLOW_UNSAFE_MODELS: "true"

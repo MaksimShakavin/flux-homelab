@@ -11,7 +11,7 @@ spec:
   # terra (gpt-6.1-terra) is the visual-reasoning model used for photo item
   # detection; luna is a cheaper fallback the HelmRelease can switch to.
   models:
-    - personal-gpt-terra
-    - personal-gpt-luna
+    - subscription-gpt-terra
+    - subscription-gpt-luna
   secretName: homebox-companion-litellm-key
   secretKey: LITELLM_API_KEY

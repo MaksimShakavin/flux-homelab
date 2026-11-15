@@ -9,7 +9,7 @@ spec:
   proxyNamespace: ai
   keyAlias: paperless
   models:
-    - personal-gpt-codex
+    - subscription-gpt-sol
     - text-embedding-3-small
   secretName: paperless-litellm-key
   secretKey: LITELLM_API_KEY

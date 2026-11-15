@@ -9,8 +9,8 @@ spec:
   proxyNamespace: ai
   keyAlias: karakeep
   models:
-    - personal-gpt-luna
-    - personal-gpt-terra
+    - subscription-gpt-luna
+    - subscription-gpt-terra
     - text-embedding-3-small
   secretName: karakeep-litellm-key
   secretKey: LITELLM_API_KEY

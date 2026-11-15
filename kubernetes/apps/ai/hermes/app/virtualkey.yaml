@@ -8,6 +8,6 @@ spec:
   proxyRef: litellm
   keyAlias: hermes
   models:
-    - personal-gpt-codex
+    - subscription-gpt-sol
   secretName: hermes-litellm-key
   secretKey: LITELLM_API_KEY
