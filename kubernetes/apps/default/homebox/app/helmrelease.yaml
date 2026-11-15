@@ -82,7 +82,12 @@ spec:
           gethomepage.dev/name: Homebox
           gethomepage.dev/icon: homebox.png
           gethomepage.dev/description: Household inventory
-          gethomepage.dev/weight: "70"
+          gethomepage.dev/weight: "60"
+          gethomepage.dev/widget.type: homebox
+          gethomepage.dev/widget.url: http://homebox.default:7745
+          gethomepage.dev/widget.username: "{{ `{{HOMEPAGE_VAR_HOMEBOX_USERNAME}}` }}"
+          gethomepage.dev/widget.password: "{{ `{{HOMEPAGE_VAR_HOMEBOX_PASSWORD}}` }}"
+          gethomepage.dev/widget.fields: '["items","locations","totalValue"]'
     persistence:
       data:
         existingClaim: *app
