@@ -33,9 +33,9 @@ spec:
         - secretRef:
             name: *secret
     server:
+      replicas: 2
       autoscaling:
-        enabled: true
-        minReplicas: 1
+        enabled: false
       resources:
         requests:
           cpu: 250m
