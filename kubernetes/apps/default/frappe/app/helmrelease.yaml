@@ -47,11 +47,13 @@ spec:
                     echo "site ${SITE_NAME} healthy, skipping new-site"
                     exit 0
                   fi
-                  echo "site ${SITE_NAME} present but unusable (incomplete bootstrap); recreating"
-                  bench drop-site "${SITE_NAME}" \
-                    --db-root-username root \
-                    --db-root-password "${DB_ROOT_PASSWORD}" \
-                    --force --no-backup
+                  echo "site ${SITE_NAME} unusable (incomplete bootstrap); moving aside for a clean rebuild"
+                  # drop-site archives the dir to container-local archived/sites/ -> EXDEV on NFS.
+                  # same-device rename within sites/ instead: atomic, tolerates open handles from
+                  # other pods; strip the marker so frappe stops treating the moved copy as a site.
+                  broken="sites/.broken-$(date +%s)"
+                  mv "sites/${SITE_NAME}" "${broken}"
+                  rm -f "${broken}/site_config.json"
                 fi
                 bench new-site "${SITE_NAME}" \
                   --db-root-username root \
