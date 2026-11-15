@@ -4,6 +4,9 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: frappe
+  annotations:
+    # scripts below use shell ${SITE_NAME}/${DB_ROOT_PASSWORD}; keep Flux envsubst off them
+    kustomize.toolkit.fluxcd.io/substitute: disabled
 spec:
   chartRef:
     kind: OCIRepository
