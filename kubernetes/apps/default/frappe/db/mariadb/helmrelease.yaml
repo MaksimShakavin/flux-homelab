@@ -37,7 +37,8 @@ spec:
                 custom: true
                 spec:
                   exec:
-                    command: ["healthcheck.sh", "--connect", "--innodb_initialized"]
+                    # auth with the root password from envFrom (no socket healthcheck user)
+                    command: ["sh", "-c", 'MYSQL_PWD="$MARIADB_ROOT_PASSWORD" mariadb-admin ping -u root']
                   initialDelaySeconds: 30
                   periodSeconds: 15
                   timeoutSeconds: 5
