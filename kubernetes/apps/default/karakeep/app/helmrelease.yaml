@@ -31,6 +31,8 @@ spec:
               WORKERS_HOST: 0.0.0.0
               # non-default archival behaviour (default is readable-text only)
               CRAWLER_FULL_PAGE_ARCHIVE: "true"
+              # s6-overlay escape hatch: accept the root-owned emptyDir /run under non-root
+              S6_YES_I_WANT_A_WORLD_WRITABLE_RUN_BECAUSE_KUBERNETES: "1"
               # AI (LiteLLM, OpenAI-compatible)
               OPENAI_BASE_URL: http://litellm.ai.svc.cluster.local:4000/v1
               INFERENCE_TEXT_MODEL: personal-gpt-luna
