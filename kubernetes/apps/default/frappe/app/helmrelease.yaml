@@ -20,9 +20,9 @@ spec:
         initContainers:
           init-site:
             image: &image
-              # renovate: datasource=docker depName=ghcr.io/frappe/lms
-              repository: ghcr.io/frappe/lms
-              tag: v16.1.1
+              # renovate: datasource=docker depName=ghcr.io/maksimshakavin/frappe-lms
+              repository: ghcr.io/maksimshakavin/frappe-lms
+              tag: 2026.11.15
             command:
               - bash
               - -c
