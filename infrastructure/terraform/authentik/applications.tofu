@@ -163,7 +163,7 @@ module "oauth2-karakeep" {
 module "oauth2-hermes" {
   source             = "./oauth2_application"
   name               = "Hermes"
-  icon_url           = "https://cdn.jsdelivr.net/gh/selfhst/icons/svg/hermes.svg"
+  icon_url           = "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/hermes.png"
   launch_url         = "https://hermes.exelent.click"
   description        = "AI agent"
   newtab             = true
@@ -195,7 +195,7 @@ module "oauth2-homebox" {
 module "oauth2-frappe" {
   source             = "./oauth2_application"
   name               = "Frappe LMS"
-  icon_url           = "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/frappe.svg"
+  icon_url           = "https://cdn.jsdelivr.net/gh/selfhst/icons/png/frappe-lending.png"
   launch_url         = "https://frappe.exelent.click"
   description        = "Learning management"
   newtab             = true
