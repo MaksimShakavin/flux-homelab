@@ -32,6 +32,8 @@ spec:
                 echo "waiting for mariadb..."
                 until (echo > /dev/tcp/frappe-mariadb.database.svc.cluster.local/3306) 2>/dev/null; do sleep 3; done
                 ls -1 apps > sites/apps.txt
+                # fresh NFS sites/ volume hides the image's baked config; set-config reads it before writing
+                [ -f sites/common_site_config.json ] || echo '{}' > sites/common_site_config.json
                 bench set-config -g  db_host frappe-mariadb.database.svc.cluster.local
                 bench set-config -gp db_port 3306
                 bench set-config -g  redis_cache    redis://dragonfly-frappe.database.svc.cluster.local:6379
