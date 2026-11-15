@@ -83,7 +83,7 @@ spec:
           gethomepage.dev/name: Arcane
           gethomepage.dev/group: "Monitoring & Observability"
           gethomepage.dev/description: Container management UI
-          gethomepage.dev/weight: "20"
+          gethomepage.dev/weight: "30"
     persistence:
       data:
         existingClaim: *app

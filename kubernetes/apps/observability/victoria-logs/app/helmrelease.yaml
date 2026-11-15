@@ -32,7 +32,7 @@ spec:
           gethomepage.dev/name: Victoria Logs
           gethomepage.dev/group: "Monitoring & Observability"
           gethomepage.dev/description: Log storage & querying
-          gethomepage.dev/weight: "70"
+          gethomepage.dev/weight: "50"
         extraRules:
           - filters:
               - type: RequestRedirect

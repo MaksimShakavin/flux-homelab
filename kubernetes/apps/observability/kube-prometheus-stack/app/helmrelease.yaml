@@ -35,7 +35,7 @@ spec:
             gethomepage.dev/name: Alertmanager
             gethomepage.dev/group: "Monitoring & Observability"
             gethomepage.dev/description: Alert routing & silencing
-            gethomepage.dev/weight: "60"
+            gethomepage.dev/weight: "40"
       alertmanagerSpec:
         alertmanagerConfiguration:
           name: alertmanager

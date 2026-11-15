@@ -194,7 +194,7 @@ spec:
           gethomepage.dev/name: Karakeep
           gethomepage.dev/icon: karakeep.svg
           gethomepage.dev/description: Bookmark everything
-          gethomepage.dev/weight: "40"
+          gethomepage.dev/weight: "90"
     persistence:
       data:
         existingClaim: "{{ .Release.Name }}"

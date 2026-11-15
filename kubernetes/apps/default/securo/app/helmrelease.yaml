@@ -237,7 +237,7 @@ spec:
           gethomepage.dev/name: Securo
           gethomepage.dev/group: "Home Apps"
           gethomepage.dev/description: "Personal Finance"
-          gethomepage.dev/weight: "110"
+          gethomepage.dev/weight: "120"
     persistence:
       attachments:
         existingClaim: "{{ .Release.Name }}"

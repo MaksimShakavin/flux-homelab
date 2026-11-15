@@ -51,7 +51,7 @@ spec:
           gethomepage.dev/name: Victoria Metrics
           gethomepage.dev/group: "Monitoring & Observability"
           gethomepage.dev/description: IoT metrics storage & querying
-          gethomepage.dev/weight: "71"
+          gethomepage.dev/weight: "51"
         extraRules:
           - filters:
               - type: RequestRedirect

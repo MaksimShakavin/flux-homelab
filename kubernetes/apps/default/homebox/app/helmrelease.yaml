@@ -82,7 +82,7 @@ spec:
           gethomepage.dev/name: Homebox
           gethomepage.dev/icon: homebox.png
           gethomepage.dev/description: Household inventory
-          gethomepage.dev/weight: "25"
+          gethomepage.dev/weight: "70"
     persistence:
       data:
         existingClaim: *app
