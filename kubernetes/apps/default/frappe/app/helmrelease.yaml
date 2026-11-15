@@ -40,9 +40,9 @@ spec:
                 bench set-config -g  redis_queue    redis://frappe-valkey.database.svc.cluster.local:6379
                 bench set-config -g  redis_socketio redis://frappe-valkey.database.svc.cluster.local:6379
                 bench set-config -gp socketio_port 9000
-                if [ -f "sites/${SITE_NAME}/site_config.json" ]; then
-                  # site_config alone isn't proof of a usable site: a new-site that crashed
-                  # mid-way leaves it behind. Probe the DB; drop + recreate if unusable.
+                if [ -d "sites/${SITE_NAME}" ]; then
+                  # the dir (not just site_config.json) is what blocks new-site: a crashed
+                  # bootstrap can leave the dir with no/stale config. Probe the DB; rebuild if bad.
                   if bench --site "${SITE_NAME}" list-apps >/dev/null 2>&1; then
                     echo "site ${SITE_NAME} healthy, skipping new-site"
                     exit 0
@@ -53,7 +53,7 @@ spec:
                   # other pods; strip the marker so frappe stops treating the moved copy as a site.
                   broken="sites/.broken-$(date +%s)"
                   mv "sites/${SITE_NAME}" "${broken}"
-                  rm -f "${broken}/site_config.json"
+                  rm -f "${broken}/site_config.json" 2>/dev/null || true
                 fi
                 bench new-site "${SITE_NAME}" \
                   --db-root-username root \
