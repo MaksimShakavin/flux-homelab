@@ -86,3 +86,6 @@ spec:
     substitute:
       APP: frappe
       APP_NAMESPACE: default
+      # the operator's readiness RPC starves on 1 thread once the lua flag is set
+      DRAGONFLY_THREADS: "2"
+      DRAGONFLY_MEMORY: 512Mi
