@@ -24,6 +24,8 @@ spec:
             env:
               TZ: Europe/Warsaw
               TMPDIR: /tmp
+              # TLS terminates at the gateway; needed to build https:// OIDC redirect URIs.
+              HBOX_OPTIONS_TRUST_PROXY: "true"
             envFrom:
               - secretRef:
                   name: homebox-secret

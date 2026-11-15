@@ -212,3 +212,10 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /tmp
+      # s6-overlay (app image only) needs a writable /run under readOnlyRootFilesystem
+      run:
+        type: emptyDir
+        advancedMounts:
+          karakeep:
+            app:
+              - path: /run
