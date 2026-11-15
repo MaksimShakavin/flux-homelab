@@ -29,7 +29,7 @@ spec:
       orphanAutoDeletion: true
       defaultLonghornStaticStorageClass: longhorn
       nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
-      nodeDrainPolicy: allow-if-replica-is-stopped
+      nodeDrainPolicy: block-for-eviction-if-contains-last-replica
       concurrentAutomaticEngineUpgradePerNodeLimit: 2
     ingress:
       enabled: false
