@@ -127,7 +127,7 @@ spec:
             image:
               # renovate: datasource=docker depName=getmeili/meilisearch
               repository: getmeili/meilisearch
-              tag: v1.55.0
+              tag: v1.57.0
             env:
               MEILI_ENV: production
               MEILI_NO_ANALYTICS: "true"
