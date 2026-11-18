@@ -18,6 +18,9 @@ model:
 dashboard:
   public_url: https://hermes.exelent.click
 
+browser:
+  backend: "off"
+
 mcp_servers:
   securo:
     url: http://mcp-securo-remote-proxy.default.svc.cluster.local:8080/mcp
