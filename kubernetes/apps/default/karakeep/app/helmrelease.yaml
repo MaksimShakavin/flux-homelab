@@ -95,6 +95,8 @@ spec:
               - --hide-scrollbars
               - --disable-blink-features=AutomationControlled
               - --window-size=1440,900
+              # FATAL-only: drops benign OOM-score/dbus/UPower/TFLite stderr noise
+              - --log-level=3
             env:
               HOME: /tmp
             probes:
@@ -113,10 +115,7 @@ spec:
                 enabled: false
             securityContext:
               allowPrivilegeEscalation: false
-              # SYS_RESOURCE lets Chromium set renderer OOM scores (silences perm-denied spam)
-              capabilities:
-                drop: [ "ALL" ]
-                add: [ "SYS_RESOURCE" ]
+              capabilities: { drop: [ "ALL" ] }
             resources:
               requests:
                 cpu: 50m
