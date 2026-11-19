@@ -1,6 +1,6 @@
 services:
   node-exporter:
-    image: quay.io/prometheus/node-exporter:v1.12.1
+    image: quay.io/prometheus/node-exporter:v1.13.1
     restart: unless-stopped
     network_mode: host
     pid: host
