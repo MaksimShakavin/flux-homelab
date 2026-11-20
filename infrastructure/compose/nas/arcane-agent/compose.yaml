@@ -1,6 +1,6 @@
 services:
   arcane-agent:
-    image: getarcaneapp/agent:v2.17.3
+    image: getarcaneapp/agent:v3.1.1
     restart: unless-stopped
     environment:
       EDGE_AGENT: "true"
