@@ -25,8 +25,7 @@ spec:
               TZ: "Europe/Warsaw"
               DATA_DIR: /data
               MEILI_ADDR: http://127.0.0.1:7700
-              # ws:// + API port 3000: connectOverCDP skips the /json/version probe
-              # (Steel strips the port there) and hits Steel's CDP ws endpoint directly
+              # ws + API port = Steel's CDP endpoint (plain http/:9223 probe is broken)
               BROWSER_WEB_URL: ws://steel-browser.ai.svc.cluster.local:3000
               BROWSER_CONNECT_ONDEMAND: "true"
               WORKERS_PORT: &metricsport 3001
