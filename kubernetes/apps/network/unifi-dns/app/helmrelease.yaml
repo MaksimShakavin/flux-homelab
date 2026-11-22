@@ -39,6 +39,8 @@ spec:
           timeoutSeconds: 5
     extraArgs:
       - --annotation-prefix=external-dns.alpha.kubernetes.io/
+      # Skip routes opting out of internal DNS (dual-gateway hosts publish their external route to Cloudflare only).
+      - --label-filter=dns.exelent.click/internal!=false
     triggerLoopOnEvent: true
     policy: sync
     sources:
