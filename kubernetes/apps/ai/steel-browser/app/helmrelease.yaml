@@ -20,7 +20,11 @@ spec:
               repository: ghcr.io/steel-dev/steel-browser-api
               tag: latest@sha256:2a516d6b84a67df19bca1874f2012736082ecd4732770c1fbb2f60e95025c245
             env:
-              DOMAIN: steel-browser.ai.svc.cluster.local:3000
+              # DOMAIN drives the session API's websocketUrl, which the hermes
+              # plugin opens as a CDP socket verbatim. Chromium's DNS-rebind guard
+              # rejects a hostname Host (500); it accepts only an IP/localhost, so
+              # this must be the pinned Service clusterIP below, not the DNS name.
+              DOMAIN: 10.96.20.56:3000
               CDP_DOMAIN: steel-browser.ai.svc.cluster.local:9223
               DEFAULT_TIMEZONE: Europe/Warsaw
             probes:
@@ -52,6 +56,8 @@ spec:
     service:
       app:
         controller: steel-browser
+        # pinned so DOMAIN above can hardcode it (Chromium CDP needs an IP Host)
+        clusterIP: 10.96.20.56
         ports:
           http:
             port: 3000
