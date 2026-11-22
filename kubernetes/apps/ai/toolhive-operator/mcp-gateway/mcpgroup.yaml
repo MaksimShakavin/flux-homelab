@@ -1,0 +1,7 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPGroup
+metadata:
+  name: default
+spec:
+  description: Self-hosted MCP backends aggregated behind the virtual MCP gateway

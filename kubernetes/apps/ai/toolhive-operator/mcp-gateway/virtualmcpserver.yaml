@@ -1,0 +1,12 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: VirtualMCPServer
+metadata:
+  name: default
+spec:
+  groupRef:
+    name: default
+  incomingAuth:
+    type: anonymous
+  outgoingAuth:
+    source: discovered
