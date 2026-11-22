@@ -1,0 +1,41 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kguardian
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: kguardian
+  interval: 1h
+  values:
+    # Privileged eBPF agent; same class as Cilium.
+    controller:
+      excludedNamespaces: [kguardian, kube-system]
+    broker:
+      resources:
+        limits:
+          memory: 2Gi
+    database:
+      persistence:
+        storageClassName: longhorn
+        size: 10Gi
+      resources:
+        limits:
+          memory: 1Gi
+    ai:
+      enabled: true
+      provider: openai
+      baseUrl: http://litellm.ai.svc.cluster.local:4000/v1
+      model: subscription-gpt-sol
+      secret: kguardian-secret
+      mcp:
+        enabled: true
+        auth:
+          # Internal-only; external access is fronted by the toolhive vMCP gateway.
+          allowUnauthenticated: true
+    llmBridge:
+      replicaCount: 1
+    telemetry:
+      enabled: false

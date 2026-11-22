@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: kguardian
+spec:
+  proxyRef: litellm
+  proxyNamespace: ai
+  keyAlias: kguardian
+  models:
+    - subscription-gpt-sol
+  secretName: kguardian-secret
+  # Chart ai.secret expects the provider key under `api-key`.
+  secretKey: api-key
