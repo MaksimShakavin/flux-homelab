@@ -35,3 +35,8 @@ gateway:
     telegram:
       extra:
         disable_topic_auto_rename: true
+
+plugins:
+  enabled:
+    - browser-steel
+  disabled: []
