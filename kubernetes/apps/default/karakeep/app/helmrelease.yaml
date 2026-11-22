@@ -25,7 +25,10 @@ spec:
               TZ: "Europe/Warsaw"
               DATA_DIR: /data
               MEILI_ADDR: http://127.0.0.1:7700
-              BROWSER_WEB_URL: http://127.0.0.1:9222
+              # ws:// + API port 3000: connectOverCDP skips the /json/version probe
+              # (Steel strips the port there) and hits Steel's CDP ws endpoint directly
+              BROWSER_WEB_URL: ws://steel-browser.ai.svc.cluster.local:3000
+              BROWSER_CONNECT_ONDEMAND: "true"
               WORKERS_PORT: &metricsport 3001
               # 0.0.0.0 so the ServiceMonitor can reach it
               WORKERS_HOST: 0.0.0.0
@@ -84,44 +87,6 @@ spec:
                 memory: 512Mi
               limits:
                 memory: 2Gi
-          chrome:
-            image:
-              # renovate: datasource=docker depName=ghcr.io/karakeep-app/karakeep-chrome
-              repository: ghcr.io/karakeep-app/karakeep-chrome
-              tag: 157.0.8103.38-r1
-            args:
-              - --disable-gpu
-              - --disable-dev-shm-usage
-              - --hide-scrollbars
-              - --disable-blink-features=AutomationControlled
-              - --window-size=1440,900
-              # FATAL-only: drops benign OOM-score/dbus/UPower/TFLite stderr noise
-              - --log-level=3
-            env:
-              HOME: /tmp
-            probes:
-              liveness: &chromeprobe
-                enabled: true
-                custom: true
-                spec:
-                  tcpSocket:
-                    port: &chromeport 9222
-                  initialDelaySeconds: 10
-                  periodSeconds: 15
-                  timeoutSeconds: 5
-                  failureThreshold: 3
-              readiness: *chromeprobe
-              startup:
-                enabled: false
-            securityContext:
-              allowPrivilegeEscalation: false
-              capabilities: { drop: [ "ALL" ] }
-            resources:
-              requests:
-                cpu: 50m
-                memory: 256Mi
-              limits:
-                memory: 1Gi
           meilisearch:
             image:
               # renovate: datasource=docker depName=getmeili/meilisearch
