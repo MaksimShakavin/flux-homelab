@@ -1,0 +1,12 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPRemoteProxy
+metadata:
+  name: kguardian
+spec:
+  remoteUrl: http://kguardian-llm-bridge.kguardian.svc.cluster.local:8080/mcp
+  transport: streamable-http
+  proxyPort: 8080
+  allowPrivateEndpoint: true
+  groupRef:
+    name: default
