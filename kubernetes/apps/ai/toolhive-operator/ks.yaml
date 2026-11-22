@@ -32,6 +32,8 @@ spec:
   dependsOn:
     - name: toolhive-operator
       namespace: ai
+    - name: onepassword
+      namespace: external-secrets
   path: ./kubernetes/apps/ai/toolhive-operator/mcp-gateway
   sourceRef:
     kind: GitRepository

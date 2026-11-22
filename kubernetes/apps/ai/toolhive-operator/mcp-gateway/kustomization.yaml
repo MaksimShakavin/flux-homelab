@@ -6,3 +6,6 @@ namespace: ai
 resources:
   - ./mcpgroup.yaml
   - ./virtualmcpserver.yaml
+  - ./externalsecret.yaml
+  - ./httproute.yaml
+  - ./securitypolicy.yaml
