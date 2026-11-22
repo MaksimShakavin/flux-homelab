@@ -23,7 +23,7 @@ spec:
             # Image ENTRYPOINT is bare `bundle exec` with no CMD; the web service's
             # entrypoint script runs migrations then `exec bundle exec "$@"`.
             command: ["web-entrypoint.sh"]
-            args: ["bin/rails", "server", "-p", "3000", "-b", "::"]
+            args: ["bin/rails", "server", "-p", "3000", "-b", "0.0.0.0"]
             env:
               RAILS_ENV: production
               SELF_HOSTED: "true"
