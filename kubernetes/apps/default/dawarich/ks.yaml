@@ -61,7 +61,7 @@ spec:
       APP: dawarich
       APP_NAMESPACE: default
       # PostGIS is mandatory for Dawarich; override the component's non-GIS default.
-      POSTGRES_IMAGE: ghcr.io/cloudnative-pg/postgis:18.7-3.7.0-standard-trixie
+      POSTGRES_IMAGE: ghcr.io/cloudnative-pg/postgis:19.0-3.7.0-standard-trixie
 ---
 # yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
