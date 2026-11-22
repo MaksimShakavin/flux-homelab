@@ -59,8 +59,6 @@ spec:
         ports:
           http:
             port: 3000
-          cdp:
-            port: 9223
     persistence:
       dshm:
         type: emptyDir
