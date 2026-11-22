@@ -114,6 +114,12 @@ module "secret_frappe" {
   item   = "frappe"
 }
 
+module "secret_dawarich" {
+  source = "github.com/bjw-s/terraform-1password-item?ref=main"
+  vault  = "homelab"
+  item   = "dawarich"
+}
+
 provider "authentik" {
   url   = "https://sso.exelent.click"
   token = module.secret_authentik.fields["AUTHENTIK_TOKEN"]
