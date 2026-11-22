@@ -4,3 +4,11 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ./dragonfly-auth.externalsecret.yaml
+patches:
+  # Sidekiq limit_fetch runs Lua touching keys Dragonfly rejects as undeclared.
+  - target:
+      kind: Dragonfly
+    patch: |
+      - op: add
+        path: /spec/args/-
+        value: --default_lua_flags=allow-undeclared-keys
