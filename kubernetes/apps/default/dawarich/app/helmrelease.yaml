@@ -72,6 +72,10 @@ spec:
                   httpGet:
                     path: /api/v1/health
                     port: &port 3000
+                    # force_ssl (APPLICATION_PROTOCOL=https) 301s plain-HTTP probes.
+                    httpHeaders: &probeHeaders
+                      - name: X-Forwarded-Proto
+                        value: https
                   initialDelaySeconds: 0
                   periodSeconds: 10
                   timeoutSeconds: 5
@@ -84,10 +88,11 @@ spec:
                   httpGet:
                     path: /api/v1/health
                     port: *port
+                    httpHeaders: *probeHeaders
                   initialDelaySeconds: 10
-                  periodSeconds: 5
-                  # DB migrations run on first boot; give them room.
-                  failureThreshold: 60
+                  periodSeconds: 10
+                  # First-boot migrations need headroom.
+                  failureThreshold: 180
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
