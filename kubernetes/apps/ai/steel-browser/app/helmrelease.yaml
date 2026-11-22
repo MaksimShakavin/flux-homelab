@@ -23,7 +23,6 @@ spec:
               # IP, not DNS: clients open this as a CDP socket and Chromium's
               # host guard rejects a hostname Host. Must match the pinned clusterIP.
               DOMAIN: 10.96.20.56:3000
-              CDP_DOMAIN: steel-browser.ai.svc.cluster.local:9223
               DEFAULT_TIMEZONE: Europe/Warsaw
             probes:
               liveness: &probe
