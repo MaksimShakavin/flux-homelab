@@ -28,6 +28,7 @@ resources:
   - ./scrypted/ks.yaml
   - ./lubelogger/ks.yaml
   - ./immich/ks.yaml
+  - ./dawarich/ks.yaml
   - ./ghostfolio/ks.yaml
   - ./octobot/ks.yaml
   - ./agregarr/ks.yaml

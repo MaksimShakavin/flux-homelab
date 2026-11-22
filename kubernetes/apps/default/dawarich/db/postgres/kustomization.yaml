@@ -1,0 +1,25 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources: []
+patches:
+  # Brand-new app: nothing to recover from yet, so bootstrap via initdb and
+  # pre-create the extensions Dawarich's schema enables as superuser (its
+  # migrations run as the non-superuser app role). Delete this block once the
+  # first backup lands — the cluster then reverts to the recovery default.
+  - target:
+      kind: Cluster
+    patch: |
+      - op: remove
+        path: /spec/bootstrap/recovery
+      - op: remove
+        path: /spec/externalClusters
+      - op: add
+        path: /spec/bootstrap/initdb
+        value:
+          database: dawarich
+          owner: dawarich
+          postInitApplicationSQL:
+            - CREATE EXTENSION IF NOT EXISTS postgis
+            - CREATE EXTENSION IF NOT EXISTS pgcrypto
