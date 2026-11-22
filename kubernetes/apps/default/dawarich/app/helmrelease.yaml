@@ -141,6 +141,9 @@ spec:
       external:
         hostnames:
           - "{{ .Release.Name }}.exelent.click"
+        # Host is also on envoy-internal; keep this route out of internal DNS so unifi-dns won't publish a conflicting CNAME.
+        labels:
+          dns.exelent.click/internal: "false"
         parentRefs:
           - name: envoy-external
             namespace: network
