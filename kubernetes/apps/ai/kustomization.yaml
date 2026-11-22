@@ -14,4 +14,5 @@ resources:
   - ./hermes/ks.yaml
   - ./litellm-operator/ks.yaml
   - ./litellm/ks.yaml
+  - ./steel-browser/ks.yaml
   - ./toolhive-operator/ks.yaml

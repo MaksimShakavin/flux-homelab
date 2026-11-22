@@ -1,0 +1,67 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: steel-browser
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: steel-browser
+  interval: 1h
+  values:
+    controllers:
+      steel-browser:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/steel-dev/steel-browser-api
+              tag: latest@sha256:2a516d6b84a67df19bca1874f2012736082ecd4732770c1fbb2f60e95025c245
+            env:
+              DOMAIN: steel-browser.ai.svc.cluster.local:3000
+              CDP_DOMAIN: steel-browser.ai.svc.cluster.local:9223
+              DEFAULT_TIMEZONE: Europe/Warsaw
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 3000
+                  initialDelaySeconds: 20
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 6
+              readiness: *probe
+              startup:
+                enabled: false
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities: { drop: [ "ALL" ] }
+            resources:
+              requests:
+                cpu: 200m
+                memory: 1Gi
+              limits:
+                memory: 3Gi
+    defaultPodOptions:
+      securityContext:
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      app:
+        controller: steel-browser
+        ports:
+          http:
+            port: 3000
+          cdp:
+            port: 9223
+    persistence:
+      dshm:
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 1Gi
+        globalMounts:
+          - path: /dev/shm
