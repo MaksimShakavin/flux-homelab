@@ -20,6 +20,9 @@ dashboard:
 
 browser:
   backend: "off"
+  cloud_provider: steel
+  steel:
+    base_url: http://steel-browser.ai.svc.cluster.local:3000
 
 mcp_servers:
   securo:
