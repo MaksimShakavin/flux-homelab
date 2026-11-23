@@ -28,7 +28,7 @@ spec:
               RAILS_ENV: production
               SELF_HOSTED: "true"
               APPLICATION_PROTOCOL: https
-              APPLICATION_HOSTS: dawarich.exelent.click
+              APPLICATION_HOSTS: dawarich.exelent.click,dawarich-api.exelent.click
               TIME_ZONE: Europe/Warsaw
               # Embedded Sidekiq runs jobs in the web process (no worker container);
               # WEB_CONCURRENCY=0 keeps Puma single-process so jobs don't double-run.
@@ -136,14 +136,12 @@ spec:
           gethomepage.dev/icon: dawarich.png
           gethomepage.dev/description: Location history
           gethomepage.dev/weight: "70"
-      # Mobile ingest only: expose /api/v1 externally; the gateway 404s every
-      # other path on this host since no rule matches it.
+      # Mobile ingest only: a dedicated public host exposing just /api/v1; the
+      # gateway 404s every other path since no rule matches it. Kept separate
+      # from the internal UI host so the UI has no public record to shadow it.
       external:
         hostnames:
-          - "{{ .Release.Name }}.exelent.click"
-        # Host is also on envoy-internal; keep this route out of internal DNS so unifi-dns won't publish a conflicting CNAME.
-        labels:
-          dns.exelent.click/internal: "false"
+          - "{{ .Release.Name }}-api.exelent.click"
         parentRefs:
           - name: envoy-external
             namespace: network
