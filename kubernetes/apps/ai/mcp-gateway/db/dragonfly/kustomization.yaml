@@ -4,3 +4,15 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ./dragonfly-auth.externalsecret.yaml
+patches:
+  # ToolHive names the vMCP pod after the VirtualMCPServer (`default`), not the
+  # dragonfly APP, so the component's client policy (instance: ${APP}) never
+  # matches. Admit the vMCP by its stable toolhive-name label instead.
+  - target:
+      kind: NetworkPolicy
+      name: dragonfly-.*-client
+    patch: |
+      - op: replace
+        path: /spec/ingress/0/from/0/podSelector/matchLabels
+        value:
+          toolhive-name: default
