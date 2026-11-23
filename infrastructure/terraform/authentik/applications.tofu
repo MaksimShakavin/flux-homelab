@@ -223,3 +223,19 @@ module "oauth2-dawarich" {
   client_secret      = module.secret_dawarich.fields["OIDC_CLIENT_SECRET"]
   redirect_uris      = ["https://dawarich.exelent.click/users/auth/openid_connect/callback"]
 }
+
+module "oauth2-mcp-gateway" {
+  source             = "./oauth2_application"
+  name               = "MCP Gateway"
+  icon_url           = "https://cdn.jsdelivr.net/gh/selfhst/icons/svg/model-context-protocol.svg"
+  launch_url         = "https://mcp.exelent.click"
+  description        = "Self-hosted MCP gateway"
+  newtab             = true
+  group              = "Infrastructure"
+  auth_groups        = [authentik_group.infrastructure.id]
+  authorization_flow = resource.authentik_flow.provider-authorization-implicit-consent.uuid
+  invalidation_flow  = data.authentik_flow.default-provider-invalidation-flow.id
+  client_id          = module.secret_mcp_gateway.fields["OIDC_CLIENT_ID"]
+  client_secret      = module.secret_mcp_gateway.fields["OIDC_CLIENT_SECRET"]
+  redirect_uris      = ["https://mcp.exelent.click/oauth/callback"]
+}
