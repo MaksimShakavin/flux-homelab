@@ -5,9 +5,7 @@ kind: Kustomization
 resources:
   - ./dragonfly-auth.externalsecret.yaml
 patches:
-  # ToolHive names the vMCP pod after the VirtualMCPServer (`default`), not the
-  # dragonfly APP, so the component's client policy (instance: ${APP}) never
-  # matches. Admit the vMCP by its stable toolhive-name label instead.
+  # vMCP pod is labelled by VirtualMCPServer name, not ${APP}; match toolhive-name
   - target:
       kind: NetworkPolicy
       name: dragonfly-.*-client

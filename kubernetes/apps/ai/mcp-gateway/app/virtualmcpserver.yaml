@@ -20,9 +20,7 @@ spec:
         type: oidc
         oidcConfig:
           issuerUrl: https://sso.exelent.click/application/o/mcp-gateway/
-          # In-cluster DNS resolves sso.exelent.click to the internal gateway
-          # (private IP); permit the discovery client to reach it.
-          allowPrivateIPs: true
+          allowPrivateIPs: true # issuer resolves to a private gateway IP in-cluster
           clientId: ${OIDC_CLIENT_ID}
           clientSecretRef:
             name: mcp-gateway-auth
