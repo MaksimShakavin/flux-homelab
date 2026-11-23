@@ -17,7 +17,7 @@ spec:
           reloader.stakater.com/auto: "true"
         containers:
           app:
-            image:
+            image: &image
               repository: mirror.gcr.io/freikin/dawarich
               tag: 1.23.0@sha256:c9c6a9c04fa2ad11c438fc0b0ea3b7d95fc7e6d8c7a3cfa98bf1fc5aef2dbfd4
             # Image ENTRYPOINT is bare `bundle exec` with no CMD; the web service's
@@ -34,8 +34,9 @@ spec:
               # WEB_CONCURRENCY=0 keeps Puma single-process so jobs don't double-run.
               SIDEKIQ_EMBEDDED: "true"
               WEB_CONCURRENCY: "0"
-              # Rails tempfiles under the writable tmp mount (readOnlyRootFS).
-              TMPDIR: /var/app/tmp
+              # Ruby's Dir.tmpdir refuses the world-writable tmp emptyDir; point it
+              # at the init-created subdir owned by 1000 (not world-writable).
+              TMPDIR: /var/app/tmp/ruby
               DATABASE_HOST:
                 valueFrom:
                   secretKeyRef:
@@ -103,6 +104,12 @@ spec:
                 memory: 512Mi
               limits:
                 memory: 2Gi
+        initContainers:
+          # Ruby's Dir.tmpdir refuses the 0777 tmp emptyDir; pre-create a 0700
+          # subdir owned by 1000 so imports can resolve a temp directory.
+          init-tmp:
+            image: *image
+            command: ["sh", "-c", "mkdir -p /var/app/tmp/ruby && chmod 700 /var/app/tmp/ruby"]
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
