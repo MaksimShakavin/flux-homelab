@@ -158,6 +158,8 @@ spec:
         existingClaim: *app
         globalMounts:
           - path: /var/app/storage
+          - path: /var/app/tmp/imports/watched
+            subPath: imports/watched
       # Entrypoint re-syncs baked assets from public_dist into public every boot;
       # under readOnlyRootFS that target needs a writable, ephemeral mount.
       public:
