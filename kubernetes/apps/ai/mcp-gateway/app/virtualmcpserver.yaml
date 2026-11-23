@@ -11,10 +11,10 @@ spec:
     insecureAllowHTTP: false
     signingKeySecretRefs:
       - name: mcp-gateway-auth
-        key: signing-key
+        key: AS_SIGNING_KEY
     hmacSecretRefs:
       - name: mcp-gateway-auth
-        key: hmac-secret
+        key: AS_HMAC_SECRET
     upstreamProviders:
       - name: authentik
         type: oidc
@@ -23,7 +23,7 @@ spec:
           clientId: ${OIDC_CLIENT_ID}
           clientSecretRef:
             name: mcp-gateway-auth
-            key: oidc-client-secret
+            key: OIDC_CLIENT_SECRET
           scopes:
             - openid
             - profile
@@ -41,7 +41,7 @@ spec:
         aclUserConfig:
           passwordSecretRef:
             name: mcp-gateway-auth
-            key: dragonfly-password
+            key: DRAGONFLY_PASSWORD
   incomingAuth:
     type: oidc
     oidcConfigRef:
