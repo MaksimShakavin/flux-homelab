@@ -14,3 +14,10 @@ patches:
         path: /spec/ingress/0/from/0/podSelector/matchLabels
         value:
           toolhive-name: default
+  # vMCP auth-server Lua touches hash-tagged keys Dragonfly rejects as undeclared
+  - target:
+      kind: Dragonfly
+    patch: |
+      - op: add
+        path: /spec/args/-
+        value: --default_lua_flags=allow-undeclared-keys
