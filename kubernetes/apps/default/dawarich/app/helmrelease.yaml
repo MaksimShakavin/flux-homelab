@@ -130,6 +130,7 @@ spec:
                 port: *port
         annotations:
           gethomepage.dev/enabled: "true"
+          gethomepage.dev/app: dawarich
           gethomepage.dev/href: "https://dawarich.exelent.click"
           gethomepage.dev/group: "Home Apps"
           gethomepage.dev/name: Dawarich
@@ -145,6 +146,10 @@ spec:
         parentRefs:
           - name: envoy-external
             namespace: network
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            conditions: ["[STATUS] == 200"]
+            path: /api/v1/health
         rules:
           - matches:
               - path:
