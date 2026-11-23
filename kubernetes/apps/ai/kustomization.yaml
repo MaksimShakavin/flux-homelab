@@ -15,5 +15,6 @@ resources:
   - ./kubesearch-mcp/ks.yaml
   - ./litellm-operator/ks.yaml
   - ./litellm/ks.yaml
+  - ./mcp-gateway/ks.yaml
   - ./steel-browser/ks.yaml
   - ./toolhive-operator/ks.yaml

@@ -1,0 +1,52 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: VirtualMCPServer
+metadata:
+  name: default
+spec:
+  groupRef:
+    name: default
+  authServerConfig:
+    issuer: https://mcp.exelent.click
+    insecureAllowHTTP: false
+    signingKeySecretRefs:
+      - name: mcp-gateway-auth
+        key: signing-key
+    hmacSecretRefs:
+      - name: mcp-gateway-auth
+        key: hmac-secret
+    upstreamProviders:
+      - name: authentik
+        type: oidc
+        oidcConfig:
+          issuerUrl: https://sso.exelent.click/application/o/mcp-gateway/
+          clientId: ${OIDC_CLIENT_ID}
+          clientSecretRef:
+            name: mcp-gateway-auth
+            key: oidc-client-secret
+          scopes:
+            - openid
+            - profile
+            - email
+            - offline_access
+          redirectUri: https://mcp.exelent.click/oauth/callback
+    baselineClientScopes:
+      - openid
+      - offline_access
+    storage:
+      type: redis
+      maxDCRClients: 50
+      redis:
+        addr: dragonfly-mcp-gateway.database.svc.cluster.local:6379
+        aclUserConfig:
+          passwordSecretRef:
+            name: mcp-gateway-auth
+            key: dragonfly-password
+  incomingAuth:
+    type: oidc
+    oidcConfigRef:
+      name: mcp-gateway
+      audience: https://mcp.exelent.click/mcp
+      resourceUrl: https://mcp.exelent.click/mcp
+  outgoingAuth:
+    source: discovered

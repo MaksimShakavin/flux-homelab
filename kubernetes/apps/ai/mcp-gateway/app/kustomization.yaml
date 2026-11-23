@@ -5,8 +5,7 @@ kind: Kustomization
 namespace: ai
 resources:
   - ./mcpgroup.yaml
+  - ./mcpoidcconfig.yaml
   - ./virtualmcpserver.yaml
   - ./mcpremoteproxy-kguardian.yaml
-  - ./externalsecret.yaml
   - ./httproute.yaml
-  - ./securitypolicy.yaml

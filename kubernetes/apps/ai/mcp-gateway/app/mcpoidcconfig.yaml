@@ -1,0 +1,9 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPOIDCConfig
+metadata:
+  name: mcp-gateway
+spec:
+  type: inline
+  inline:
+    issuer: https://mcp.exelent.click
