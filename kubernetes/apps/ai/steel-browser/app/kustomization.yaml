@@ -6,3 +6,11 @@ resources:
   - ./helmrelease.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
+configMapGenerator:
+  - name: steel-browser-ca-policy
+    files:
+      - 01_russian_ca.json=./files/01_russian_ca.json
+generatorOptions:
+  disableNameSuffixHash: true
+  annotations:
+    kustomize.toolkit.fluxcd.io/substitute: disabled

@@ -65,3 +65,12 @@ spec:
         sizeLimit: 1Gi
         globalMounts:
           - path: /dev/shm
+      ca-policy:
+        type: configMap
+        name: steel-browser-ca-policy
+        advancedMounts:
+          steel-browser:
+            app:
+              - path: /etc/chromium/policies/managed/01_russian_ca.json
+                subPath: 01_russian_ca.json
+                readOnly: true
