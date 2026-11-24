@@ -1,6 +1,6 @@
 services:
   garage:
-    image: dxflrs/garage:v2.5.0
+    image: dxflrs/garage:v2.6.0
     restart: unless-stopped
     command: ["/garage", "server"]
     networks:
