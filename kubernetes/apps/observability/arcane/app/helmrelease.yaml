@@ -18,13 +18,14 @@ spec:
           app:
             image:
               repository: getarcaneapp/manager
-              tag: "v2.17.3"
+              tag: "v3.1.1"
             env:
               TZ: Europe/Warsaw
-              PORT: &port 3552
-              APP_URL: https://arcane.exelent.click
-              ENVIRONMENT: production
-              TRUSTED_PROXIES: 10.69.0.0/16
+              # v3 requires the ARCANE_ prefix; legacy unprefixed names hard-stop startup
+              ARCANE_PORT: &port 3552
+              ARCANE_APP_URL: https://arcane.exelent.click
+              ARCANE_ENVIRONMENT: production
+              ARCANE_TRUSTED_PROXIES: 10.69.0.0/16
             envFrom:
               - secretRef:
                   name: arcane-secret
