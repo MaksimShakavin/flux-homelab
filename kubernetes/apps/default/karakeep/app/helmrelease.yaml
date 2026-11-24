@@ -90,10 +90,12 @@ spec:
             image:
               # renovate: datasource=docker depName=getmeili/meilisearch
               repository: getmeili/meilisearch
-              tag: v1.55.0
+              tag: v1.58.0
             env:
               MEILI_ENV: production
               MEILI_NO_ANALYTICS: "true"
+              # required once the datadir lags the binary version; permanent no-op when they match
+              MEILI_UPGRADE_DB: "true"
               MEILI_MASTER_KEY:
                 valueFrom:
                   secretKeyRef:
