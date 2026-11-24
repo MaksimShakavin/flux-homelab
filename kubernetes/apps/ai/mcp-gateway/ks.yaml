@@ -43,6 +43,11 @@ spec:
       namespace: ai
     - name: onepassword
       namespace: external-secrets
+  healthCheckExprs:
+    - apiVersion: toolhive.stacklok.dev/v1beta1
+      kind: VirtualMCPServer
+      failed: status.phase != 'Ready'
+      current: status.phase == 'Ready'
   path: ./kubernetes/apps/ai/mcp-gateway/app
   postBuild:
     substituteFrom:
