@@ -20,7 +20,7 @@ spec:
             image:
               # renovate: datasource=docker depName=mariadb
               repository: mariadb
-              tag: "11.8"
+              tag: "13.0"
             args:
               - --character-set-server=utf8mb4
               - --collation-server=utf8mb4_unicode_ci
