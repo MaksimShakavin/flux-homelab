@@ -43,7 +43,7 @@ spec:
               readOnlyRootFilesystem: false
             resources:
               requests:
-                cpu: 200m
+                cpu: 75m
                 memory: 1Gi
               limits:
                 memory: 3Gi

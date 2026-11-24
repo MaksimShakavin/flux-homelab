@@ -38,7 +38,7 @@ spec:
         enabled: false
       resources:
         requests:
-          cpu: 250m
+          cpu: 200m
           memory: 512Mi
         limits:
           memory: 1Gi
@@ -80,9 +80,10 @@ spec:
       autoscaling:
         enabled: true
         minReplicas: 1
+        maxReplicas: 3
       resources:
         requests:
-          cpu: 250m
+          cpu: 200m
           memory: 512Mi
         limits:
           memory: 1Gi

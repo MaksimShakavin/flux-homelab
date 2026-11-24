@@ -11,6 +11,12 @@ spec:
   interval: 1h
   values:
     kind: Deployment
+    resources:
+      requests:
+        cpu: 75m
+        memory: 256Mi
+      limits:
+        memory: 256Mi
     deschedulerPolicyAPIVersion: descheduler/v1alpha2
     deschedulerPolicy:
       metricsProviders:
