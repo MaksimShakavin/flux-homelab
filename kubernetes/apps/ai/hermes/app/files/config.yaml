@@ -1,5 +1,5 @@
 ---
-_config_version: 46
+_config_version: 47
 
 timezone: Europe/Warsaw
 
@@ -29,6 +29,8 @@ mcp_servers:
     url: http://mcp-securo-remote-proxy.default.svc.cluster.local:8080/mcp
   homebox:
     url: http://mcp-homebox-mcp-proxy.default.svc.cluster.local:8080/mcp
+  vikunja:
+    url: http://mcp-vikunja-mcp-proxy.default.svc.cluster.local:8080/mcp
 
 gateway:
   platforms:

@@ -38,4 +38,5 @@ resources:
   - ./homebox/ks.yaml
   - ./homebox-companion/ks.yaml
   - ./frappe/ks.yaml
+  - ./vikunja/ks.yaml
 #  - ./valheim/ks.yaml

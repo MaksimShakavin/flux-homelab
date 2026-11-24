@@ -1,0 +1,21 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources: []
+# Net-new database: override the component's recovery bootstrap with a fresh
+# initdb. Patch runs before Flux substitutes ${APP}, so target the literal name.
+# Remove this block after the first barman backup completes.
+patches:
+  - target:
+      kind: Cluster
+    patch: |
+      - op: remove
+        path: /spec/bootstrap/recovery
+      - op: remove
+        path: /spec/externalClusters
+      - op: add
+        path: /spec/bootstrap/initdb
+        value:
+          database: vikunja
+          owner: vikunja

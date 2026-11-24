@@ -224,6 +224,22 @@ module "oauth2-dawarich" {
   redirect_uris      = ["https://dawarich.exelent.click/users/auth/openid_connect/callback"]
 }
 
+module "oauth2-vikunja" {
+  source             = "./oauth2_application"
+  name               = "Vikunja"
+  icon_url           = "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/vikunja.svg"
+  launch_url         = "https://vikunja.exelent.click"
+  description        = "Task management"
+  newtab             = true
+  group              = "Selfhosted"
+  auth_groups        = [authentik_group.users.id]
+  authorization_flow = resource.authentik_flow.provider-authorization-implicit-consent.uuid
+  invalidation_flow  = data.authentik_flow.default-provider-invalidation-flow.id
+  client_id          = module.secret_vikunja.fields["OIDC_CLIENT_ID"]
+  client_secret      = module.secret_vikunja.fields["OIDC_CLIENT_SECRET"]
+  redirect_uris      = ["https://vikunja.exelent.click/auth/openid/authentik"]
+}
+
 module "oauth2-mcp-gateway" {
   source             = "./oauth2_application"
   name               = "MCP Gateway"

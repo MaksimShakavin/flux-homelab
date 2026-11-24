@@ -1,0 +1,16 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPServer
+metadata:
+  name: vikunja-mcp
+spec:
+  image: ghcr.io/netadvanced/vikunja-mcp-ng:0.7.0@sha256:3381d627eaf11d9db735215d665dd17a7a31ff74255d26eb5062731df2b84df0
+  transport: stdio
+  proxyPort: 8080
+  env:
+    - name: VIKUNJA_URL
+      value: http://vikunja.default.svc.cluster.local:3456
+  secrets:
+    - name: vikunja-mcp-token
+      key: token
+      targetEnvName: VIKUNJA_API_TOKEN

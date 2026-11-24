@@ -126,6 +126,12 @@ module "secret_mcp_gateway" {
   item   = "mcp-gateway"
 }
 
+module "secret_vikunja" {
+  source = "github.com/bjw-s/terraform-1password-item?ref=main"
+  vault  = "homelab"
+  item   = "vikunja"
+}
+
 provider "authentik" {
   url   = "https://sso.exelent.click"
   token = module.secret_authentik.fields["AUTHENTIK_TOKEN"]
