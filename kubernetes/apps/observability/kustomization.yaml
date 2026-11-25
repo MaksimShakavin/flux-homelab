@@ -25,3 +25,4 @@ resources:
   - ./smartctl-exporter/ks.yaml
   - ./blackbox-exporter/ks.yaml
   - ./prometheus-adapter/ks.yaml
+  - ./robusta/ks.yaml

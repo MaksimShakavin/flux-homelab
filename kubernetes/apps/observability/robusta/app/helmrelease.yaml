@@ -1,0 +1,81 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: robusta
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: robusta
+  interval: 1h
+  values:
+    clusterName: home-kubernetes
+    enablePrometheusStack: false
+    enablePlatformPlaybooks: false
+    globalConfig:
+      check_prometheus_flags: false
+      prometheus_url: http://victoria-metrics-server.observability.svc.cluster.local:8428
+    sinksConfig:
+      - telegram_sink:
+          name: telegram
+          bot_token: "{{ env.TELEGRAM_BOT_TOKEN }}"
+          chat_id: "{{ env.TELEGRAM_CHAT_ID }}"
+    runner:
+      additional_env_froms:
+        - secretRef:
+            name: robusta-telegram-secret
+      resources:
+        requests:
+          cpu: 100m
+        limits:
+          memory: 1Gi
+    kubewatch:
+      resources:
+        requests:
+          cpu: 10m
+        limits:
+          memory: 512Mi
+    enableHolmesGPT: true
+    holmes:
+      enabled: true
+      sentryDSN: ""
+      extraEnvVarsSecrets:
+        - robusta-secret
+      additionalEnvVars:
+        - name: MODEL
+          value: subscription-gpt-sol
+        - name: OPENAI_API_BASE
+          value: http://litellm.ai.svc.cluster.local:4000/v1
+      modelList:
+        subscription-gpt-sol:
+          model: openai/subscription-gpt-sol
+          api_base: envRef:OPENAI_API_BASE
+          api_key: envRef:OPENAI_API_KEY
+      toolsets:
+        kubernetes/core:
+          enabled: true
+        kubernetes/logs:
+          enabled: true
+        prometheus/metrics:
+          enabled: true
+          config:
+            subtype: victoriametrics
+            prometheus_url: http://victoria-metrics-server.observability.svc.cluster.local:8428
+        victorialogs:
+          enabled: true
+          config:
+            api_url: http://victoria-logs-server.observability.svc.cluster.local:9428
+        flux/core:
+          enabled: true
+        robusta:
+          enabled: false
+        internet:
+          enabled: false
+        bash:
+          enabled: false
+      resources:
+        requests:
+          cpu: 100m
+        limits:
+          memory: 2Gi
