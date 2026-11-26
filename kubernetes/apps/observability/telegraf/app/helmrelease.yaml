@@ -18,7 +18,7 @@ spec:
           app:
             image:
               repository: docker.io/library/telegraf
-              tag: 1.40.3-alpine
+              tag: 1.40.4-alpine
             envFrom:
               - secretRef:
                   name: telegraf-secret
