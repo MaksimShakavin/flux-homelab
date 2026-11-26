@@ -17,7 +17,7 @@ spec:
             image:
               # renovate: datasource=docker depName=valkey/valkey
               repository: valkey/valkey
-              tag: 8.1.12-alpine
+              tag: 9.2.1-alpine
             # Frappe 16 needs RESP3 client-tracking (Dragonfly/KeyDB can't); keep it
             # open+unauthenticated like the dragonfly it replaces, no RDB persistence
             args: ["--protected-mode", "no", "--save", ""]
