@@ -18,7 +18,7 @@ spec:
           app:
             image:
               repository: getarcaneapp/manager
-              tag: "v3.1.1"
+              tag: "v3.2.0"
             env:
               TZ: Europe/Warsaw
               # v3 requires the ARCANE_ prefix; legacy unprefixed names hard-stop startup
