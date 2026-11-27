@@ -1,6 +1,6 @@
 services:
   arcane-agent:
-    image: getarcaneapp/agent:v3.1.1
+    image: getarcaneapp/agent:v3.2.0
     restart: unless-stopped
     environment:
       ARCANE_AGENT: "true"
