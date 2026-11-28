@@ -18,7 +18,7 @@ spec:
           app:
             image:
               repository: ghcr.io/steel-dev/steel-browser-api
-              tag: latest@sha256:2a516d6b84a67df19bca1874f2012736082ecd4732770c1fbb2f60e95025c245
+              tag: latest@sha256:6a7644925c588441eaf185db77b0911aebe8c81334ac8c01c988f65060fdd776
             env:
               # IP, not DNS: clients open this as a CDP socket and Chromium's
               # host guard rejects a hostname Host. Must match the pinned clusterIP.
